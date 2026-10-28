@@ -1,0 +1,26 @@
+{
+  "people": [
+    {"key": "dale", "name": "Dale"},
+    {"key": "jade", "name": "Jade"}
+  ],
+  "exclusions": [
+    {
+      "person": "jade",
+      "family": "seafood",
+      "exceptions": ["fish_sauce", "shrimp_paste", "breaded_cod"],
+      "note": "No fish or shellfish (incl. anchovies, Worcestershire, oyster sauce). Fish sauce and shrimp paste are fine, as is breaded or battered cod."
+    },
+    {
+      "person": "jade",
+      "family": "mushroom",
+      "exceptions": [],
+      "note": "No mushrooms in any form, including stock and powder."
+    },
+    {
+      "person": "dale",
+      "family": "whole_fruit",
+      "exceptions": [],
+      "note": "No whole pieces of fruit, fresh or dried. Juice and zest are fine."
+    }
+  ]
+}

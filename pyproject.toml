@@ -1,0 +1,9 @@
+[project]
+name = "hormonious"
+version = "0.1.0"
+description = "Private weekly meal planner for two"
+requires-python = ">=3.13"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -23,6 +23,15 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - Health wording: "designed to support" / "in line with". Never medical claims. Show a "not medical advice" note.
 - Secrets live only in `.env` (git-ignored). The API key is never sent to the frontend.
 
+## Code map
+- `core/schema.py`: Pydantic models (Ingredient, Recipe, RecipeItem, FlexComponent, FlexOption). Shared-base grams are totals for `servings`; flex grams are per person, per meal.
+- `core/families.py`: family hierarchy (`PARENTS`) and the keyword safety net (`KEYWORD_RULES`, ordered; a matched phrase is blanked before later rules run).
+- `core/exclusions.py`: rule = family + exceptions, checked per family. `check_recipe` covers shared items and every swap option.
+- `core/nutrition.py`: per-100 g sums. `core/loaders.py` reads `data/`. `db/`: SQLAlchemy models + repo. `manage.py`: dev commands.
+- Run `python -m pytest` and `python manage.py recipes` after changing data. A test requires catalogue `families` to equal `classify_name(name)`.
+- No Alembic yet: `manage.py reset-db` rebuilds the dev DB. Add Alembic before the first deploy (stage 7).
+- Ingredient nutrition is `approx-uk`/unverified. Cross-check against CoFID (needs a download; ask Dale first) before stage 3 portion maths.
+
 ## Household rules
 - Exclusions are hard rules. If either person excludes something, the recipe is never suggested.
   - Jade: all fish, shellfish and anchovies. **Exceptions:** fish sauce, shrimp paste, breaded/battered cod (these may be suggested). Mushrooms in every form, including stock and powder.
@@ -38,7 +47,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 
 ## Stage progress
 - [x] 0 PC setup, git, GitHub repo (private: github.com/dajones91/hormonious, branch `main`)
-- [ ] 1 Recipe model, ingredients, exclusions, seed library
+- [x] 1 Recipe model, ingredients, exclusions, seed library (branch `stage-1/recipes-exclusions`)
 - [ ] 2 Profiles, targets, menu generation, planning
 - [ ] 3 Recipe cards, portions, shopping list
 - [ ] 4 Ratings and repetition

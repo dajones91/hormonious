@@ -1,0 +1,5 @@
+# Libraries the app needs. Install with: pip install -r requirements.txt
+SQLAlchemy==2.1.6      # database layer
+pydantic==2.14.1       # recipe schema + validation
+python-dotenv==1.2.4   # reads settings from .env
+pytest==9.2.0          # tests
