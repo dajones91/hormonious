@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "_macros.html" import recipe_meta %}
+{% block title %}Week of {{ week_start.strftime("%d %b") }} · Hormonious{% endblock %}
+{% block content %}
+<div class="week-nav">
+  <a href="{{ url_for('main.week', start=prev_week) }}" aria-label="Previous week">‹ Prev</a>
+  <h1>Week from Sat {{ week_start.strftime("%d %b") }}</h1>
+  <a href="{{ url_for('main.week', start=next_week) }}" aria-label="Next week">Next ›</a>
+</div>
+{% if today < ready %}
+  <p class="muted">Menu for this week is normally ready on Monday {{ ready.strftime("%d %b") }}. Here's a preview.</p>
+{% endif %}
+
+<form method="post" action="{{ url_for('main.week', start=week_start.isoformat()) }}" class="plan">
+  <h2>Plan <span class="muted">· {{ cooking }} cooking night{{ "s" if cooking != 1 }}</span></h2>
+  {% for row in rows %}
+    {% set slot = row.slot %}
+    <div class="slot {{ slot.kind }}">
+      <label for="slot-{{ slot.day.isoformat() }}">
+        <strong>{{ slot.day.strftime("%a %d") }}</strong>
+        <span class="muted">
+          {% if slot.kind == "off" %}no plan
+          {% elif slot.lunch_for %}{{ slot.portions }} portions · lunch {{ slot.lunch_for.strftime("%a") }}
+          {% else %}{{ slot.portions }} portions{% endif %}
+        </span>
+      </label>
+      {% if slot.kind != "off" %}
+      <select name="slot-{{ slot.day.isoformat() }}" id="slot-{{ slot.day.isoformat() }}">
+        <option value="" {% if row.value == "" %}selected{% endif %}>Not planned</option>
+        <option value="no-cook" {% if row.value == "no-cook" %}selected{% endif %}>No cook (leftovers / out)</option>
+        {% set first, second = (weekend, weeknight) if slot.kind == "weekend" else (weeknight, weekend) %}
+        <optgroup label="{{ 'Weekend specials' if slot.kind == 'weekend' else 'Weeknight' }}">
+          {% for r in first %}<option value="{{ r.slug }}" {% if row.value == r.slug %}selected{% endif %}>{{ r.title }}</option>{% endfor %}
+        </optgroup>
+        <optgroup label="{{ 'Weeknight' if slot.kind == 'weekend' else 'Weekend specials' }}">
+          {% for r in second %}<option value="{{ r.slug }}" {% if row.value == r.slug %}selected{% endif %}>{{ r.title }}</option>{% endfor %}
+        </optgroup>
+      </select>
+      {% if row.recipe %}<a class="small" href="{{ url_for('main.recipe', slug=row.recipe.slug) }}">View recipe</a>{% endif %}
+      {% for w in row.warnings %}<p class="warn">⚠ {{ w }}</p>{% endfor %}
+      {% endif %}
+    </div>
+  {% endfor %}
+  <button type="submit">Save plan</button>
+</form>
+
+<h2>This week's menu</h2>
+<h3>Weeknight ({{ weeknight|length }})</h3>
+<ul class="cards">
+  {% for r in weeknight %}
+  <li><a href="{{ url_for('main.recipe', slug=r.slug) }}">{{ r.title }}</a><span class="muted">{{ recipe_meta(r) }}</span></li>
+  {% endfor %}
+</ul>
+<h3>Weekend specials ({{ weekend|length }})</h3>
+<ul class="cards">
+  {% for r in weekend %}
+  <li><a href="{{ url_for('main.recipe', slug=r.slug) }}">{{ r.title }}</a><span class="muted">{{ recipe_meta(r) }}</span></li>
+  {% endfor %}
+</ul>
+{% endblock %}

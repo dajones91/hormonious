@@ -15,6 +15,14 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - PWA: manifest plus a home-screen install on iPhone (Safari). A Windows laptop uses the browser.
 - Hosting: PythonAnywhere free tier. Fallback: Render + Neon Postgres if the outbound allowlist blocks api.anthropic.com (verify before stage 5).
 
+## Design direction (agreed 2026-10-28)
+- Bold and bright, meal-kit-app energy, with **blue** as the brand colour (not red). Our own look, never a copy of any brand.
+- **Always light mode**: no dark-mode switching.
+- Inspiration: therandomrecipe.com. Grid recipe cards with a landscape photo, a category chip on the image, the title, and a stats row (time, servings) with clear action buttons. On phones, use a bottom tab bar instead of a mega-menu.
+- **AI-generated food pictures** on recipe cards. Claude can't make images, so this needs a separate image API (choose the provider when we build it); store our own generated images only.
+- Stay on Flask + Jinja + HTMX + plain CSS (design tokens in `:root`). No React/Node build step.
+- Build Stage 3 screens in this style. Do a full design pass after Stage 3.
+
 ## Conventions
 - UK English, metric units, UK ingredient names and Tesco pack sizes and aisles.
 - Store weights in grams **in the state they're bought or weighed** (raw or dry). Cooked weight = grams × the ingredient's `cooked_yield`.
@@ -27,6 +35,10 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - `core/schema.py`: Pydantic models (Ingredient, Recipe, RecipeItem, FlexComponent, FlexOption). Shared-base grams are totals for `servings`; flex grams are per person, per meal.
 - `core/families.py`: family hierarchy (`PARENTS`) and the keyword safety net (`KEYWORD_RULES`, ordered; a matched phrase is blanked before later rules run).
 - `core/exclusions.py`: rule = family + exceptions, checked per family. `check_recipe` covers shared items and every swap option.
+- `core/portions.py`: base shares (recipe ratio > settings `split_mode` even/protein/fixed), `build_plate` per person x meal. Toppings and veg swaps are standard size; the carb = min(kcal fit, carb fit), clamped, rounded to 5 g (whole items for `pack_unit=each`), under 1/5 of standard means none, under 1/2 means auto veg swap if one exists.
+- `core/rules.py`: `check_plate` (on rounded values), `check_structure`, `validate` (weekend fails become warns). `core/menu.py`: Sat-Fri `week_slots`, `build_menu` (seeded by week start; skips anything cooked in the 7 days before), `check_assignment`.
+- `db/planner.py`: `load_context`, `check_all`, `ensure_week` (menu built lazily on first view, stored in `week`). Cook history comes from `plan_slot` rows (no separate log).
+- `app/`: Flask blueprint in `views.py`; `create_app(database_url, today)` (tests pin the date). Plain forms, no JS yet.
 - `core/nutrition.py`: per-100 g sums. `core/loaders.py` reads `data/`. `db/`: SQLAlchemy models + repo. `manage.py`: dev commands.
 - Run `python -m pytest` and `python manage.py recipes` after changing data. A test requires catalogue `families` to equal `classify_name(name)`.
 - No Alembic yet: `manage.py reset-db` rebuilds the dev DB. Add Alembic before the first deploy (stage 7).
@@ -49,7 +61,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 ## Stage progress
 - [x] 0 PC setup, git, GitHub repo (private: github.com/dajones91/hormonious, branch `main`)
 - [x] 1 Recipe model, ingredients, exclusions, seed library (branch `stage-1/recipes-exclusions`)
-- [ ] 2 Profiles, targets, menu generation, planning
+- [x] 2 Profiles, targets, menu generation, planning (branch `stage-2/profiles-menu-planning`; portion maths landed here too because rule checks need per-person plates)
 - [ ] 3 Recipe cards, portions, shopping list
 - [ ] 4 Ratings and repetition
 - [ ] 5 AI recipe generation

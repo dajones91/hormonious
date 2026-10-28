@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Profiles · Hormonious{% endblock %}
+{% block content %}
+<h1>Profiles and targets</h1>
+<p class="muted">Per-meal targets used to size each person's portion. Starting values are placeholders, so set your own.
+Jade may want to check hers with her GP or a dietitian.</p>
+
+<form method="post" class="profiles">
+  {% for person in people %}
+  <fieldset>
+    <legend>{{ person|title }}</legend>
+    <table>
+      <thead><tr><th></th><th>kcal</th><th>Protein ≥ (g)</th><th>Carbs target (g)</th><th>Carbs max (g)</th><th>Fibre ≥ (g)</th></tr></thead>
+      <tbody>
+      {% for meal in meals %}{% set t = targets[person][meal] %}
+        <tr>
+          <th>{{ meal|title }}</th>
+          <td><input type="number" inputmode="numeric" min="100" max="2000" name="{{ person }}-{{ meal }}-kcal" value="{{ t.kcal|int }}" required></td>
+          <td><input type="number" inputmode="numeric" min="0" max="200" name="{{ person }}-{{ meal }}-protein_min" value="{{ t.protein_min|int }}" required></td>
+          <td><input type="number" inputmode="numeric" min="0" max="300" name="{{ person }}-{{ meal }}-carbs_target" value="{{ t.carbs_target|int }}" required></td>
+          <td><input type="number" inputmode="numeric" min="0" max="300" name="{{ person }}-{{ meal }}-carbs_max" value="{{ t.carbs_max|int if t.carbs_max is not none else '' }}" placeholder="none"></td>
+          <td><input type="number" inputmode="numeric" min="0" max="100" name="{{ person }}-{{ meal }}-fibre_min" value="{{ t.fibre_min|int }}" required></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </fieldset>
+  {% endfor %}
+
+  <fieldset>
+    <legend>Splitting the shared base</legend>
+    <label><input type="radio" name="split_mode" value="even" {% if settings.split_mode == "even" %}checked{% endif %}> Evenly (50/50)</label>
+    <label><input type="radio" name="split_mode" value="protein" {% if settings.split_mode == "protein" %}checked{% endif %}> By protein target (dinner)</label>
+    <label><input type="radio" name="split_mode" value="fixed" {% if settings.split_mode == "fixed" %}checked{% endif %}> Fixed: Dale gets
+      <input type="number" class="short" min="1" max="99" name="fixed_dale" value="{{ (settings.fixed_split.dale * 100)|round|int }}">%</label>
+    <p class="muted small">A ratio set on an individual recipe always wins.</p>
+  </fieldset>
+  <button type="submit">Save profiles</button>
+</form>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import recipe_meta, carb_text %}
+{% block title %}{{ r.title }} · Hormonious{% endblock %}
+{% block content %}
+<h1>{{ r.title }}</h1>
+<p class="muted">{{ r.tier|title }} · {{ recipe_meta(r) }} · makes {{ r.servings }} portions</p>
+<p>{% for t in r.tags %}<span class="tag">{{ t }}</span>{% endfor %}</p>
+
+{% for e in check.exclusions %}<p class="flash error">Excluded: {{ e }}</p>{% endfor %}
+{% for i in check.issues %}<p class="{{ 'flash error' if i.level == 'fail' else 'warn' }}">{{ '✗' if i.level == 'fail' else '⚠' }} {{ i }}</p>{% endfor %}
+
+<h2>Per-person portions <span class="muted">(estimates)</span></h2>
+<table class="plates">
+  <thead><tr><th></th><th>Carb / extras</th><th>kcal</th><th>Protein</th><th>Carbs</th><th>Fibre</th><th>Fat</th></tr></thead>
+  <tbody>
+  {% for p in check.plates %}
+    {% set n = p.total.rounded() %}{% set t = targets[p.person][p.meal] %}
+    <tr>
+      <th>{{ p.person|title }} {{ p.meal }}<br><span class="muted">{{ (p.share * 100)|round|int }}% of base</span></th>
+      <td>{{ carb_text(p) or "standard portion" }}</td>
+      <td>≈{{ n.kcal|int }}<br><span class="muted">/ {{ t.kcal|int }}</span></td>
+      <td>{{ n.protein|int }} g<br><span class="muted">≥ {{ t.protein_min|int }}</span></td>
+      <td>{{ n.carbs|int }} g<br><span class="muted">{% if t.carbs_max is not none %}≤ {{ t.carbs_max|int }}{% else %}~{{ t.carbs_target|int }}{% endif %}</span></td>
+      <td>{{ n.fibre|int }} g<br><span class="muted">≥ {{ t.fibre_min|int }}</span></td>
+      <td>{{ n.fat|int }} g</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="muted small">Full recipe cards with plating guides, portion changes and the shopping list arrive in the next stage.</p>
+
+<h2>Ingredients <span class="muted">(shared base, all {{ r.servings }} portions)</span></h2>
+<ul>
+  {% for item in r.shared %}
+  <li>{{ item.display or (item.grams|round|int ~ " g") }} {{ catalogue[item.ingredient].name|lower }}{% if item.note %}, {{ item.note }}{% endif %}</li>
+  {% endfor %}
+</ul>
+{% for comp in r.flexible %}
+<h3>Flexible: {{ comp.component }}</h3>
+<ul>
+  {% for o in comp.options %}
+  <li>{{ catalogue[o.ingredient].name }}{% if o.default %} (default){% endif %}
+      <span class="muted">· {{ o.standard_grams|int }} g standard per person</span></li>
+  {% endfor %}
+</ul>
+{% if comp.cook_note %}<p class="muted">{{ comp.cook_note }}</p>{% endif %}
+{% endfor %}
+
+<h2>Method</h2>
+<ol class="steps">{% for s in r.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+{% if r.reheat_note %}<p><strong>Lunch:</strong> {{ r.reheat_note }}</p>{% endif %}
+{% endblock %}

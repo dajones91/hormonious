@@ -3,6 +3,26 @@
     {"key": "dale", "name": "Dale"},
     {"key": "jade", "name": "Jade"}
   ],
+  "targets": {
+    "dale": {
+      "dinner": {"kcal": 750, "protein_min": 45, "carbs_target": 75, "carbs_max": null, "fibre_min": 8},
+      "lunch":  {"kcal": 650, "protein_min": 40, "carbs_target": 60, "carbs_max": null, "fibre_min": 8}
+    },
+    "jade": {
+      "dinner": {"kcal": 500, "protein_min": 35, "carbs_target": 45, "carbs_max": 45, "fibre_min": 8},
+      "lunch":  {"kcal": 450, "protein_min": 35, "carbs_target": 40, "carbs_max": 40, "fibre_min": 8}
+    }
+  },
+  "settings": {
+    "split_mode": "even",
+    "fixed_split": {"dale": 0.55, "jade": 0.45},
+    "weeknight_options": 11,
+    "weekend_options": 3,
+    "friday_plan": false,
+    "added_sugar_max_g": 5,
+    "weeknight_max_min": 45,
+    "weekend_max_min": 90
+  },
   "exclusions": [
     {
       "person": "jade",

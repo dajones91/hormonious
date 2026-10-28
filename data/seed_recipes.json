@@ -55,7 +55,8 @@
       {"ingredient": "green_beans", "grams": 200, "note": "halved"},
       {"ingredient": "red_pepper", "grams": 160, "display": "1", "note": "sliced"},
       {"ingredient": "courgette", "grams": 200, "display": "1", "note": "half-moons"},
-      {"ingredient": "edamame", "grams": 150, "display": "150 g (from frozen)"},
+      {"ingredient": "edamame", "grams": 200, "display": "200 g (from frozen)"},
+      {"ingredient": "spinach", "grams": 120, "display": "1/2 bag"},
       {"ingredient": "lime_juice", "grams": 25, "display": "juice of 1 lime"},
       {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
     ],
@@ -73,7 +74,7 @@
       "Heat the oil in a large pan over a medium-high heat. Fry the curry paste, garlic and ginger for 1 minute until fragrant.",
       "Add the chicken and stir-fry for 4-5 minutes until sealed all over.",
       "Pour in the coconut milk and fish sauce, bring to a simmer, then add the green beans, pepper and courgette. Simmer for 10 minutes.",
-      "Add the edamame for the last 3 minutes. Check the chicken is cooked through.",
+      "Add the edamame and spinach for the last 3 minutes. Check the chicken is cooked through.",
       "Stir in the lime juice and most of the coriander. Taste and add more fish sauce if needed.",
       "Plate using the plating guide, topped with toasted cashews and the rest of the coriander."
     ],
@@ -212,7 +213,8 @@
       {"ingredient": "red_onion", "grams": 75, "display": "1/2", "note": "thinly sliced"},
       {"ingredient": "olives", "grams": 40, "display": "a small handful"},
       {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
-      {"ingredient": "feta", "grams": 100, "note": "crumbled"},
+      {"ingredient": "red_pepper", "grams": 320, "display": "2", "note": "cut into chunks"},
+      {"ingredient": "feta", "grams": 70, "note": "crumbled"},
       {"ingredient": "little_gem", "grams": 180, "display": "2", "note": "chopped"}
     ],
     "flexible": [
@@ -223,7 +225,7 @@
     ],
     "steps": [
       "Mix the chicken with half the lemon juice, the oregano, garlic, half the oil and a pinch of salt. Leave for 5 minutes (or overnight in the fridge).",
-      "Thread onto skewers if you like. Cook under a hot grill or in the air fryer at 200C for 12-15 minutes, turning once, until cooked through.",
+      "Thread the chicken and peppers onto skewers if you like. Cook under a hot grill or in the air fryer at 200C for 12-15 minutes, turning once, until the chicken is cooked through and the peppers are charred.",
       "Tzatziki: mix the yoghurt with the grated, squeezed cucumber, the mint and a pinch of salt.",
       "Salad: toss the lettuce, tomatoes, diced cucumber, red onion, olives and chickpeas with the remaining oil and lemon juice. Top with the feta.",
       "Plate using the plating guide with pitta or bulgur."
@@ -317,6 +319,7 @@
       {"ingredient": "soy_sauce", "grams": 30, "display": "2 tbsp"},
       {"ingredient": "carrot", "grams": 160, "display": "2", "note": "cut into matchsticks"},
       {"ingredient": "edamame", "grams": 200, "display": "200 g (from frozen)"},
+      {"ingredient": "tenderstem", "grams": 200, "display": "1 pack", "note": "halved lengthways"},
       {"ingredient": "spring_onions", "grams": 100, "display": "1 bunch", "note": "sliced"},
       {"ingredient": "spinach", "grams": 120, "display": "1/2 bag"},
       {"ingredient": "sesame_seeds", "grams": 10, "display": "1 tbsp"}
@@ -331,7 +334,7 @@
       "Toss the cucumber with the rice vinegar and a pinch of salt. Set aside to pickle.",
       "Start the rice if you're having it.",
       "Heat the sesame oil in a wok over a high heat. Fry the pork for 6-8 minutes, breaking it up, until browned and a little crispy.",
-      "Add the garlic, ginger and carrots for 2 minutes, then stir in the gochujang, soy sauce and 3 tbsp water.",
+      "Add the garlic, ginger, carrots and tenderstem for 3 minutes, then stir in the gochujang, soy sauce and 3 tbsp water.",
       "Add the edamame and spinach and cook for 2-3 minutes until hot and wilted. Stir in most of the spring onions.",
       "Plate using the plating guide, topped with the pickled cucumber, sesame seeds and the remaining spring onions."
     ],
