@@ -78,7 +78,7 @@ KEYWORD_RULES: list[tuple[str | None, str]] = [
     (None, r"\bgrapeseed\b"),
     # Meat substitutes, matched early so "vegan sausages" isn't read as pork
     ("mycoprotein", r"\bquorn\b|\bmycoprotein\b"),
-    ("meat_substitute", r"\b(?:seitan|tvp|textured\s+(?:vegetable|soya?)\s+protein|soya?\s+mince|meat\s+substitutes?)\b|"
+    ("meat_substitute", r"\b(?:tofu|tempeh|beancurd|bean\s+curd|seitan|tvp|textured\s+(?:vegetable|soya?)\s+protein|soya?\s+mince|meat\s+substitutes?)\b|"
                         r"\b(?:plant[-\s]based|meat[-\s]free|vegan|vegetarian|meatless|mock|faux|fake)\s+"
                         r"(?:\w+\s+)?(?:mince|sausages?|burgers?|chicken|bacon|meatballs?|nuggets?|pieces|strips|"
                         r"fillets?|meat|fish|fingers)\b"),

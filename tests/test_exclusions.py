@@ -61,6 +61,7 @@ def test_oyster_mushrooms_count_as_mushroom_not_shellfish():
     "Quorn mince", "Quorn pieces", "mycoprotein", "seitan", "soya mince", "TVP",
     "textured vegetable protein", "plant-based mince", "vegan sausages", "meat-free burgers",
     "vegetarian chicken pieces", "vegan fish fingers", "Paneer", "paneer cubes",
+    "Firm tofu", "smoked tofu", "tempeh", "silken tofu",
 ])
 def test_meat_substitutes_and_paneer_excluded_for_both(name, rules):
     assert people_excluding(name, rules) == ["dale", "jade"]
@@ -72,7 +73,7 @@ def test_meat_substitute_is_not_read_as_meat_or_fish():
     assert classify_name("Quorn mince") == {"mycoprotein"}
 
 
-@pytest.mark.parametrize("name", ["Firm tofu", "edamame beans", "red lentils", "Greek yoghurt", "halloumi"])
+@pytest.mark.parametrize("name", ["edamame beans", "red lentils", "Greek yoghurt", "halloumi", "soy sauce"])
 def test_real_foods_are_not_meat_substitutes(name, rules):
     assert check_name(name, rules) == []
 

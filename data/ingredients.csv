@@ -19,7 +19,7 @@ parmesan,Parmesan,Dairy & eggs,as_sold,392,33.0,0,0,0,29.0,1,na,,,g,100;200,pack
 light_cream_cheese,Light soft cheese,Dairy & eggs,as_sold,150,7.5,4.6,4.0,0.3,11.0,1,na,,,g,180;300,tub,,0,approx-uk,0
 paneer,Paneer,Dairy & eggs,as_sold,321,18.5,3.1,3.1,0,26.0,1,na,protein,paneer,g,226,pack,,0,approx-uk,0
 quorn_mince,Quorn mince,Chilled,as_sold,105,14.5,4.5,0.6,5.5,2.0,1,low,protein,mycoprotein,g,300,pack,,0,approx-uk,0
-tofu_firm,Firm tofu,Chilled,as_sold,120,13.0,1.0,0.5,0.5,7.0,1,low,protein,,g,280,block,,0,approx-uk,0
+tofu_firm,Firm tofu,Chilled,as_sold,120,13.0,1.0,0.5,0.5,7.0,1,low,protein,meat_substitute,g,280,block,,0,approx-uk,0
 hummus_light,Reduced-fat houmous,Chilled,as_sold,225,7.5,12.5,1.0,5.5,15.0,1,low,healthy_fat,,g,200,tub,,0,approx-uk,0
 onion,Onions,Fruit & veg,raw,36,1.2,7.9,5.6,2.2,0.2,1,low,vegetable,,each,1;3,onion,150,0,approx-uk,0
 red_onion,Red onions,Fruit & veg,raw,37,1.2,7.9,5.9,2.2,0.2,1,low,vegetable,,each,1;3,red onion,150,0,approx-uk,0

@@ -412,12 +412,12 @@
     "reheat_note": "Microwave for 2-3 minutes, stirring halfway, with a splash of water to loosen the sauce."
   },
   {
-    "slug": "tofu-satay-stir-fry",
-    "title": "Crispy tofu satay stir-fry with edamame",
+    "slug": "chicken-satay-stir-fry",
+    "title": "Chicken satay stir-fry with edamame",
     "tier": "weeknight", "cuisine": "Malaysian-inspired", "spice": 1, "active_min": 20, "total_min": 30,
-    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "vegetarian"],
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly"],
     "shared": [
-      {"ingredient": "tofu_firm", "grams": 840, "display": "3 x 280 g blocks", "note": "pressed and cubed"},
+      {"ingredient": "chicken_breast", "grams": 650, "note": "sliced into strips"},
       {"ingredient": "sesame_oil", "grams": 10, "display": "2 tsp"},
       {"ingredient": "peanut_butter", "grams": 50, "display": "2 heaped tbsp"},
       {"ingredient": "soy_sauce", "grams": 30, "display": "2 tbsp"},
@@ -439,14 +439,14 @@
       ]}
     ],
     "steps": [
-      "Air-fry the tofu cubes at 200C for 15 minutes, shaking halfway, until crisp. (Or roast at 220C for 25 minutes.)",
       "Satay sauce: whisk the peanut butter, soy sauce, lime juice, garlic, ginger, chilli and 4-5 tbsp hot water until smooth.",
       "Cook the noodles or rice if you're having them.",
-      "Heat the sesame oil in a wok. Stir-fry the broccoli, pepper and carrot for 4 minutes with a splash of water, then add the edamame for 2 minutes.",
-      "Add the tofu and satay sauce and toss until coated. Stir in most of the spring onions.",
+      "Heat the sesame oil in a wok over a high heat. Stir-fry the chicken for 5-6 minutes until cooked through, then set aside.",
+      "Stir-fry the broccoli, pepper and carrot for 4 minutes with a splash of water, then add the edamame for 2 minutes.",
+      "Return the chicken, add the satay sauce and toss until coated. Stir in most of the spring onions.",
       "Plate using the plating guide, topped with the remaining spring onions."
     ],
-    "reheat_note": "Microwave for 2 minutes with a splash of water. The tofu softens a little but stays tasty."
+    "reheat_note": "Microwave for 2 minutes with a splash of water until piping hot."
   },
   {
     "slug": "chicken-piri-piri",
