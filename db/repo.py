@@ -1,13 +1,17 @@
 """Save core objects to the database and read them back."""
 
-from sqlalchemy import select
+from datetime import date
+
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.exclusions import ExclusionRule
 from core.loaders import load_household, load_ingredients, load_recipes
+from core.menu import DaySlot, Menu
+from core.portions import MealTarget, Targets
 from core.schema import FlexComponent, FlexOption, Ingredient, Recipe, RecipeItem
-from db.models import (Base, Exclusion, FlexComponentRow, FlexOptionRow, IngredientRow, Person,
-                       RecipeItemRow, RecipeRow)
+from db.models import (Base, Exclusion, FlexComponentRow, FlexOptionRow, IngredientRow, Person, PlanSlotRow,
+                       RecipeItemRow, RecipeRow, SettingRow, TargetRow, WeekRow)
 
 _RECIPE_FIELDS = ("slug", "title", "source", "source_url", "servings", "active_min", "total_min",
                   "tier", "cuisine", "spice", "tags", "steps", "reheat_note", "base_split")
@@ -66,6 +70,60 @@ def get_exclusion_rules(session: Session) -> list[ExclusionRule]:
     return [ExclusionRule(r.person.key, r.family, frozenset(r.exceptions)) for r in rows]
 
 
+def get_recipe(session: Session, slug: str) -> Recipe | None:
+    row = session.scalar(select(RecipeRow).where(RecipeRow.slug == slug))
+    return to_recipe(row) if row else None
+
+
+def get_targets(session: Session) -> Targets:
+    targets: Targets = {}
+    for row in session.scalars(select(TargetRow)).all():
+        targets.setdefault(row.person.key, {})[row.meal] = MealTarget(
+            row.kcal, row.protein_min, row.carbs_target, row.carbs_max, row.fibre_min)
+    return targets
+
+
+def save_target(session: Session, person: str, meal: str, target: MealTarget) -> None:
+    row = session.scalar(select(TargetRow).join(Person).where(Person.key == person, TargetRow.meal == meal))
+    for field in ("kcal", "protein_min", "carbs_target", "carbs_max", "fibre_min"):
+        setattr(row, field, getattr(target, field))
+
+
+def get_settings(session: Session) -> dict:
+    return {row.key: row.value for row in session.scalars(select(SettingRow)).all()}
+
+
+def set_setting(session: Session, key: str, value) -> None:
+    session.merge(SettingRow(key=key, value=value))
+
+
+def last_cooked(session: Session, before: date) -> dict[str, date]:
+    """The most recent planned day for each recipe, before the given date."""
+    rows = session.execute(
+        select(PlanSlotRow.recipe_slug, func.max(PlanSlotRow.day))
+        .where(PlanSlotRow.recipe_slug.is_not(None), PlanSlotRow.day < before)
+        .group_by(PlanSlotRow.recipe_slug)).all()
+    return dict(rows)
+
+
+def get_week(session: Session, start: date) -> WeekRow | None:
+    return session.scalar(select(WeekRow).where(WeekRow.start == start))
+
+
+def create_week(session: Session, start: date, menu: Menu, slots: list[DaySlot]) -> WeekRow:
+    week = WeekRow(start=start, weeknight_options=menu.weeknight, weekend_options=menu.weekend)
+    week.slots = [PlanSlotRow(day=s.day, portions=s.portions) for s in slots]
+    session.add(week)
+    session.flush()
+    return week
+
+
+def set_slot(session: Session, week: WeekRow, day: date, recipe_slug: str | None, no_cook: bool) -> None:
+    slot = next(s for s in week.slots if s.day == day)
+    slot.recipe_slug = None if no_cook else recipe_slug
+    slot.no_cook = no_cook
+
+
 def reset_and_seed(session: Session) -> dict[str, int]:
     """Wipe the database and load everything from data/. For development only."""
     engine = session.get_bind()
@@ -82,6 +140,12 @@ def reset_and_seed(session: Session) -> dict[str, int]:
     for rule in household["exclusions"]:
         people[rule["person"]].exclusions.append(
             Exclusion(family=rule["family"], exceptions=rule.get("exceptions", []), note=rule.get("note")))
+
+    for person_key, meals in household["targets"].items():
+        for meal, t in meals.items():
+            session.add(TargetRow(person=people[person_key], meal=meal, **t))
+    for key, value in household["settings"].items():
+        session.add(SettingRow(key=key, value=value))
 
     recipes = load_recipes()
     for recipe in recipes:

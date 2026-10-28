@@ -8,7 +8,7 @@ import os
 from datetime import date, datetime
 
 from dotenv import load_dotenv
-from sqlalchemy import JSON, ForeignKey, String, create_engine
+from sqlalchemy import JSON, ForeignKey, String, UniqueConstraint, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
 
@@ -77,7 +77,6 @@ class RecipeRow(Base):
     reheat_note: Mapped[str | None]
     base_split: Mapped[dict | None] = mapped_column(JSON)
     status: Mapped[str] = mapped_column(default="active")  # active / retired
-    last_cooked: Mapped[date | None]
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     items: Mapped[list["RecipeItemRow"]] = relationship(
         back_populates="recipe", cascade="all, delete-orphan", order_by="RecipeItemRow.position")
@@ -122,6 +121,55 @@ class FlexOptionRow(Base):
     max_grams: Mapped[float]
     is_default: Mapped[bool]
     component_row: Mapped[FlexComponentRow] = relationship(back_populates="options")
+
+
+class TargetRow(Base):
+    """Per-person, per-meal nutrition targets (editable on the Profiles page)."""
+
+    __tablename__ = "target"
+    __table_args__ = (UniqueConstraint("person_id", "meal"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"))
+    meal: Mapped[str]  # dinner / lunch
+    kcal: Mapped[float]
+    protein_min: Mapped[float]
+    carbs_target: Mapped[float]
+    carbs_max: Mapped[float | None]
+    fibre_min: Mapped[float]
+    person: Mapped[Person] = relationship()
+
+
+class SettingRow(Base):
+    __tablename__ = "setting"
+    key: Mapped[str] = mapped_column(String(60), primary_key=True)
+    value: Mapped[object] = mapped_column(JSON)
+
+
+class WeekRow(Base):
+    """A planning week (Saturday to Friday) and the menu offered for it."""
+
+    __tablename__ = "week"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    start: Mapped[date] = mapped_column(unique=True)
+    weeknight_options: Mapped[list[str]] = mapped_column(JSON, default=list)
+    weekend_options: Mapped[list[str]] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    slots: Mapped[list["PlanSlotRow"]] = relationship(
+        back_populates="week", cascade="all, delete-orphan", order_by="PlanSlotRow.day")
+
+
+class PlanSlotRow(Base):
+    """What we're doing on one day: a recipe, or a no-cook night."""
+
+    __tablename__ = "plan_slot"
+    __table_args__ = (UniqueConstraint("week_id", "day"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    week_id: Mapped[int] = mapped_column(ForeignKey("week.id"))
+    day: Mapped[date]
+    recipe_slug: Mapped[str | None] = mapped_column(ForeignKey("recipe.slug"))
+    no_cook: Mapped[bool] = mapped_column(default=False)
+    portions: Mapped[int]
+    week: Mapped[WeekRow] = relationship(back_populates="slots")
 
 
 def make_session_factory(url: str | None = None) -> sessionmaker:

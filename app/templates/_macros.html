@@ -1,0 +1,12 @@
+{% macro recipe_meta(r) -%}
+  {{ r.total_min }} min ({{ r.active_min }} active) · {{ r.cuisine }}{% if r.spice >= 2 %} · {{ "🌶" * r.spice }}{% endif %}
+{%- endmacro %}
+
+{% macro carb_text(plate) -%}
+  {%- for c in plate.components -%}
+    {%- if c.grams > 0 -%}
+      {{ c.grams|round|int }} g {% if c.weight_label %}{{ c.weight_label }} {% endif %}{{ c.ingredient.name|lower }}
+      {%- if c.sized_by == "swap" %} (swap){% endif %}{% if not loop.last %}, {% endif %}
+    {%- else -%}no {{ c.component }}{% if not loop.last %}, {% endif %}{%- endif -%}
+  {%- endfor -%}
+{%- endmacro %}

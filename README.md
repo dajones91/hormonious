@@ -27,7 +27,9 @@ python manage.py reset-db     # creates hormonious.db from the files in data/
 
 | Command | What it does |
 |---|---|
-| `python manage.py recipes` | Lists every recipe with time, nutrition per even portion and any rule problems |
+| `python manage.py serve` | Runs the app at http://127.0.0.1:5000 (this PC only, with the debugger on) |
+| `python manage.py serve --lan` | Also lets phones on your home Wi-Fi open it at `http://<this PC's IP>:5000` (debugger off) |
+| `python manage.py recipes` | Lists every recipe with Dale's and Jade's dinner plates and any rule problems |
 | `python manage.py check "oyster sauce"` | Tests the exclusion filter on any ingredient name |
 | `python -m pytest` | Runs all the tests |
 
@@ -35,8 +37,9 @@ python manage.py reset-db     # creates hormonious.db from the files in data/
 
 | Folder | Contents |
 |---|---|
-| `core/` | The rules in plain Python: recipe schema, food families, exclusions, nutrition |
-| `db/` | Database tables and saving/loading |
+| `core/` | The rules in plain Python: recipe schema, food families, exclusions, nutrition, portions, rules, menu |
+| `db/` | Database tables, saving/loading, and `planner.py` which ties the rules to the database |
+| `app/` | The Flask web app: pages (`views.py`), HTML templates and CSS |
 | `data/` | Editable seed data: `ingredients.csv`, `seed_recipes.json`, `household.json` |
 | `tests/` | Automated tests |
 
