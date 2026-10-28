@@ -15,6 +15,14 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - PWA: manifest plus a home-screen install on iPhone (Safari). A Windows laptop uses the browser.
 - Hosting: PythonAnywhere free tier. Fallback: Render + Neon Postgres if the outbound allowlist blocks api.anthropic.com (verify before stage 5).
 
+## Design direction (agreed 2026-10-28)
+- Bold and bright, meal-kit-app energy, with **blue** as the brand colour (not red). Our own look, never a copy of any brand.
+- **Always light mode**: no dark-mode switching.
+- Inspiration: therandomrecipe.com. Grid recipe cards with a landscape photo, a category chip on the image, the title, and a stats row (time, servings) with clear action buttons. On phones, use a bottom tab bar instead of a mega-menu.
+- **AI-generated food pictures** on recipe cards. Claude can't make images, so this needs a separate image API (choose the provider when we build it); store our own generated images only.
+- Stay on Flask + Jinja + HTMX + plain CSS (design tokens in `:root`). No React/Node build step.
+- Build Stage 3 screens in this style. Do a full design pass after Stage 3.
+
 ## Conventions
 - UK English, metric units, UK ingredient names and Tesco pack sizes and aisles.
 - Store weights in grams **in the state they're bought or weighed** (raw or dry). Cooked weight = grams × the ingredient's `cooked_yield`.
