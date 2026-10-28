@@ -13,6 +13,7 @@ import re
 PARENTS: dict[str, str] = {
     # Seafood
     "salmon": "oily_fish",
+    "worcestershire": "anchovy",
     "anchovy": "oily_fish",
     "oily_fish": "fish",
     "tuna": "fish",
@@ -23,6 +24,7 @@ PARENTS: dict[str, str] = {
     "fish": "seafood",
     "prawn": "shellfish",
     "shrimp_paste": "shellfish",
+    "oyster_sauce": "oyster",
     "oyster": "shellfish",
     "mussel": "shellfish",
     "squid": "shellfish",
@@ -34,6 +36,9 @@ PARENTS: dict[str, str] = {
     "fresh_fruit": "whole_fruit",
     "dried_fruit": "whole_fruit",
     "fruit_preserve": "whole_fruit",
+    # Meat substitutes (Quorn is a fungus, but it's caught here, not as a mushroom)
+    "mycoprotein": "meat_substitute",
+    # "paneer" is its own family with no parent.
     # Meat (used to tell whether a recipe is vegetarian)
     "chicken": "poultry",
     "turkey": "poultry",
@@ -71,6 +76,13 @@ KEYWORD_RULES: list[tuple[str | None, str]] = [
     (None, r"\b(?:apple\s+cider|cider|wine|sherry|balsamic|rice|malt)\s+vinegar\b"),
     (None, r"\bcoconut\b"),
     (None, r"\bgrapeseed\b"),
+    # Meat substitutes, matched early so "vegan sausages" isn't read as pork
+    ("mycoprotein", r"\bquorn\b|\bmycoprotein\b"),
+    ("meat_substitute", r"\b(?:seitan|tvp|textured\s+(?:vegetable|soya?)\s+protein|soya?\s+mince|meat\s+substitutes?)\b|"
+                        r"\b(?:plant[-\s]based|meat[-\s]free|vegan|vegetarian|meatless|mock|faux|fake)\s+"
+                        r"(?:\w+\s+)?(?:mince|sausages?|burgers?|chicken|bacon|meatballs?|nuggets?|pieces|strips|"
+                        r"fillets?|meat|fish|fingers)\b"),
+    ("paneer", _words("paneer")),
     # Juice and zest are fine for Dale
     ("fruit_juice", r"\b(?:lemon|lime|orange|grapefruit|apple|pineapple|pomegranate|yuzu|cranberry|fruit)s?\s+(?:juice|zest)\b"),
     ("fruit_juice", r"\b(?:juice|zest)\s+of\s+(?:an?\s+|\d+\s+)?(?:lemon|lime|orange)s?\b"),
@@ -78,10 +90,12 @@ KEYWORD_RULES: list[tuple[str | None, str]] = [
     ("fish_sauce", r"\bfish\s+sauce\b|\bnam\s+pla\b"),
     ("shrimp_paste", r"\bshrimp\s+paste\b|\bbelacan\b|\bkapi\b"),
     ("breaded_cod", r"\b(?:breaded|battered)\s+cod\b|\bcod\b[\w\s]*\bfor\s+(?:breading|battering)\b"),
-    # Hidden seafood
+    # Hidden seafood (oyster sauce and Worcestershire are allowed exceptions for Jade)
     ("mushroom", r"\boyster\s+mushrooms?\b"),
+    ("oyster_sauce", r"\boyster\s+sauce\b"),
     ("oyster", r"\boysters?\b"),
-    ("anchovy", r"\bworcestershire\b|\bcaesar\b|" + _words("anchov(?:y|ie)")),
+    ("worcestershire", r"\bworcestershire\b"),
+    ("anchovy", r"\bcaesar\b|" + _words("anchov(?:y|ie)")),
     # Fish
     ("salmon", _words("salmon")),
     ("tuna", _words("tuna")),
@@ -100,7 +114,8 @@ KEYWORD_RULES: list[tuple[str | None, str]] = [
     ("mushroom", _words("mushroom", "shiitake", "portobello", "portabella", "chanterelle", "porcini",
                         "enoki", "cep", "morel", "girolle")),
     # Fruit (bare "lemon"/"lime" are left alone: we use them for juice and zest)
-    ("fruit_preserve", r"\b(?:\w+\s+)?chutney\b|\bmarmalade\b|\bjam\b"),
+    # A lemon slice as garnish is fine; preserved lemon is eaten, so it counts as fruit
+    ("fruit_preserve", r"\b(?:\w+\s+)?chutney\b|\bmarmalade\b|\bjam\b|\bpreserved\s+(?:lemon|lime)s?\b"),
     ("dried_fruit", r"\bdried\s+(?:apricot|fig|mango|cranberr|cherr|date|fruit|prune)\w*|"
                     + _words("raisin", "sultana", "currant", "prune")),
     ("fresh_fruit", _words("apple", "pear", "banana", "mango", "pineapple", "papaya", "melon", "watermelon",

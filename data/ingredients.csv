@@ -17,7 +17,8 @@ cheddar_reduced,Reduced-fat mature cheddar,Dairy & eggs,as_sold,314,27.5,0.1,0.1
 feta,Feta,Dairy & eggs,as_sold,270,15.0,1.5,1.5,0,22.0,1,na,,,g,200,pack,,0,approx-uk,0
 parmesan,Parmesan,Dairy & eggs,as_sold,392,33.0,0,0,0,29.0,1,na,,,g,100;200,pack,,0,approx-uk,0
 light_cream_cheese,Light soft cheese,Dairy & eggs,as_sold,150,7.5,4.6,4.0,0.3,11.0,1,na,,,g,180;300,tub,,0,approx-uk,0
-paneer,Paneer,Dairy & eggs,as_sold,321,18.5,3.1,3.1,0,26.0,1,na,protein,,g,226,pack,,0,approx-uk,0
+paneer,Paneer,Dairy & eggs,as_sold,321,18.5,3.1,3.1,0,26.0,1,na,protein,paneer,g,226,pack,,0,approx-uk,0
+quorn_mince,Quorn mince,Chilled,as_sold,105,14.5,4.5,0.6,5.5,2.0,1,low,protein,mycoprotein,g,300,pack,,0,approx-uk,0
 tofu_firm,Firm tofu,Chilled,as_sold,120,13.0,1.0,0.5,0.5,7.0,1,low,protein,,g,280,block,,0,approx-uk,0
 hummus_light,Reduced-fat houmous,Chilled,as_sold,225,7.5,12.5,1.0,5.5,15.0,1,low,healthy_fat,,g,200,tub,,0,approx-uk,0
 onion,Onions,Fruit & veg,raw,36,1.2,7.9,5.6,2.2,0.2,1,low,vegetable,,each,1;3,onion,150,0,approx-uk,0
@@ -80,8 +81,8 @@ harissa_paste,Harissa paste,World foods,as_sold,160,3.0,12.0,8.0,5.0,11.0,1,na,,
 gochujang,Gochujang paste,World foods,as_sold,230,5.0,45.0,20.0,3.0,2.0,1,na,added_sugar,,g,200,tub,,0,approx-uk,0
 fish_sauce,Fish sauce,World foods,as_sold,35,5.0,3.5,3.5,0,0,1,na,,fish_sauce,g,200,bottle,,1,approx-uk,0
 shrimp_paste,Shrimp paste,World foods,as_sold,110,20.0,3.0,0,0,2.0,1,na,,shrimp_paste,g,100,jar,,0,approx-uk,0
-oyster_sauce,Oyster sauce,World foods,as_sold,110,2.0,25.0,15.0,0.3,0.3,1,na,added_sugar,oyster,g,150,bottle,,0,approx-uk,0
-worcestershire_sauce,Worcestershire sauce,Oils & condiments,as_sold,90,1.0,20.0,18.0,0,0,1,na,added_sugar,anchovy,g,150,bottle,,0,approx-uk,0
+oyster_sauce,Oyster sauce,World foods,as_sold,110,2.0,25.0,15.0,0.3,0.3,1,na,added_sugar,oyster_sauce,g,150,bottle,,0,approx-uk,0
+worcestershire_sauce,Worcestershire sauce,Oils & condiments,as_sold,90,1.0,20.0,18.0,0,0,1,na,added_sugar,worcestershire,g,150,bottle,,0,approx-uk,0
 mango_chutney,Mango chutney,World foods,as_sold,230,0.5,55.0,50.0,1.0,0.2,1,na,added_sugar,fruit_preserve,g,340,jar,,0,approx-uk,0
 soy_sauce,Reduced-salt soy sauce,World foods,as_sold,60,8.0,6.0,1.0,0.5,0.1,1,na,,,g,150,bottle,,1,approx-uk,0
 peanut_butter,Peanut butter (no added sugar),Nuts & seeds,as_sold,610,26.0,9.0,4.0,7.0,50.0,1,low,healthy_fat,,g,340,jar,,0,approx-uk,0
@@ -109,4 +110,5 @@ dried_oregano,Dried oregano,Herbs & spices,as_sold,265,9.0,69.0,4.0,43.0,4.0,1,n
 ground_cinnamon,Ground cinnamon,Herbs & spices,as_sold,247,4.0,81.0,2.0,53.0,1.2,1,na,,,g,40,jar,,1,approx-uk,0
 cajun_seasoning,Cajun seasoning,Herbs & spices,as_sold,300,10.0,50.0,5.0,20.0,6.0,1,na,,,g,45,jar,,1,approx-uk,0
 jerk_seasoning,Jerk seasoning,Herbs & spices,as_sold,280,8.0,50.0,20.0,15.0,5.0,1,na,,,g,45,jar,,1,approx-uk,0
+piri_piri_seasoning,Piri-piri seasoning,Herbs & spices,as_sold,290,10.0,45.0,8.0,20.0,6.0,1,na,,,g,45,jar,,1,approx-uk,0
 ras_el_hanout,Ras el hanout,Herbs & spices,as_sold,330,12.0,45.0,3.0,25.0,12.0,1,na,,,g,40,jar,,1,approx-uk,0

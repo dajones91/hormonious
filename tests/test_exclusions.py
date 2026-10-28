@@ -16,8 +16,8 @@ def people_excluding(name, rules):
 @pytest.mark.parametrize("name", [
     "Salmon fillets", "smoked salmon", "Cod fillets", "tinned tuna", "Haddock", "sea bass fillets",
     "mackerel", "sardines", "trout", "King prawns", "cooked shrimp", "crab meat", "Mussels",
-    "squid rings", "calamari", "scallops", "anchovy fillets", "anchovies", "Worcestershire sauce",
-    "Caesar dressing", "oyster sauce", "fishcakes", "white fish", "mixed seafood",
+    "squid rings", "calamari", "scallops", "anchovy fillets", "anchovies", "Caesar dressing",
+    "fresh oysters", "fishcakes", "white fish", "mixed seafood",
 ])
 def test_seafood_excluded_for_jade(name, rules):
     assert people_excluding(name, rules) == ["jade"]
@@ -25,7 +25,7 @@ def test_seafood_excluded_for_jade(name, rules):
 
 @pytest.mark.parametrize("name", [
     "Fish sauce", "Thai fish sauce", "nam pla", "shrimp paste", "breaded cod fillets",
-    "Battered cod", "Cod loin for breading",
+    "Battered cod", "Cod loin for breading", "oyster sauce", "Worcestershire sauce",
 ])
 def test_seafood_exceptions_are_allowed(name, rules):
     assert check_name(name, rules) == []
@@ -55,12 +55,35 @@ def test_oyster_mushrooms_count_as_mushroom_not_shellfish():
     assert classify_name("oyster mushrooms") == {"mushroom"}
 
 
+# --- Household: no meat substitutes, no paneer -------------------------------------
+
+@pytest.mark.parametrize("name", [
+    "Quorn mince", "Quorn pieces", "mycoprotein", "seitan", "soya mince", "TVP",
+    "textured vegetable protein", "plant-based mince", "vegan sausages", "meat-free burgers",
+    "vegetarian chicken pieces", "vegan fish fingers", "Paneer", "paneer cubes",
+])
+def test_meat_substitutes_and_paneer_excluded_for_both(name, rules):
+    assert people_excluding(name, rules) == ["dale", "jade"]
+
+
+def test_meat_substitute_is_not_read_as_meat_or_fish():
+    assert classify_name("vegan sausages") == {"meat_substitute"}
+    assert classify_name("vegan fish fingers") == {"meat_substitute"}
+    assert classify_name("Quorn mince") == {"mycoprotein"}
+
+
+@pytest.mark.parametrize("name", ["Firm tofu", "edamame beans", "red lentils", "Greek yoghurt", "halloumi"])
+def test_real_foods_are_not_meat_substitutes(name, rules):
+    assert check_name(name, rules) == []
+
+
 # --- Dale: no whole pieces of fruit; juice and zest are fine ------------------
 
 @pytest.mark.parametrize("name", [
     "Mango", "diced mango", "raisins", "sultanas", "dried apricots", "pomegranate seeds",
     "cherries", "strawberries", "blueberries", "apple", "sliced pears", "pineapple chunks",
     "Medjool dates", "dried cranberries", "mango chutney", "orange segments", "banana",
+    "preserved lemons",
 ])
 def test_whole_fruit_excluded_for_dale(name, rules):
     assert people_excluding(name, rules) == ["dale"]
@@ -69,8 +92,8 @@ def test_whole_fruit_excluded_for_dale(name, rules):
 @pytest.mark.parametrize("name", [
     "Lemon juice", "lime juice", "lemon zest", "orange zest", "juice of 1 lime", "apple juice",
     "Apple cider vinegar", "Cherry tomatoes", "plum tomatoes", "red pepper", "orange pepper",
-    "kaffir lime leaves", "Avocado", "light coconut milk", "olives", "lemon", "grapeseed oil",
-    "red lentils", "tomatoes",
+    "kaffir lime leaves", "Avocado", "light coconut milk", "olives", "lemon", "lemon slices to garnish",
+    "grapeseed oil", "red lentils", "tomatoes",
 ])
 def test_savoury_and_juice_allowed_for_dale(name, rules):
     assert check_name(name, rules) == []
@@ -136,7 +159,7 @@ def test_every_family_in_rules_is_known():
 
 def ancestors_all():
     from core.families import PARENTS
-    return set(PARENTS) | set(PARENTS.values()) | {"fruit_juice"}
+    return set(PARENTS) | set(PARENTS.values()) | {"fruit_juice", "paneer"}
 
 
 def test_all_seed_recipes_pass_exclusions(catalogue, recipes, rules):

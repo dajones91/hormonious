@@ -449,43 +449,41 @@
     "reheat_note": "Microwave for 2 minutes with a splash of water. The tofu softens a little but stays tasty."
   },
   {
-    "slug": "paneer-chickpea-saag",
-    "title": "Paneer, chickpea and lentil saag",
-    "tier": "weeknight", "cuisine": "Indian", "spice": 1, "active_min": 15, "total_min": 35,
-    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "vegetarian", "one-pot"],
+    "slug": "chicken-piri-piri",
+    "title": "Piri-piri chicken with charred peppers and butter bean salad",
+    "tier": "weeknight", "cuisine": "Portuguese", "spice": 2, "active_min": 15, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "good-cold"],
     "shared": [
-      {"ingredient": "olive_oil", "grams": 7, "display": "1/2 tbsp"},
-      {"ingredient": "paneer", "grams": 113, "display": "1/2 x 226 g pack", "note": "cubed"},
-      {"ingredient": "onion", "grams": 150, "display": "1", "note": "chopped"},
+      {"ingredient": "chicken_breast", "grams": 700},
+      {"ingredient": "piri_piri_seasoning", "grams": 10, "display": "1 tbsp"},
+      {"ingredient": "smoked_paprika", "grams": 4, "display": "1 tsp"},
       {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
-      {"ingredient": "ginger", "grams": 15, "display": "thumb-sized piece", "note": "grated"},
-      {"ingredient": "garam_masala", "grams": 6, "display": "2 tsp"},
-      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
-      {"ingredient": "turmeric", "grams": 2, "display": "1/2 tsp"},
-      {"ingredient": "red_lentils", "grams": 120, "note": "rinsed"},
-      {"ingredient": "chopped_tomatoes", "grams": 400, "display": "1 x 400 g tin"},
-      {"ingredient": "stock_cube_veg", "grams": 10, "display": "1 cube, made up with 500 ml water"},
-      {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
-      {"ingredient": "edamame", "grams": 200, "display": "200 g (from frozen)"},
-      {"ingredient": "spinach", "grams": 480, "display": "2 bags"},
-      {"ingredient": "greek_yoghurt_0", "grams": 300, "display": "300 g (half stirred in, half to serve)"},
-      {"ingredient": "lemon_juice", "grams": 15, "display": "juice of 1/2 lemon"}
+      {"ingredient": "lemon_juice", "grams": 45, "display": "juice of 1 1/2 lemons"},
+      {"ingredient": "olive_oil", "grams": 21, "display": "1 1/2 tbsp"},
+      {"ingredient": "red_pepper", "grams": 480, "display": "3", "note": "cut into strips"},
+      {"ingredient": "red_onion", "grams": 150, "display": "1", "note": "cut into wedges"},
+      {"ingredient": "butter_beans", "grams": 480, "display": "2 x 400 g tins, drained"},
+      {"ingredient": "cherry_tomatoes", "grams": 250, "note": "halved"},
+      {"ingredient": "red_wine_vinegar", "grams": 15, "display": "1 tbsp"},
+      {"ingredient": "spinach", "grams": 120, "display": "1/2 bag"},
+      {"ingredient": "parsley", "grams": 15, "display": "small bunch", "note": "chopped"},
+      {"ingredient": "greek_yoghurt_0", "grams": 150, "display": "150 g, mixed with a little of the garlic"}
     ],
     "flexible": [
-      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
-        {"ingredient": "brown_basmati", "standard_grams": 50, "min_grams": 0, "max_grams": 100, "default": true},
+      {"component": "carb", "cook_note": "Bulgur: pour over boiling water, cover for 15 min. Sweet potato: air-fry wedges at 200C for 20 min.", "options": [
+        {"ingredient": "bulgur_wheat", "standard_grams": 50, "min_grams": 0, "max_grams": 90, "default": true},
+        {"ingredient": "sweet_potato", "standard_grams": 200, "min_grams": 0, "max_grams": 300},
         {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
       ]}
     ],
     "steps": [
-      "Heat the oil in a large pan and fry the paneer cubes until golden on a few sides, about 4 minutes. Set aside.",
-      "Soften the onion in the same pan for 5 minutes, then add the garlic, ginger and spices for 1 minute.",
-      "Add the lentils, tomatoes and stock. Simmer for 15 minutes until the lentils are soft. Start the rice if you're having it.",
-      "Add the chickpeas, edamame and spinach a handful at a time until wilted. Return the paneer for 2 minutes.",
-      "Take off the heat and stir in half the yoghurt and the lemon juice. Season.",
-      "Plate using the plating guide with the remaining yoghurt on top."
+      "Heat the oven to 220C (200C fan). Mix the piri-piri seasoning, paprika, two-thirds of the garlic, 1 tbsp lemon juice, 1 tbsp oil and a pinch of salt. Rub over the chicken.",
+      "Put the chicken, peppers and onion on a large tray and roast for 25 minutes, until the chicken is cooked through and the peppers are charred. Start your carb meanwhile.",
+      "Salad: toss the butter beans, tomatoes and spinach with the vinegar, the rest of the oil and lemon juice, and most of the parsley. Season.",
+      "Mix the yoghurt with the remaining garlic and a pinch of salt.",
+      "Slice the chicken. Plate using the plating guide with the peppers, bean salad, garlic yoghurt and the rest of the parsley."
     ],
-    "reheat_note": "Microwave for 2-3 minutes, stirring halfway, until piping hot. Add the yoghurt topping after reheating."
+    "reheat_note": "Good cold. To eat warm, microwave the chicken and peppers for 1-2 minutes. Keep the bean salad and yoghurt separate."
   },
   {
     "slug": "jerk-chicken-rice-peas",
