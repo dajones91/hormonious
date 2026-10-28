@@ -1,0 +1,114 @@
+key,name,aisle,state,kcal,protein,carbs,sugars,fibre,fat,cooked_yield,gi,flags,families,pack_unit,packs,pack_label,unit_g,staple,source,verified
+chicken_breast,Chicken breast fillets,Meat & poultry,raw,106,24.0,0,0,0,1.1,0.75,na,protein,chicken,g,300;650;1000,pack,,0,approx-uk,0
+chicken_thigh,Chicken thigh fillets (skinless),Meat & poultry,raw,150,19.0,0,0,0,8.0,0.75,na,protein,chicken,g,500;1000,pack,,0,approx-uk,0
+turkey_mince,Turkey breast mince (2% fat),Meat & poultry,raw,105,23.0,0,0,0,1.5,0.8,na,protein,turkey,g,500,pack,,0,approx-uk,0
+beef_frying_steak,Lean beef frying steak,Meat & poultry,raw,125,22.0,0,0,0,4.0,0.75,na,protein,beef,g,250;400,pack,,0,approx-uk,0
+beef_sirloin,Beef sirloin steak,Meat & poultry,raw,165,22.0,0,0,0,8.5,0.75,na,protein,beef,g,225;450,pack,,0,approx-uk,0
+pork_mince,Pork mince (5% fat),Meat & poultry,raw,125,20.5,0,0,0,4.5,0.8,na,protein,pork,g,500,pack,,0,approx-uk,0
+lamb_leg_diced,Diced lamb leg,Meat & poultry,raw,150,20.5,0,0,0,7.5,0.7,na,protein,lamb,g,400,pack,,0,approx-uk,0
+cod_for_breading,Cod loin for breading,Fish,raw,80,18.3,0,0,0,0.7,0.8,na,protein,breaded_cod,g,280;520,pack,,0,approx-uk,0
+cod_fillet,Cod fillets,Fish,raw,80,18.3,0,0,0,0.7,0.8,na,protein,cod,g,280;520,pack,,0,approx-uk,0
+salmon_fillet,Salmon fillets,Fish,raw,200,20.0,0,0,0,13.0,0.8,na,protein;healthy_fat,salmon,g,240;480,pack,,0,approx-uk,0
+king_prawns,King prawns,Fish,raw,70,15.5,0,0,0,0.8,0.85,na,protein,prawn,g,150;300,pack,,0,approx-uk,0
+anchovy_fillets,Anchovy fillets in oil,Tins & jars,as_sold,210,25.0,0,0,0,12.0,1,na,,anchovy,g,50,jar,,0,approx-uk,0
+greek_yoghurt_0,Greek-style yoghurt 0% fat,Dairy & eggs,as_sold,57,10.0,3.6,3.6,0,0.2,1,low,protein,,g,500;1000,pot,,0,approx-uk,0
+eggs,Eggs (medium),Dairy & eggs,raw,131,12.6,0,0,0,9.0,1,na,protein,,each,6;12,box,50,0,approx-uk,0
+cheddar_reduced,Reduced-fat mature cheddar,Dairy & eggs,as_sold,314,27.5,0.1,0.1,0,22.0,1,na,protein,,g,350,block,,0,approx-uk,0
+feta,Feta,Dairy & eggs,as_sold,270,15.0,1.5,1.5,0,22.0,1,na,,,g,200,pack,,0,approx-uk,0
+parmesan,Parmesan,Dairy & eggs,as_sold,392,33.0,0,0,0,29.0,1,na,,,g,100;200,pack,,0,approx-uk,0
+light_cream_cheese,Light soft cheese,Dairy & eggs,as_sold,150,7.5,4.6,4.0,0.3,11.0,1,na,,,g,180;300,tub,,0,approx-uk,0
+paneer,Paneer,Dairy & eggs,as_sold,321,18.5,3.1,3.1,0,26.0,1,na,protein,paneer,g,226,pack,,0,approx-uk,0
+quorn_mince,Quorn mince,Chilled,as_sold,105,14.5,4.5,0.6,5.5,2.0,1,low,protein,mycoprotein,g,300,pack,,0,approx-uk,0
+tofu_firm,Firm tofu,Chilled,as_sold,120,13.0,1.0,0.5,0.5,7.0,1,low,protein,meat_substitute,g,280,block,,0,approx-uk,0
+hummus_light,Reduced-fat houmous,Chilled,as_sold,225,7.5,12.5,1.0,5.5,15.0,1,low,healthy_fat,,g,200,tub,,0,approx-uk,0
+onion,Onions,Fruit & veg,raw,36,1.2,7.9,5.6,2.2,0.2,1,low,vegetable,,each,1;3,onion,150,0,approx-uk,0
+red_onion,Red onions,Fruit & veg,raw,37,1.2,7.9,5.9,2.2,0.2,1,low,vegetable,,each,1;3,red onion,150,0,approx-uk,0
+garlic,Garlic,Fruit & veg,raw,98,7.9,16.3,1.6,4.1,0.6,1,low,vegetable,,each,1,bulb,50,0,approx-uk,0
+ginger,Fresh ginger,Fruit & veg,raw,80,1.8,17.0,1.7,2.0,0.8,1,low,vegetable,,g,100,piece,,0,approx-uk,0
+red_pepper,Red peppers,Fruit & veg,raw,32,1.0,6.4,6.1,1.9,0.4,1,low,vegetable,,each,1;3,pepper,160,0,approx-uk,0
+courgette,Courgettes,Fruit & veg,raw,18,1.8,1.8,1.7,1.2,0.4,1,low,vegetable,,each,1;3,courgette,200,0,approx-uk,0
+carrot,Carrots,Fruit & veg,raw,34,0.6,7.9,7.4,2.4,0.3,1,low,vegetable,,g,1000,bag,,0,approx-uk,0
+celery,Celery,Fruit & veg,raw,8,0.5,0.9,0.9,1.6,0.2,1,low,vegetable,,g,400,head,,0,approx-uk,0
+broccoli,Broccoli,Fruit & veg,raw,34,4.4,1.8,1.5,2.6,0.9,1,low,vegetable,,g,350,head,,0,approx-uk,0
+tenderstem,Tenderstem broccoli,Fruit & veg,raw,35,3.0,3.0,2.0,3.0,0.5,1,low,vegetable,,g,200,pack,,0,approx-uk,0
+green_beans,Fine green beans,Fruit & veg,raw,25,1.8,3.2,2.3,3.1,0.2,1,low,vegetable,,g,200,pack,,0,approx-uk,0
+spinach,Baby spinach,Fruit & veg,raw,25,2.8,1.6,1.5,2.2,0.8,1,low,vegetable,,g,240,bag,,0,approx-uk,0
+cauliflower_rice,Cauliflower rice,Fruit & veg,raw,27,2.0,2.5,2.0,2.0,0.4,1,low,vegetable,,g,300,pack,,0,approx-uk,0
+cucumber,Cucumber,Fruit & veg,raw,10,0.7,1.5,1.4,0.6,0.1,1,low,vegetable,,each,1,cucumber,300,0,approx-uk,0
+cherry_tomatoes,Cherry tomatoes,Fruit & veg,raw,18,0.7,3.0,3.0,1.2,0.3,1,low,vegetable,,g,250,punnet,,0,approx-uk,0
+little_gem,Little gem lettuce,Fruit & veg,raw,15,1.0,1.7,1.5,1.2,0.3,1,low,vegetable,,each,2,lettuce,90,0,approx-uk,0
+red_cabbage,Red cabbage,Fruit & veg,raw,21,1.1,3.7,3.4,2.5,0.2,1,low,vegetable,,each,1,cabbage,700,0,approx-uk,0
+spring_onions,Spring onions,Fruit & veg,raw,30,2.0,3.2,2.3,2.6,0.5,1,low,vegetable,,g,100,bunch,,0,approx-uk,0
+avocado,Avocados,Fruit & veg,raw,190,1.9,1.9,0.5,3.4,19.5,1,low,healthy_fat,,each,1;2,avocado,130,0,approx-uk,0
+sweet_potato,Sweet potatoes,Fruit & veg,raw,87,1.2,21.3,5.7,3.0,0.3,0.85,medium,,,g,1000,bag,,0,approx-uk,0
+potato,Potatoes (Maris Piper),Fruit & veg,raw,77,2.0,17.0,0.8,1.6,0.1,0.75,high,,,g,2500,bag,,0,approx-uk,0
+lemon_juice,Lemon juice (fresh lemons),Fruit & veg,as_sold,7,0.3,1.6,1.5,0.1,0.1,1,low,,fruit_juice,each,1;4,lemon,30,0,approx-uk,0
+lime_juice,Lime juice (fresh limes),Fruit & veg,as_sold,9,0.4,1.6,1.1,0.1,0.1,1,low,,fruit_juice,each,1;4,lime,25,0,approx-uk,0
+coriander,Fresh coriander,Fruit & veg,raw,23,2.1,3.7,0.9,2.8,0.5,1,na,,,g,30,bunch,,0,approx-uk,0
+parsley,Fresh flat-leaf parsley,Fruit & veg,raw,36,3.0,6.3,0.9,3.3,0.8,1,na,,,g,30,bunch,,0,approx-uk,0
+mint,Fresh mint,Fruit & veg,raw,44,3.3,8.4,0,6.8,0.7,1,na,,,g,30,bunch,,0,approx-uk,0
+basil,Fresh basil,Fruit & veg,raw,23,3.2,2.7,0.3,1.6,0.6,1,na,,,g,30,bunch,,0,approx-uk,0
+mango,Mango,Fruit & veg,raw,60,0.8,15.0,13.7,1.6,0.4,1,medium,,fresh_fruit,each,1,mango,200,0,approx-uk,0
+chestnut_mushrooms,Chestnut mushrooms,Fruit & veg,raw,22,3.1,3.3,0.3,1.0,0.3,1,low,vegetable,mushroom,g,250,punnet,,0,approx-uk,0
+wholemeal_bread,Wholemeal bread,Bakery,as_sold,240,10.0,40.0,3.0,7.0,3.0,1,medium,wholegrain,,g,800,loaf,,0,approx-uk,0
+wholemeal_pitta,Wholemeal pitta breads,Bakery,as_sold,240,9.5,43.0,2.3,6.5,1.5,1,medium,wholegrain,,each,6,pack,60,0,approx-uk,0
+wholemeal_tortilla,Wholemeal tortilla wraps,Bakery,as_sold,263,8.8,42.0,2.5,6.5,5.5,1,medium,wholegrain,,each,8,pack,64,0,approx-uk,0
+wholemeal_roll,Wholemeal rolls,Bakery,as_sold,245,10.0,40.0,3.0,6.0,3.5,1,medium,wholegrain,,each,4;6,pack,65,0,approx-uk,0
+brown_basmati,Brown basmati rice,"Rice, pasta & grains",dry,355,8.4,72.9,0.9,3.6,2.9,2.6,low,wholegrain,,g,500;1000,bag,,0,approx-uk,0
+white_basmati,Basmati rice,"Rice, pasta & grains",dry,353,8.1,77.9,0.1,1.4,0.9,2.6,medium,refined_carb,,g,500;1000,bag,,0,approx-uk,0
+wholewheat_pasta,Wholewheat pasta,"Rice, pasta & grains",dry,340,13.0,62.0,3.0,9.0,2.5,2.3,low,wholegrain,,g,500,bag,,0,approx-uk,0
+red_lentil_pasta,Red lentil pasta,"Rice, pasta & grains",dry,340,25.0,50.0,2.0,8.0,2.0,2.3,low,pulse,,g,250,bag,,0,approx-uk,0
+wholewheat_noodles,Wholewheat noodles,"Rice, pasta & grains",dry,340,12.5,63.0,2.0,8.0,2.5,2.5,low,wholegrain,,g,250,pack,,0,approx-uk,0
+bulgur_wheat,Bulgur wheat,"Rice, pasta & grains",dry,345,12.0,65.0,0.5,9.0,1.5,2.5,low,wholegrain,,g,500,bag,,0,approx-uk,0
+wholewheat_couscous,Wholewheat couscous,"Rice, pasta & grains",dry,355,12.5,65.0,1.0,7.0,2.0,2.4,medium,wholegrain,,g,500,bag,,0,approx-uk,0
+quinoa,Quinoa,"Rice, pasta & grains",dry,368,14.0,57.0,3.0,7.0,6.0,2.7,low,wholegrain,,g,300,bag,,0,approx-uk,0
+red_lentils,Red split lentils,"Rice, pasta & grains",dry,325,24.0,48.0,2.0,11.0,1.5,2.5,low,pulse;protein,,g,500;1000,bag,,0,approx-uk,0
+edamame,Edamame beans (frozen),Frozen,raw,121,11.9,3.6,1.5,5.2,5.2,1,low,protein;vegetable,,g,300,bag,,0,approx-uk,0
+peas,Garden peas (frozen),Frozen,raw,70,5.5,7.5,3.0,5.0,1.1,1,low,vegetable,,g,900,bag,,0,approx-uk,0
+chopped_tomatoes,Chopped tomatoes,Tins & jars,as_sold,22,1.1,3.8,3.5,0.9,0.1,1,low,vegetable,,g,400,tin,,0,approx-uk,0
+tomato_puree,Tomato puree,Tins & jars,as_sold,80,4.5,13.0,11.0,3.0,0.3,1,low,,,g,200,tube,,1,approx-uk,0
+sundried_tomatoes,Sun-dried tomatoes in oil (drained),Tins & jars,as_sold,210,4.5,12.0,10.0,6.0,15.0,1,low,,,g,170,jar,,0,approx-uk,0
+chickpeas,Chickpeas (drained),Tins & jars,as_sold,120,7.5,14.0,0.5,6.0,2.5,1,low,pulse,,g,240,400 g tin,,0,approx-uk,0
+kidney_beans,Red kidney beans (drained),Tins & jars,as_sold,95,7.0,13.0,1.0,6.5,0.5,1,low,pulse,,g,240,400 g tin,,0,approx-uk,0
+black_beans,Black beans (drained),Tins & jars,as_sold,95,7.5,13.0,0.5,7.0,0.5,1,low,pulse,,g,240,400 g tin,,0,approx-uk,0
+butter_beans,Butter beans (drained),Tins & jars,as_sold,77,5.9,10.4,1.0,4.6,0.5,1,low,pulse,,g,240,400 g tin,,0,approx-uk,0
+light_coconut_milk,Reduced-fat coconut milk,Tins & jars,as_sold,73,0.7,1.8,1.5,0,7.0,1,na,,,g,400,tin,,0,approx-uk,0
+olives,Kalamata olives (drained),Tins & jars,as_sold,230,1.5,4.0,0,3.0,23.0,1,na,healthy_fat,,g,160,jar,,0,approx-uk,0
+capers,Capers (drained),Tins & jars,as_sold,23,2.4,4.9,0.4,3.2,0.9,1,na,,,g,60,jar,,1,approx-uk,0
+gherkins,Gherkins,Tins & jars,as_sold,20,0.8,3.5,2.5,1.2,0.2,1,na,,,g,200,jar,,0,approx-uk,0
+thai_green_curry_paste,Thai green curry paste,World foods,as_sold,130,2.0,13.0,9.0,4.0,7.0,1,na,,,g,110,jar,,0,approx-uk,0
+harissa_paste,Harissa paste,World foods,as_sold,160,3.0,12.0,8.0,5.0,11.0,1,na,,,g,90,jar,,0,approx-uk,0
+gochujang,Gochujang paste,World foods,as_sold,230,5.0,45.0,20.0,3.0,2.0,1,na,added_sugar,,g,200,tub,,0,approx-uk,0
+fish_sauce,Fish sauce,World foods,as_sold,35,5.0,3.5,3.5,0,0,1,na,,fish_sauce,g,200,bottle,,1,approx-uk,0
+shrimp_paste,Shrimp paste,World foods,as_sold,110,20.0,3.0,0,0,2.0,1,na,,shrimp_paste,g,100,jar,,0,approx-uk,0
+oyster_sauce,Oyster sauce,World foods,as_sold,110,2.0,25.0,15.0,0.3,0.3,1,na,added_sugar,oyster_sauce,g,150,bottle,,0,approx-uk,0
+worcestershire_sauce,Worcestershire sauce,Oils & condiments,as_sold,90,1.0,20.0,18.0,0,0,1,na,added_sugar,worcestershire,g,150,bottle,,0,approx-uk,0
+mango_chutney,Mango chutney,World foods,as_sold,230,0.5,55.0,50.0,1.0,0.2,1,na,added_sugar,fruit_preserve,g,340,jar,,0,approx-uk,0
+soy_sauce,Reduced-salt soy sauce,World foods,as_sold,60,8.0,6.0,1.0,0.5,0.1,1,na,,,g,150,bottle,,1,approx-uk,0
+peanut_butter,Peanut butter (no added sugar),Nuts & seeds,as_sold,610,26.0,9.0,4.0,7.0,50.0,1,low,healthy_fat,,g,340,jar,,0,approx-uk,0
+tahini,Tahini,Nuts & seeds,as_sold,640,22.0,6.0,0.5,9.0,58.0,1,low,healthy_fat,,g,270,jar,,0,approx-uk,0
+cashews,Cashew nuts,Nuts & seeds,as_sold,585,20.0,18.0,5.0,3.3,48.0,1,low,healthy_fat,,g,200,bag,,0,approx-uk,0
+sesame_seeds,Sesame seeds,Nuts & seeds,as_sold,600,18.0,1.0,0.3,7.9,58.0,1,low,healthy_fat,,g,100,bag,,1,approx-uk,0
+raisins,Raisins,Nuts & seeds,as_sold,296,2.1,69.0,69.0,2.0,0.4,1,medium,,dried_fruit,g,500,bag,,0,approx-uk,0
+dried_apricots,Dried apricots,Nuts & seeds,as_sold,180,3.4,37.0,37.0,6.3,0.6,1,low,,dried_fruit,g,250,bag,,0,approx-uk,0
+olive_oil,Olive oil,Oils & condiments,as_sold,899,0,0,0,0,99.9,1,na,healthy_fat,,g,460,500 ml bottle,,1,approx-uk,0
+sesame_oil,Toasted sesame oil,Oils & condiments,as_sold,899,0,0,0,0,99.9,1,na,healthy_fat,,g,230,250 ml bottle,,1,approx-uk,0
+apple_cider_vinegar,Apple cider vinegar,Oils & condiments,as_sold,20,0,0.9,0.4,0,0,1,na,,,g,350,bottle,,1,approx-uk,0
+red_wine_vinegar,Red wine vinegar,Oils & condiments,as_sold,20,0,0.3,0,0,0,1,na,,,g,350,bottle,,1,approx-uk,0
+rice_vinegar,Rice vinegar,Oils & condiments,as_sold,20,0,1.0,0.5,0,0,1,na,,,g,150,bottle,,1,approx-uk,0
+stock_cube_chicken,Chicken stock cube (reduced salt),Stock & gravy,as_sold,250,10.0,30.0,3.0,1.0,8.0,1,na,,chicken,each,12,box,10,1,approx-uk,0
+stock_cube_beef,Beef stock cube (reduced salt),Stock & gravy,as_sold,250,10.0,30.0,3.0,1.0,8.0,1,na,,beef,each,12,box,10,1,approx-uk,0
+stock_cube_veg,Vegetable stock cube (reduced salt),Stock & gravy,as_sold,250,8.0,30.0,3.0,1.0,8.0,1,na,,,each,12,box,10,1,approx-uk,0
+ground_cumin,Ground cumin,Herbs & spices,as_sold,375,18.0,44.0,2.0,10.0,22.0,1,na,,,g,40,jar,,1,approx-uk,0
+ground_coriander,Ground coriander,Herbs & spices,as_sold,300,12.0,13.0,0,42.0,18.0,1,na,,,g,40,jar,,1,approx-uk,0
+garam_masala,Garam masala,Herbs & spices,as_sold,330,12.0,40.0,3.0,25.0,12.0,1,na,,,g,40,jar,,1,approx-uk,0
+turmeric,Ground turmeric,Herbs & spices,as_sold,310,10.0,44.0,3.0,22.0,3.0,1,na,,,g,40,jar,,1,approx-uk,0
+smoked_paprika,Smoked paprika,Herbs & spices,as_sold,282,14.0,54.0,10.0,35.0,13.0,1,na,,,g,40,jar,,1,approx-uk,0
+chilli_powder,Mild chilli powder,Herbs & spices,as_sold,282,13.0,50.0,7.0,35.0,14.0,1,na,,,g,40,jar,,1,approx-uk,0
+chilli_flakes,Dried chilli flakes,Herbs & spices,as_sold,320,12.0,50.0,10.0,27.0,14.0,1,na,,,g,30,jar,,1,approx-uk,0
+dried_oregano,Dried oregano,Herbs & spices,as_sold,265,9.0,69.0,4.0,43.0,4.0,1,na,,,g,15,jar,,1,approx-uk,0
+ground_cinnamon,Ground cinnamon,Herbs & spices,as_sold,247,4.0,81.0,2.0,53.0,1.2,1,na,,,g,40,jar,,1,approx-uk,0
+cajun_seasoning,Cajun seasoning,Herbs & spices,as_sold,300,10.0,50.0,5.0,20.0,6.0,1,na,,,g,45,jar,,1,approx-uk,0
+jerk_seasoning,Jerk seasoning,Herbs & spices,as_sold,280,8.0,50.0,20.0,15.0,5.0,1,na,,,g,45,jar,,1,approx-uk,0
+piri_piri_seasoning,Piri-piri seasoning,Herbs & spices,as_sold,290,10.0,45.0,8.0,20.0,6.0,1,na,,,g,45,jar,,1,approx-uk,0
+ras_el_hanout,Ras el hanout,Herbs & spices,as_sold,330,12.0,45.0,3.0,25.0,12.0,1,na,,,g,40,jar,,1,approx-uk,0

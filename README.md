@@ -16,7 +16,31 @@ python -m venv .venv          # private Python environment for this project
 copy .env.example .env        # then edit .env
 ```
 
-_App install and run steps are added in stage 1._
+Then install the libraries and build the local database:
+
+```powershell
+pip install -r requirements.txt
+python manage.py reset-db     # creates hormonious.db from the files in data/
+```
+
+## Useful commands
+
+| Command | What it does |
+|---|---|
+| `python manage.py recipes` | Lists every recipe with time, nutrition per even portion and any rule problems |
+| `python manage.py check "oyster sauce"` | Tests the exclusion filter on any ingredient name |
+| `python -m pytest` | Runs all the tests |
+
+## Where things live
+
+| Folder | Contents |
+|---|---|
+| `core/` | The rules in plain Python: recipe schema, food families, exclusions, nutrition |
+| `db/` | Database tables and saving/loading |
+| `data/` | Editable seed data: `ingredients.csv`, `seed_recipes.json`, `household.json` |
+| `tests/` | Automated tests |
+
+Nutrition values in `data/ingredients.csv` are approximate UK figures per 100 g (`source=approx-uk`, `verified=0`). They'll be checked against CoFID before we rely on them for portions.
 
 ## Environment variables
 

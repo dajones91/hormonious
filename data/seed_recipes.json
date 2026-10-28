@@ -1,0 +1,745 @@
+[
+  {
+    "slug": "chicken-tikka-traybake",
+    "title": "Chicken tikka traybake with chickpeas, spinach and mint raita",
+    "tier": "weeknight", "cuisine": "Indian", "spice": 2, "active_min": 15, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "traybake"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 650, "note": "cut into large chunks"},
+      {"ingredient": "greek_yoghurt_0", "grams": 300, "display": "300 g (half for the marinade, half for the raita)"},
+      {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 15, "display": "thumb-sized piece", "note": "grated"},
+      {"ingredient": "garam_masala", "grams": 8, "display": "2 tsp"},
+      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "turmeric", "grams": 2, "display": "1/2 tsp"},
+      {"ingredient": "chilli_powder", "grams": 2, "display": "1/2 tsp"},
+      {"ingredient": "lemon_juice", "grams": 30, "display": "juice of 1 lemon"},
+      {"ingredient": "red_onion", "grams": 300, "display": "2", "note": "cut into wedges"},
+      {"ingredient": "red_pepper", "grams": 320, "display": "2", "note": "cut into chunks"},
+      {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "olive_oil", "grams": 21, "display": "1 1/2 tbsp"},
+      {"ingredient": "spinach", "grams": 240, "display": "1 bag"},
+      {"ingredient": "cucumber", "grams": 150, "display": "1/2", "note": "grated and squeezed"},
+      {"ingredient": "mint", "grams": 10, "display": "small handful", "note": "chopped"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
+        {"ingredient": "brown_basmati", "standard_grams": 60, "min_grams": 0, "max_grams": 110, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Heat the oven to 220C (200C fan). Put the rice on now if you're having it.",
+      "Mix 150 g of the yoghurt with the garlic, ginger, spices, half the lemon juice and a pinch of salt. Stir in the chicken to coat.",
+      "Toss the onion, peppers and chickpeas with the oil on a large roasting tray. Nestle the chicken on top.",
+      "Roast for 25 minutes, turning halfway, until the chicken is cooked through and charred at the edges.",
+      "Meanwhile make the raita: mix the remaining yoghurt with the cucumber, mint, the rest of the lemon juice and a pinch of salt.",
+      "Stir the spinach through the hot tray until it wilts, about 2 minutes.",
+      "Plate using the plating guide. Box the lunch portions once cooled, keeping the raita separate."
+    ],
+    "reheat_note": "Microwave for 2-3 minutes until piping hot. Keep the raita separate and add it after reheating."
+  },
+  {
+    "slug": "thai-green-chicken-curry",
+    "title": "Thai green chicken curry with green beans and edamame",
+    "tier": "weeknight", "cuisine": "Thai", "spice": 2, "active_min": 15, "total_min": 30,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly"],
+    "shared": [
+      {"ingredient": "chicken_thigh", "grams": 700, "note": "cut into bite-sized pieces"},
+      {"ingredient": "olive_oil", "grams": 7, "display": "1/2 tbsp"},
+      {"ingredient": "thai_green_curry_paste", "grams": 60, "display": "3 tbsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 10, "display": "small piece", "note": "grated"},
+      {"ingredient": "light_coconut_milk", "grams": 400, "display": "1 x 400 ml tin"},
+      {"ingredient": "fish_sauce", "grams": 15, "display": "1 tbsp"},
+      {"ingredient": "green_beans", "grams": 200, "note": "halved"},
+      {"ingredient": "red_pepper", "grams": 160, "display": "1", "note": "sliced"},
+      {"ingredient": "courgette", "grams": 200, "display": "1", "note": "half-moons"},
+      {"ingredient": "edamame", "grams": 150, "display": "150 g (from frozen)"},
+      {"ingredient": "lime_juice", "grams": 25, "display": "juice of 1 lime"},
+      {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
+        {"ingredient": "brown_basmati", "standard_grams": 60, "min_grams": 0, "max_grams": 110, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]},
+      {"component": "topping", "options": [
+        {"ingredient": "cashews", "standard_grams": 10, "min_grams": 0, "max_grams": 20, "default": true}
+      ]}
+    ],
+    "steps": [
+      "Start the rice if you're having it.",
+      "Heat the oil in a large pan over a medium-high heat. Fry the curry paste, garlic and ginger for 1 minute until fragrant.",
+      "Add the chicken and stir-fry for 4-5 minutes until sealed all over.",
+      "Pour in the coconut milk and fish sauce, bring to a simmer, then add the green beans, pepper and courgette. Simmer for 10 minutes.",
+      "Add the edamame for the last 3 minutes. Check the chicken is cooked through.",
+      "Stir in the lime juice and most of the coriander. Taste and add more fish sauce if needed.",
+      "Plate using the plating guide, topped with toasted cashews and the rest of the coriander."
+    ],
+    "reheat_note": "Microwave for 2-3 minutes, stirring halfway, until piping hot. Pack the cashews separately so they stay crunchy."
+  },
+  {
+    "slug": "turkey-chilli",
+    "title": "Smoky turkey and two-bean chilli",
+    "tier": "weeknight", "cuisine": "Mexican", "spice": 2, "active_min": 15, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly"],
+    "shared": [
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "onion", "grams": 150, "display": "1", "note": "chopped"},
+      {"ingredient": "red_pepper", "grams": 320, "display": "2", "note": "chopped"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "turkey_mince", "grams": 750, "display": "750 g"},
+      {"ingredient": "smoked_paprika", "grams": 6, "display": "2 tsp"},
+      {"ingredient": "ground_cumin", "grams": 6, "display": "2 tsp"},
+      {"ingredient": "chilli_powder", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "dried_oregano", "grams": 2, "display": "1 tsp"},
+      {"ingredient": "tomato_puree", "grams": 30, "display": "2 tbsp"},
+      {"ingredient": "chopped_tomatoes", "grams": 800, "display": "2 x 400 g tins"},
+      {"ingredient": "stock_cube_beef", "grams": 10, "display": "1 cube, made up with 200 ml water"},
+      {"ingredient": "kidney_beans", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "black_beans", "grams": 240, "display": "1 x 400 g tin, drained"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
+        {"ingredient": "brown_basmati", "standard_grams": 50, "min_grams": 0, "max_grams": 100, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]},
+      {"component": "topping", "options": [
+        {"ingredient": "cheddar_reduced", "standard_grams": 15, "min_grams": 0, "max_grams": 30, "default": true}
+      ]}
+    ],
+    "steps": [
+      "Heat the oil in a large casserole. Soften the onion and peppers for 5 minutes, then add the garlic for 1 minute.",
+      "Turn up the heat, add the turkey mince and brown it, breaking it up with a spoon, for 5 minutes.",
+      "Stir in the spices and tomato puree for 1 minute.",
+      "Add the tomatoes, stock and both beans. Simmer, partly covered, for 20 minutes until thick. Season to taste.",
+      "Meanwhile cook the rice if you're having it.",
+      "Plate using the plating guide and top with grated cheddar."
+    ],
+    "reheat_note": "Microwave for 3 minutes, stirring halfway, until piping hot. Freezes well for up to 3 months."
+  },
+  {
+    "slug": "chicken-fajita-bowls",
+    "title": "Chicken fajita bowls with black beans, avocado and lime yoghurt",
+    "tier": "weeknight", "cuisine": "Mexican", "spice": 1, "active_min": 20, "total_min": 30,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "good-cold"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 700, "note": "sliced into strips"},
+      {"ingredient": "smoked_paprika", "grams": 6, "display": "2 tsp"},
+      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "chilli_powder", "grams": 2, "display": "1/2 tsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "olive_oil", "grams": 21, "display": "1 1/2 tbsp"},
+      {"ingredient": "red_pepper", "grams": 320, "display": "2", "note": "sliced"},
+      {"ingredient": "red_onion", "grams": 150, "display": "1", "note": "sliced"},
+      {"ingredient": "black_beans", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "lime_juice", "grams": 50, "display": "juice of 2 limes"},
+      {"ingredient": "little_gem", "grams": 180, "display": "2", "note": "shredded"},
+      {"ingredient": "cherry_tomatoes", "grams": 250, "note": "quartered"},
+      {"ingredient": "greek_yoghurt_0", "grams": 150},
+      {"ingredient": "avocado", "grams": 130, "display": "1", "note": "diced, added just before eating"},
+      {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Warm wraps in a dry pan for 30 seconds each side.", "options": [
+        {"ingredient": "wholemeal_tortilla", "standard_grams": 64, "min_grams": 0, "max_grams": 128, "default": true},
+        {"ingredient": "brown_basmati", "standard_grams": 50, "min_grams": 0, "max_grams": 100},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Toss the chicken with the spices, garlic, half the oil and a pinch of salt.",
+      "Heat the rest of the oil in a large frying pan over a high heat. Cook the peppers and onion for 5 minutes until charred, then tip onto a plate.",
+      "Cook the chicken in the same pan for 6-8 minutes until cooked through. Return the veg, add the black beans and half the lime juice, and warm through.",
+      "Mix the yoghurt with the rest of the lime juice and a pinch of salt.",
+      "Build bowls: lettuce and tomatoes, then the chicken mix, avocado, lime yoghurt and coriander. Add wraps or rice per the plating guide."
+    ],
+    "reheat_note": "Good cold as a salad bowl. To eat warm, microwave the chicken and beans only. Pack the salad, yoghurt and avocado separately (squeeze lime over the avocado)."
+  },
+  {
+    "slug": "beef-broccoli-stir-fry",
+    "title": "Ginger beef and broccoli stir-fry",
+    "tier": "weeknight", "cuisine": "Chinese-inspired", "spice": 1, "active_min": 20, "total_min": 25,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly"],
+    "shared": [
+      {"ingredient": "beef_frying_steak", "grams": 650, "note": "thinly sliced"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "broccoli", "grams": 350, "display": "1 head", "note": "small florets"},
+      {"ingredient": "red_pepper", "grams": 160, "display": "1", "note": "sliced"},
+      {"ingredient": "edamame", "grams": 150, "display": "150 g (from frozen)"},
+      {"ingredient": "spring_onions", "grams": 100, "display": "1 bunch", "note": "sliced"},
+      {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 20, "display": "thumb-sized piece", "note": "grated"},
+      {"ingredient": "soy_sauce", "grams": 45, "display": "3 tbsp"},
+      {"ingredient": "rice_vinegar", "grams": 15, "display": "1 tbsp"},
+      {"ingredient": "chilli_flakes", "grams": 1, "display": "pinch"},
+      {"ingredient": "sesame_oil", "grams": 10, "display": "2 tsp"},
+      {"ingredient": "sesame_seeds", "grams": 10, "display": "1 tbsp"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cook noodles per the pack (about 5 min); boil brown basmati for 25 min.", "options": [
+        {"ingredient": "wholewheat_noodles", "standard_grams": 60, "min_grams": 0, "max_grams": 100, "default": true},
+        {"ingredient": "brown_basmati", "standard_grams": 60, "min_grams": 0, "max_grams": 110},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Mix the soy sauce, rice vinegar, chilli flakes and sesame oil in a jug.",
+      "Cook the noodles or rice if you're having them. Drain the noodles and toss with a splash of the sauce.",
+      "Heat the oil in a wok until smoking. Stir-fry the beef in two batches for 2 minutes each, then set aside.",
+      "Stir-fry the broccoli and pepper for 3 minutes with a splash of water. Add the garlic, ginger, edamame and most of the spring onions for 1 minute.",
+      "Return the beef, pour in the sauce and toss for 1 minute until glossy.",
+      "Plate using the plating guide. Scatter with sesame seeds and the remaining spring onions."
+    ],
+    "reheat_note": "Microwave for 2 minutes until piping hot. Add a splash of water to the noodles before reheating."
+  },
+  {
+    "slug": "chicken-souvlaki",
+    "title": "Chicken souvlaki with Greek salad and tzatziki",
+    "tier": "weeknight", "cuisine": "Greek", "spice": 0, "active_min": 20, "total_min": 35,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "good-cold"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 700, "note": "cut into chunks"},
+      {"ingredient": "lemon_juice", "grams": 30, "display": "juice of 1 lemon"},
+      {"ingredient": "dried_oregano", "grams": 4, "display": "2 tsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "olive_oil", "grams": 28, "display": "2 tbsp"},
+      {"ingredient": "greek_yoghurt_0", "grams": 250},
+      {"ingredient": "cucumber", "grams": 300, "display": "1", "note": "half grated for tzatziki, half diced"},
+      {"ingredient": "mint", "grams": 5, "display": "a few leaves", "note": "chopped"},
+      {"ingredient": "cherry_tomatoes", "grams": 300, "note": "halved"},
+      {"ingredient": "red_onion", "grams": 75, "display": "1/2", "note": "thinly sliced"},
+      {"ingredient": "olives", "grams": 40, "display": "a small handful"},
+      {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "feta", "grams": 100, "note": "crumbled"},
+      {"ingredient": "little_gem", "grams": 180, "display": "2", "note": "chopped"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Toast pittas; for bulgur, pour boiling water over and cover for 15 min.", "options": [
+        {"ingredient": "wholemeal_pitta", "standard_grams": 60, "min_grams": 0, "max_grams": 120, "default": true},
+        {"ingredient": "bulgur_wheat", "standard_grams": 50, "min_grams": 0, "max_grams": 90}
+      ]}
+    ],
+    "steps": [
+      "Mix the chicken with half the lemon juice, the oregano, garlic, half the oil and a pinch of salt. Leave for 5 minutes (or overnight in the fridge).",
+      "Thread onto skewers if you like. Cook under a hot grill or in the air fryer at 200C for 12-15 minutes, turning once, until cooked through.",
+      "Tzatziki: mix the yoghurt with the grated, squeezed cucumber, the mint and a pinch of salt.",
+      "Salad: toss the lettuce, tomatoes, diced cucumber, red onion, olives and chickpeas with the remaining oil and lemon juice. Top with the feta.",
+      "Plate using the plating guide with pitta or bulgur."
+    ],
+    "reheat_note": "Good cold. Or microwave the chicken for 1-2 minutes. Keep the salad and tzatziki separate."
+  },
+  {
+    "slug": "harissa-turkey-meatballs",
+    "title": "Harissa turkey meatballs with chickpeas and lemony yoghurt",
+    "tier": "weeknight", "cuisine": "North African", "spice": 2, "active_min": 20, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly"],
+    "shared": [
+      {"ingredient": "turkey_mince", "grams": 650},
+      {"ingredient": "eggs", "grams": 50, "display": "1"},
+      {"ingredient": "wholemeal_bread", "grams": 40, "display": "1 slice", "note": "blitzed into crumbs"},
+      {"ingredient": "harissa_paste", "grams": 45, "display": "3 tbsp"},
+      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "red_onion", "grams": 150, "display": "1", "note": "sliced"},
+      {"ingredient": "red_pepper", "grams": 320, "display": "2", "note": "sliced"},
+      {"ingredient": "courgette", "grams": 200, "display": "1", "note": "diced"},
+      {"ingredient": "chopped_tomatoes", "grams": 400, "display": "1 x 400 g tin"},
+      {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "spinach", "grams": 120, "display": "1/2 bag"},
+      {"ingredient": "greek_yoghurt_0", "grams": 150},
+      {"ingredient": "lemon_juice", "grams": 15, "display": "juice of 1/2 lemon"},
+      {"ingredient": "parsley", "grams": 15, "display": "small bunch", "note": "chopped"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Couscous: pour over boiling water, cover for 5 min, then fluff.", "options": [
+        {"ingredient": "wholewheat_couscous", "standard_grams": 50, "min_grams": 0, "max_grams": 90, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Mix the turkey, egg, breadcrumbs, 1 tbsp harissa, the cumin, half the garlic and a pinch of salt. Roll into about 20 meatballs.",
+      "Heat the oil in a large deep frying pan and brown the meatballs all over for 5 minutes. Set aside.",
+      "In the same pan, soften the onion, pepper and courgette for 5 minutes. Add the remaining garlic and harissa for 1 minute.",
+      "Add the tomatoes and chickpeas, return the meatballs, cover and simmer for 12-15 minutes until cooked through. Stir in the spinach to wilt.",
+      "Mix the yoghurt with the lemon juice and a pinch of salt.",
+      "Plate using the plating guide with a dollop of lemony yoghurt and the parsley."
+    ],
+    "reheat_note": "Microwave for 2-3 minutes until piping hot. Pack the yoghurt separately."
+  },
+  {
+    "slug": "chicken-red-lentil-dhal",
+    "title": "Chicken and red lentil dhal with spinach",
+    "tier": "weeknight", "cuisine": "Indian", "spice": 1, "active_min": 15, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly", "one-pot"],
+    "shared": [
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "onion", "grams": 150, "display": "1", "note": "chopped"},
+      {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 15, "display": "thumb-sized piece", "note": "grated"},
+      {"ingredient": "turmeric", "grams": 3, "display": "1 tsp"},
+      {"ingredient": "garam_masala", "grams": 6, "display": "2 tsp"},
+      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "chicken_breast", "grams": 600, "note": "diced"},
+      {"ingredient": "red_lentils", "grams": 200, "note": "rinsed"},
+      {"ingredient": "chopped_tomatoes", "grams": 400, "display": "1 x 400 g tin"},
+      {"ingredient": "stock_cube_chicken", "grams": 10, "display": "1 cube, made up with 700 ml water"},
+      {"ingredient": "spinach", "grams": 240, "display": "1 bag"},
+      {"ingredient": "lemon_juice", "grams": 15, "display": "juice of 1/2 lemon"},
+      {"ingredient": "greek_yoghurt_0", "grams": 100, "display": "100 g, to serve"},
+      {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [],
+    "steps": [
+      "Heat the oil in a large pan. Soften the onion for 5 minutes, then add the garlic, ginger and spices for 1 minute.",
+      "Add the chicken and stir to coat in the spices for 2 minutes.",
+      "Add the lentils, tomatoes and stock. Bring to the boil, then simmer for 20-25 minutes, stirring now and then, until the lentils are soft and the chicken is cooked. Add a splash of water if it gets too thick.",
+      "Stir in the spinach until wilted, then the lemon juice. Season to taste.",
+      "Split using the plating guide. Top with yoghurt and coriander."
+    ],
+    "reheat_note": "Microwave for 3 minutes with a splash of water, stirring halfway, until piping hot. Freezes well."
+  },
+  {
+    "slug": "gochujang-pork-edamame",
+    "title": "Gochujang pork with edamame and quick-pickled cucumber",
+    "tier": "weeknight", "cuisine": "Korean-inspired", "spice": 2, "active_min": 15, "total_min": 25,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly"],
+    "shared": [
+      {"ingredient": "cucumber", "grams": 150, "display": "1/2", "note": "thinly sliced"},
+      {"ingredient": "rice_vinegar", "grams": 15, "display": "1 tbsp"},
+      {"ingredient": "sesame_oil", "grams": 10, "display": "2 tsp"},
+      {"ingredient": "pork_mince", "grams": 650},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 15, "display": "thumb-sized piece", "note": "grated"},
+      {"ingredient": "gochujang", "grams": 40, "display": "2 tbsp"},
+      {"ingredient": "soy_sauce", "grams": 30, "display": "2 tbsp"},
+      {"ingredient": "carrot", "grams": 160, "display": "2", "note": "cut into matchsticks"},
+      {"ingredient": "edamame", "grams": 200, "display": "200 g (from frozen)"},
+      {"ingredient": "spring_onions", "grams": 100, "display": "1 bunch", "note": "sliced"},
+      {"ingredient": "spinach", "grams": 120, "display": "1/2 bag"},
+      {"ingredient": "sesame_seeds", "grams": 10, "display": "1 tbsp"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
+        {"ingredient": "brown_basmati", "standard_grams": 60, "min_grams": 0, "max_grams": 110, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Toss the cucumber with the rice vinegar and a pinch of salt. Set aside to pickle.",
+      "Start the rice if you're having it.",
+      "Heat the sesame oil in a wok over a high heat. Fry the pork for 6-8 minutes, breaking it up, until browned and a little crispy.",
+      "Add the garlic, ginger and carrots for 2 minutes, then stir in the gochujang, soy sauce and 3 tbsp water.",
+      "Add the edamame and spinach and cook for 2-3 minutes until hot and wilted. Stir in most of the spring onions.",
+      "Plate using the plating guide, topped with the pickled cucumber, sesame seeds and the remaining spring onions."
+    ],
+    "reheat_note": "Microwave for 2-3 minutes until piping hot. Pack the pickled cucumber separately."
+  },
+  {
+    "slug": "turkey-lentil-bolognese",
+    "title": "Turkey and lentil bolognese",
+    "tier": "weeknight", "cuisine": "Italian", "spice": 0, "active_min": 15, "total_min": 45,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly"],
+    "shared": [
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "onion", "grams": 150, "display": "1", "note": "finely chopped"},
+      {"ingredient": "carrot", "grams": 160, "display": "2", "note": "finely chopped"},
+      {"ingredient": "celery", "grams": 100, "display": "2 sticks", "note": "finely chopped"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "turkey_mince", "grams": 600},
+      {"ingredient": "tomato_puree", "grams": 30, "display": "2 tbsp"},
+      {"ingredient": "red_lentils", "grams": 80, "note": "rinsed"},
+      {"ingredient": "chopped_tomatoes", "grams": 800, "display": "2 x 400 g tins"},
+      {"ingredient": "stock_cube_beef", "grams": 10, "display": "1 cube, made up with 300 ml water"},
+      {"ingredient": "dried_oregano", "grams": 3, "display": "1 tsp"},
+      {"ingredient": "basil", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cook pasta per the pack (10-12 min); fry courgetti in a hot pan for 2 min.", "options": [
+        {"ingredient": "wholewheat_pasta", "standard_grams": 60, "min_grams": 0, "max_grams": 100, "default": true},
+        {"ingredient": "red_lentil_pasta", "standard_grams": 60, "min_grams": 0, "max_grams": 100},
+        {"ingredient": "courgette", "standard_grams": 200, "min_grams": 0, "max_grams": 300}
+      ]},
+      {"component": "topping", "options": [
+        {"ingredient": "parmesan", "standard_grams": 10, "min_grams": 0, "max_grams": 20, "default": true}
+      ]}
+    ],
+    "steps": [
+      "Heat the oil in a large pan. Soften the onion, carrot and celery for 8 minutes, then add the garlic for 1 minute.",
+      "Turn up the heat and brown the turkey mince for 5 minutes, breaking it up.",
+      "Stir in the tomato puree, then the lentils, tomatoes, stock and oregano.",
+      "Simmer, partly covered, for 25 minutes, stirring now and then, until the lentils have melted into the sauce. Season to taste.",
+      "Cook your chosen pasta or courgetti near the end.",
+      "Plate using the plating guide, topped with torn basil and grated parmesan."
+    ],
+    "reheat_note": "Microwave for 3 minutes, stirring halfway, until piping hot. The sauce freezes well; store pasta and sauce together for lunches."
+  },
+  {
+    "slug": "tuscan-chicken",
+    "title": "Creamy Tuscan chicken with butter beans and spinach",
+    "tier": "weeknight", "cuisine": "Italian", "spice": 0, "active_min": 15, "total_min": 30,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 750, "note": "sliced in half horizontally"},
+      {"ingredient": "dried_oregano", "grams": 2, "display": "1 tsp"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "sundried_tomatoes", "grams": 60, "note": "chopped"},
+      {"ingredient": "cherry_tomatoes", "grams": 250, "note": "halved"},
+      {"ingredient": "stock_cube_chicken", "grams": 10, "display": "1 cube, made up with 250 ml water"},
+      {"ingredient": "light_cream_cheese", "grams": 120},
+      {"ingredient": "parmesan", "grams": 20, "note": "grated"},
+      {"ingredient": "butter_beans", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "spinach", "grams": 240, "display": "1 bag"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cook pasta per the pack (10-12 min); steam tenderstem for 4 min.", "options": [
+        {"ingredient": "wholewheat_pasta", "standard_grams": 50, "min_grams": 0, "max_grams": 100, "default": true},
+        {"ingredient": "red_lentil_pasta", "standard_grams": 50, "min_grams": 0, "max_grams": 100},
+        {"ingredient": "tenderstem", "standard_grams": 100, "min_grams": 0, "max_grams": 200}
+      ]}
+    ],
+    "steps": [
+      "Season the chicken with the oregano, salt and pepper. Start the pasta if you're having it.",
+      "Heat the oil in a large frying pan and cook the chicken for 4-5 minutes each side until golden and cooked through. Set aside.",
+      "Add the garlic, sun-dried tomatoes and cherry tomatoes to the pan for 2 minutes.",
+      "Pour in the stock, then stir in the soft cheese and parmesan until smooth. Add the butter beans and simmer for 3 minutes.",
+      "Stir in the spinach to wilt. Slice the chicken and return it to the sauce.",
+      "Plate using the plating guide."
+    ],
+    "reheat_note": "Microwave for 2-3 minutes, stirring halfway, with a splash of water to loosen the sauce."
+  },
+  {
+    "slug": "chicken-satay-stir-fry",
+    "title": "Chicken satay stir-fry with edamame",
+    "tier": "weeknight", "cuisine": "Malaysian-inspired", "spice": 1, "active_min": 20, "total_min": 30,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 650, "note": "sliced into strips"},
+      {"ingredient": "sesame_oil", "grams": 10, "display": "2 tsp"},
+      {"ingredient": "peanut_butter", "grams": 50, "display": "2 heaped tbsp"},
+      {"ingredient": "soy_sauce", "grams": 30, "display": "2 tbsp"},
+      {"ingredient": "lime_juice", "grams": 25, "display": "juice of 1 lime"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 15, "display": "thumb-sized piece", "note": "grated"},
+      {"ingredient": "chilli_flakes", "grams": 1, "display": "pinch"},
+      {"ingredient": "broccoli", "grams": 350, "display": "1 head", "note": "small florets"},
+      {"ingredient": "red_pepper", "grams": 160, "display": "1", "note": "sliced"},
+      {"ingredient": "carrot", "grams": 80, "display": "1", "note": "cut into matchsticks"},
+      {"ingredient": "edamame", "grams": 250, "display": "250 g (from frozen)"},
+      {"ingredient": "spring_onions", "grams": 100, "display": "1 bunch", "note": "sliced"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cook noodles per the pack (about 5 min); boil brown basmati for 25 min.", "options": [
+        {"ingredient": "wholewheat_noodles", "standard_grams": 50, "min_grams": 0, "max_grams": 100, "default": true},
+        {"ingredient": "brown_basmati", "standard_grams": 50, "min_grams": 0, "max_grams": 100},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Satay sauce: whisk the peanut butter, soy sauce, lime juice, garlic, ginger, chilli and 4-5 tbsp hot water until smooth.",
+      "Cook the noodles or rice if you're having them.",
+      "Heat the sesame oil in a wok over a high heat. Stir-fry the chicken for 5-6 minutes until cooked through, then set aside.",
+      "Stir-fry the broccoli, pepper and carrot for 4 minutes with a splash of water, then add the edamame for 2 minutes.",
+      "Return the chicken, add the satay sauce and toss until coated. Stir in most of the spring onions.",
+      "Plate using the plating guide, topped with the remaining spring onions."
+    ],
+    "reheat_note": "Microwave for 2 minutes with a splash of water until piping hot."
+  },
+  {
+    "slug": "chicken-piri-piri",
+    "title": "Piri-piri chicken with charred peppers and butter bean salad",
+    "tier": "weeknight", "cuisine": "Portuguese", "spice": 2, "active_min": 15, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "good-cold"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 700},
+      {"ingredient": "piri_piri_seasoning", "grams": 10, "display": "1 tbsp"},
+      {"ingredient": "smoked_paprika", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
+      {"ingredient": "lemon_juice", "grams": 45, "display": "juice of 1 1/2 lemons"},
+      {"ingredient": "olive_oil", "grams": 21, "display": "1 1/2 tbsp"},
+      {"ingredient": "red_pepper", "grams": 480, "display": "3", "note": "cut into strips"},
+      {"ingredient": "red_onion", "grams": 150, "display": "1", "note": "cut into wedges"},
+      {"ingredient": "butter_beans", "grams": 480, "display": "2 x 400 g tins, drained"},
+      {"ingredient": "cherry_tomatoes", "grams": 250, "note": "halved"},
+      {"ingredient": "red_wine_vinegar", "grams": 15, "display": "1 tbsp"},
+      {"ingredient": "spinach", "grams": 120, "display": "1/2 bag"},
+      {"ingredient": "parsley", "grams": 15, "display": "small bunch", "note": "chopped"},
+      {"ingredient": "greek_yoghurt_0", "grams": 150, "display": "150 g, mixed with a little of the garlic"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Bulgur: pour over boiling water, cover for 15 min. Sweet potato: air-fry wedges at 200C for 20 min.", "options": [
+        {"ingredient": "bulgur_wheat", "standard_grams": 50, "min_grams": 0, "max_grams": 90, "default": true},
+        {"ingredient": "sweet_potato", "standard_grams": 200, "min_grams": 0, "max_grams": 300},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Heat the oven to 220C (200C fan). Mix the piri-piri seasoning, paprika, two-thirds of the garlic, 1 tbsp lemon juice, 1 tbsp oil and a pinch of salt. Rub over the chicken.",
+      "Put the chicken, peppers and onion on a large tray and roast for 25 minutes, until the chicken is cooked through and the peppers are charred. Start your carb meanwhile.",
+      "Salad: toss the butter beans, tomatoes and spinach with the vinegar, the rest of the oil and lemon juice, and most of the parsley. Season.",
+      "Mix the yoghurt with the remaining garlic and a pinch of salt.",
+      "Slice the chicken. Plate using the plating guide with the peppers, bean salad, garlic yoghurt and the rest of the parsley."
+    ],
+    "reheat_note": "Good cold. To eat warm, microwave the chicken and peppers for 1-2 minutes. Keep the bean salad and yoghurt separate."
+  },
+  {
+    "slug": "jerk-chicken-rice-peas",
+    "title": "Jerk chicken with coconut kidney beans and lime slaw",
+    "tier": "weeknight", "cuisine": "Caribbean", "spice": 2, "active_min": 15, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly"],
+    "shared": [
+      {"ingredient": "chicken_thigh", "grams": 750},
+      {"ingredient": "jerk_seasoning", "grams": 15, "display": "1 1/2 tbsp"},
+      {"ingredient": "lime_juice", "grams": 50, "display": "juice of 2 limes"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "spring_onions", "grams": 100, "display": "1 bunch", "note": "sliced"},
+      {"ingredient": "kidney_beans", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "light_coconut_milk", "grams": 200, "display": "1/2 x 400 ml tin"},
+      {"ingredient": "red_cabbage", "grams": 250, "display": "1/4", "note": "finely shredded"},
+      {"ingredient": "carrot", "grams": 160, "display": "2", "note": "grated"},
+      {"ingredient": "greek_yoghurt_0", "grams": 100},
+      {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
+        {"ingredient": "brown_basmati", "standard_grams": 60, "min_grams": 0, "max_grams": 110, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Heat the oven to 220C (200C fan). Rub the chicken with the jerk seasoning, half the lime juice and half the oil.",
+      "Roast on a lined tray for 25-30 minutes until cooked through and charred. Start the rice if you're having it.",
+      "Meanwhile heat the rest of the oil in a pan. Soften the garlic and most of the spring onions for 2 minutes, then add the kidney beans and coconut milk and simmer for 8 minutes until creamy. Season.",
+      "Slaw: toss the cabbage and carrot with the yoghurt, the remaining lime juice and a pinch of salt.",
+      "Slice the chicken and plate using the plating guide: carb, then the coconut beans, chicken and slaw. Finish with coriander and the remaining spring onions."
+    ],
+    "reheat_note": "Microwave the chicken, beans and rice for 2-3 minutes until piping hot. Pack the slaw separately."
+  },
+  {
+    "slug": "chicken-shawarma-bowls",
+    "title": "Chicken shawarma bowls with houmous and tahini dressing",
+    "tier": "weeknight", "cuisine": "Middle Eastern", "spice": 1, "active_min": 20, "total_min": 35,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "good-cold"],
+    "shared": [
+      {"ingredient": "chicken_breast", "grams": 700, "note": "sliced into strips"},
+      {"ingredient": "greek_yoghurt_0", "grams": 100},
+      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "smoked_paprika", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "turmeric", "grams": 2, "display": "1/2 tsp"},
+      {"ingredient": "ground_cinnamon", "grams": 1, "display": "1/4 tsp"},
+      {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},
+      {"ingredient": "lemon_juice", "grams": 45, "display": "juice of 1 1/2 lemons"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "red_onion", "grams": 150, "display": "1", "note": "sliced"},
+      {"ingredient": "cucumber", "grams": 200, "display": "2/3", "note": "diced"},
+      {"ingredient": "cherry_tomatoes", "grams": 250, "note": "halved"},
+      {"ingredient": "little_gem", "grams": 180, "display": "2", "note": "shredded"},
+      {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "hummus_light", "grams": 120},
+      {"ingredient": "tahini", "grams": 20, "display": "1 tbsp"},
+      {"ingredient": "parsley", "grams": 15, "display": "small bunch", "note": "chopped"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Rinse quinoa and simmer for 15 min; warm pittas in the toaster.", "options": [
+        {"ingredient": "quinoa", "standard_grams": 50, "min_grams": 0, "max_grams": 90, "default": true},
+        {"ingredient": "wholemeal_pitta", "standard_grams": 60, "min_grams": 0, "max_grams": 120},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Mix the chicken with the yoghurt, spices, garlic, 1 tbsp lemon juice and a pinch of salt.",
+      "Start the quinoa if you're having it.",
+      "Heat the oil in a large frying pan over a high heat. Cook the chicken and red onion for 8-10 minutes until the chicken is cooked through and charred at the edges.",
+      "Dressing: whisk the tahini with the rest of the lemon juice, a pinch of salt and 2-3 tbsp water until pourable.",
+      "Build bowls: lettuce, cucumber, tomatoes and chickpeas, then the chicken, a spoonful of houmous, the dressing and parsley. Add the carb per the plating guide."
+    ],
+    "reheat_note": "Good cold. To eat warm, microwave the chicken and quinoa only for 1-2 minutes. Pack the salad and dressing separately."
+  },
+  {
+    "slug": "cajun-turkey-burgers",
+    "title": "Cajun turkey burgers with sweet potato wedges and slaw",
+    "tier": "weeknight", "cuisine": "American", "spice": 1, "active_min": 20, "total_min": 40,
+    "tags": ["high-protein", "lunchbox-friendly", "freezer-friendly"],
+    "shared": [
+      {"ingredient": "turkey_mince", "grams": 750},
+      {"ingredient": "cajun_seasoning", "grams": 10, "display": "1 tbsp"},
+      {"ingredient": "red_onion", "grams": 75, "display": "1/2", "note": "finely grated"},
+      {"ingredient": "eggs", "grams": 50, "display": "1"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "red_cabbage", "grams": 200, "display": "1/4", "note": "finely shredded"},
+      {"ingredient": "carrot", "grams": 160, "display": "2", "note": "grated"},
+      {"ingredient": "greek_yoghurt_0", "grams": 120},
+      {"ingredient": "lime_juice", "grams": 25, "display": "juice of 1 lime"},
+      {"ingredient": "little_gem", "grams": 90, "display": "1", "note": "leaves separated"},
+      {"ingredient": "cherry_tomatoes", "grams": 200, "note": "sliced"},
+      {"ingredient": "avocado", "grams": 130, "display": "1", "note": "smashed with a pinch of salt"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cut sweet potato into wedges and air-fry at 200C for 20 min (or roast at 220C for 30 min).", "options": [
+        {"ingredient": "sweet_potato", "standard_grams": 200, "min_grams": 0, "max_grams": 300, "default": true},
+        {"ingredient": "wholemeal_roll", "standard_grams": 65, "min_grams": 0, "max_grams": 130},
+        {"ingredient": "red_cabbage", "standard_grams": 100, "min_grams": 0, "max_grams": 200}
+      ]}
+    ],
+    "steps": [
+      "Toss the sweet potato wedges with a little of the oil and roast or air-fry (see the carb note).",
+      "Mix the turkey, Cajun seasoning, grated onion, egg and a pinch of salt. Shape into 8 patties.",
+      "Brush the patties with the rest of the oil. Grill, air-fry or pan-fry for 5-6 minutes each side until cooked through.",
+      "Slaw: toss the cabbage and carrot with the yoghurt, lime juice and a pinch of salt.",
+      "Plate using the plating guide: 2 patties each (or as the split suggests), with lettuce, tomatoes, smashed avocado and slaw."
+    ],
+    "reheat_note": "Microwave the patties and wedges for 2 minutes, or re-crisp in the air fryer for 4 minutes. Pack the slaw and avocado separately (squeeze lime over the avocado)."
+  },
+  {
+    "slug": "crispy-cod-chips-peas",
+    "title": "Crispy breaded cod with chips, minted peas and yoghurt tartare",
+    "tier": "weekend", "cuisine": "British", "spice": 0, "active_min": 25, "total_min": 45,
+    "tags": ["high-protein", "weekend-special", "fakeaway"],
+    "shared": [
+      {"ingredient": "cod_for_breading", "grams": 520, "display": "4 loins"},
+      {"ingredient": "eggs", "grams": 100, "display": "2", "note": "beaten"},
+      {"ingredient": "wholemeal_bread", "grams": 120, "display": "3 slices", "note": "blitzed into crumbs"},
+      {"ingredient": "parsley", "grams": 10, "display": "small handful", "note": "chopped"},
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "peas", "grams": 400, "display": "400 g (from frozen)"},
+      {"ingredient": "mint", "grams": 10, "display": "small handful"},
+      {"ingredient": "greek_yoghurt_0", "grams": 150},
+      {"ingredient": "capers", "grams": 20, "display": "1 tbsp", "note": "chopped"},
+      {"ingredient": "gherkins", "grams": 40, "display": "2", "note": "chopped"},
+      {"ingredient": "lemon_juice", "grams": 30, "display": "juice of 1 lemon"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cut into chips, toss with a little oil and air-fry at 200C for 20-25 min, shaking twice.", "options": [
+        {"ingredient": "potato", "standard_grams": 250, "min_grams": 0, "max_grams": 400, "default": true},
+        {"ingredient": "sweet_potato", "standard_grams": 250, "min_grams": 0, "max_grams": 400},
+        {"ingredient": "tenderstem", "standard_grams": 150, "min_grams": 0, "max_grams": 250}
+      ]}
+    ],
+    "steps": [
+      "Start the chips (see the carb note).",
+      "Mix the breadcrumbs with the parsley, half the oil and a pinch of salt. Dip each cod loin in egg, then press into the crumbs.",
+      "Air-fry the cod at 200C for 10-12 minutes (or bake at 220C for 15 minutes) until golden and the fish flakes.",
+      "Cook the peas in boiling water for 3 minutes. Drain and roughly crush with the mint, the rest of the oil and a squeeze of lemon.",
+      "Tartare: mix the yoghurt with the capers, gherkins and the rest of the lemon juice.",
+      "Plate using the plating guide."
+    ],
+    "reheat_note": "Best eaten fresh. If you make 4 portions, chill the cod and chips and re-crisp in the air fryer for 5-6 minutes. Don't microwave."
+  },
+  {
+    "slug": "lamb-rogan-josh",
+    "title": "Slow-cooked lamb rogan josh with spinach",
+    "tier": "weekend", "cuisine": "Indian", "spice": 2, "active_min": 25, "total_min": 90,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly", "weekend-special"],
+    "shared": [
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "lamb_leg_diced", "grams": 700},
+      {"ingredient": "onion", "grams": 300, "display": "2", "note": "sliced"},
+      {"ingredient": "garlic", "grams": 20, "display": "4 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 20, "display": "thumb-sized piece", "note": "grated"},
+      {"ingredient": "garam_masala", "grams": 8, "display": "2 tsp"},
+      {"ingredient": "smoked_paprika", "grams": 6, "display": "2 tsp"},
+      {"ingredient": "ground_cumin", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "ground_coriander", "grams": 4, "display": "1 tsp"},
+      {"ingredient": "ground_cinnamon", "grams": 1, "display": "1/4 tsp"},
+      {"ingredient": "chilli_powder", "grams": 2, "display": "1/2 tsp"},
+      {"ingredient": "tomato_puree", "grams": 30, "display": "2 tbsp"},
+      {"ingredient": "chopped_tomatoes", "grams": 400, "display": "1 x 400 g tin"},
+      {"ingredient": "greek_yoghurt_0", "grams": 200},
+      {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
+      {"ingredient": "spinach", "grams": 240, "display": "1 bag"},
+      {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Boil brown basmati for 25 min; microwave cauliflower rice for 3 min.", "options": [
+        {"ingredient": "brown_basmati", "standard_grams": 60, "min_grams": 0, "max_grams": 110, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Heat the oil in a casserole and brown the lamb in batches. Set aside.",
+      "Lower the heat and cook the onions for 10 minutes until soft and golden. Add the garlic, ginger and spices for 1 minute, then the tomato puree.",
+      "Return the lamb with the tomatoes and 200 ml water. Cover and simmer gently for 60 minutes (or slow-cook on low for 6 hours) until tender.",
+      "Take off the heat and stir in the yoghurt a spoonful at a time, then the chickpeas. Simmer gently for 5 minutes without boiling.",
+      "Stir in the spinach to wilt. Cook the rice while it finishes.",
+      "Plate using the plating guide with coriander on top."
+    ],
+    "reheat_note": "Microwave for 3 minutes, stirring halfway, until piping hot. Even better the next day. Freezes well."
+  },
+  {
+    "slug": "steak-chimichurri",
+    "title": "Sirloin steak with chimichurri, garlicky butter beans and tenderstem",
+    "tier": "weekend", "cuisine": "Argentinian-inspired", "spice": 1, "active_min": 25, "total_min": 40,
+    "tags": ["high-protein", "low-GI", "weekend-special"],
+    "shared": [
+      {"ingredient": "beef_sirloin", "grams": 800, "display": "4 steaks"},
+      {"ingredient": "parsley", "grams": 30, "display": "1 bunch", "note": "finely chopped"},
+      {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
+      {"ingredient": "red_wine_vinegar", "grams": 15, "display": "1 tbsp"},
+      {"ingredient": "dried_oregano", "grams": 2, "display": "1 tsp"},
+      {"ingredient": "chilli_flakes", "grams": 1, "display": "pinch"},
+      {"ingredient": "olive_oil", "grams": 42, "display": "3 tbsp"},
+      {"ingredient": "butter_beans", "grams": 480, "display": "2 x 400 g tins, drained"},
+      {"ingredient": "tenderstem", "grams": 400, "display": "2 packs"},
+      {"ingredient": "cherry_tomatoes", "grams": 250}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Cut into fries and air-fry at 200C for 20 min, shaking twice.", "options": [
+        {"ingredient": "sweet_potato", "standard_grams": 200, "min_grams": 0, "max_grams": 300, "default": true},
+        {"ingredient": "potato", "standard_grams": 200, "min_grams": 0, "max_grams": 300},
+        {"ingredient": "tenderstem", "standard_grams": 100, "min_grams": 0, "max_grams": 200}
+      ]}
+    ],
+    "steps": [
+      "Take the steaks out of the fridge 20 minutes before cooking. Start the fries (see the carb note).",
+      "Chimichurri: mix the parsley, a third of the garlic, the vinegar, oregano, chilli flakes, 2 tbsp oil and a pinch of salt.",
+      "Warm 1/2 tbsp oil in a pan with the rest of the garlic, add the butter beans and a splash of water and cook for 5 minutes, lightly crushing some of the beans. Season.",
+      "Steam or griddle the tenderstem for 4 minutes. Blister the tomatoes in a hot pan for 3 minutes.",
+      "Rub the steaks with the remaining oil and season. Cook in a very hot pan for 2-3 minutes each side for medium-rare. Rest for 5 minutes, then slice.",
+      "Plate using the plating guide and spoon over the chimichurri."
+    ],
+    "reheat_note": "Best fresh. Leftover steak is good cold, sliced over the beans."
+  },
+  {
+    "slug": "chicken-chickpea-tagine",
+    "title": "Chicken, chickpea and olive tagine",
+    "tier": "weekend", "cuisine": "Moroccan", "spice": 1, "active_min": 25, "total_min": 75,
+    "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly", "weekend-special"],
+    "shared": [
+      {"ingredient": "olive_oil", "grams": 14, "display": "1 tbsp"},
+      {"ingredient": "chicken_thigh", "grams": 800},
+      {"ingredient": "onion", "grams": 300, "display": "2", "note": "sliced"},
+      {"ingredient": "garlic", "grams": 15, "display": "3 cloves", "note": "crushed"},
+      {"ingredient": "ginger", "grams": 10, "display": "small piece", "note": "grated"},
+      {"ingredient": "ras_el_hanout", "grams": 10, "display": "1 tbsp"},
+      {"ingredient": "turmeric", "grams": 2, "display": "1/2 tsp"},
+      {"ingredient": "ground_cinnamon", "grams": 1, "display": "1/4 tsp"},
+      {"ingredient": "chopped_tomatoes", "grams": 400, "display": "1 x 400 g tin"},
+      {"ingredient": "stock_cube_chicken", "grams": 10, "display": "1 cube, made up with 300 ml water"},
+      {"ingredient": "chickpeas", "grams": 480, "display": "2 x 400 g tins, drained"},
+      {"ingredient": "carrot", "grams": 240, "display": "3", "note": "chunky slices"},
+      {"ingredient": "courgette", "grams": 200, "display": "1", "note": "chunks"},
+      {"ingredient": "olives", "grams": 60},
+      {"ingredient": "lemon_juice", "grams": 30, "display": "juice and zest of 1 lemon"},
+      {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
+    ],
+    "flexible": [
+      {"component": "carb", "cook_note": "Couscous: pour over boiling water, cover for 5 min, then fluff.", "options": [
+        {"ingredient": "wholewheat_couscous", "standard_grams": 50, "min_grams": 0, "max_grams": 90, "default": true},
+        {"ingredient": "cauliflower_rice", "standard_grams": 150, "min_grams": 0, "max_grams": 300}
+      ]}
+    ],
+    "steps": [
+      "Heat the oil in a large casserole and brown the chicken all over. Set aside.",
+      "Soften the onions for 8 minutes, then add the garlic, ginger and spices for 1 minute.",
+      "Return the chicken with the tomatoes, stock, chickpeas and carrots. Cover and simmer gently for 30 minutes.",
+      "Add the courgette and olives and simmer uncovered for 15 minutes until the sauce thickens.",
+      "Stir in the lemon juice and zest. Season. Make the couscous.",
+      "Plate using the plating guide with coriander on top."
+    ],
+    "reheat_note": "Microwave for 3 minutes, stirring halfway, until piping hot. Freezes well, and makes a great Monday lunch from a Sunday cook."
+  }
+]

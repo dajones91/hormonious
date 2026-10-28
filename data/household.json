@@ -1,0 +1,50 @@
+{
+  "people": [
+    {"key": "dale", "name": "Dale"},
+    {"key": "jade", "name": "Jade"}
+  ],
+  "exclusions": [
+    {
+      "person": "jade",
+      "family": "seafood",
+      "exceptions": ["fish_sauce", "shrimp_paste", "oyster_sauce", "worcestershire", "breaded_cod"],
+      "note": "No fish or shellfish, including anchovies. Fish sauce, shrimp paste, oyster sauce and Worcestershire sauce are fine, as is breaded or battered cod."
+    },
+    {
+      "person": "jade",
+      "family": "mushroom",
+      "exceptions": [],
+      "note": "No mushrooms in any form, including stock and powder."
+    },
+    {
+      "person": "jade",
+      "family": "meat_substitute",
+      "exceptions": [],
+      "note": "Household rule: no meat substitutes at all (Quorn, tofu, tempeh, seitan, plant-based mince etc.)."
+    },
+    {
+      "person": "dale",
+      "family": "meat_substitute",
+      "exceptions": [],
+      "note": "Household rule: no meat substitutes at all (Quorn, tofu, tempeh, seitan, plant-based mince etc.)."
+    },
+    {
+      "person": "jade",
+      "family": "paneer",
+      "exceptions": [],
+      "note": "Household rule: no paneer."
+    },
+    {
+      "person": "dale",
+      "family": "paneer",
+      "exceptions": [],
+      "note": "Household rule: no paneer."
+    },
+    {
+      "person": "dale",
+      "family": "whole_fruit",
+      "exceptions": [],
+      "note": "No whole pieces of fruit, fresh or dried. Juice and zest are fine."
+    }
+  ]
+}

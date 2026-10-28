@@ -1,0 +1,131 @@
+"""Database tables. Each class is one table; each attribute is one column.
+
+Lists and sets (tags, steps, families) are stored as JSON columns to keep
+the number of tables small.
+"""
+
+import os
+from datetime import date, datetime
+
+from dotenv import load_dotenv
+from sqlalchemy import JSON, ForeignKey, String, create_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Person(Base):
+    __tablename__ = "person"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    key: Mapped[str] = mapped_column(String(20), unique=True)
+    name: Mapped[str]
+    exclusions: Mapped[list["Exclusion"]] = relationship(back_populates="person", cascade="all, delete-orphan")
+
+
+class Exclusion(Base):
+    __tablename__ = "exclusion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"))
+    family: Mapped[str]
+    exceptions: Mapped[list[str]] = mapped_column(JSON, default=list)
+    note: Mapped[str | None]
+    person: Mapped[Person] = relationship(back_populates="exclusions")
+
+
+class IngredientRow(Base):
+    __tablename__ = "ingredient"
+    key: Mapped[str] = mapped_column(String(60), primary_key=True)
+    name: Mapped[str]
+    aisle: Mapped[str]
+    state: Mapped[str]
+    kcal: Mapped[float]
+    protein: Mapped[float]
+    carbs: Mapped[float]
+    sugars: Mapped[float]
+    fibre: Mapped[float]
+    fat: Mapped[float]
+    cooked_yield: Mapped[float]
+    gi: Mapped[str]
+    flags: Mapped[list[str]] = mapped_column(JSON, default=list)
+    families: Mapped[list[str]] = mapped_column(JSON, default=list)
+    pack_unit: Mapped[str]
+    packs: Mapped[list[float]] = mapped_column(JSON, default=list)
+    pack_label: Mapped[str]
+    unit_g: Mapped[float | None]
+    staple: Mapped[bool]
+    source: Mapped[str]
+    verified: Mapped[bool]
+
+
+class RecipeRow(Base):
+    __tablename__ = "recipe"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    slug: Mapped[str] = mapped_column(String(80), unique=True)
+    title: Mapped[str]
+    source: Mapped[str]
+    source_url: Mapped[str | None]
+    servings: Mapped[int]
+    active_min: Mapped[int]
+    total_min: Mapped[int]
+    tier: Mapped[str]
+    cuisine: Mapped[str]
+    spice: Mapped[int]
+    tags: Mapped[list[str]] = mapped_column(JSON, default=list)
+    steps: Mapped[list[str]] = mapped_column(JSON, default=list)
+    reheat_note: Mapped[str | None]
+    base_split: Mapped[dict | None] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(default="active")  # active / retired
+    last_cooked: Mapped[date | None]
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    items: Mapped[list["RecipeItemRow"]] = relationship(
+        back_populates="recipe", cascade="all, delete-orphan", order_by="RecipeItemRow.position")
+    components: Mapped[list["FlexComponentRow"]] = relationship(
+        back_populates="recipe", cascade="all, delete-orphan", order_by="FlexComponentRow.position")
+
+
+class RecipeItemRow(Base):
+    """A shared-base ingredient line."""
+
+    __tablename__ = "recipe_item"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipe.id"))
+    position: Mapped[int]
+    ingredient_key: Mapped[str] = mapped_column(ForeignKey("ingredient.key"))
+    grams: Mapped[float]
+    display: Mapped[str | None]
+    note: Mapped[str | None]
+    recipe: Mapped[RecipeRow] = relationship(back_populates="items")
+
+
+class FlexComponentRow(Base):
+    __tablename__ = "flex_component"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipe.id"))
+    position: Mapped[int]
+    component: Mapped[str]
+    cook_note: Mapped[str | None]
+    recipe: Mapped[RecipeRow] = relationship(back_populates="components")
+    options: Mapped[list["FlexOptionRow"]] = relationship(
+        back_populates="component_row", cascade="all, delete-orphan", order_by="FlexOptionRow.position")
+
+
+class FlexOptionRow(Base):
+    __tablename__ = "flex_option"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    component_id: Mapped[int] = mapped_column(ForeignKey("flex_component.id"))
+    position: Mapped[int]
+    ingredient_key: Mapped[str] = mapped_column(ForeignKey("ingredient.key"))
+    standard_grams: Mapped[float]
+    min_grams: Mapped[float]
+    max_grams: Mapped[float]
+    is_default: Mapped[bool]
+    component_row: Mapped[FlexComponentRow] = relationship(back_populates="options")
+
+
+def make_session_factory(url: str | None = None) -> sessionmaker:
+    """Connect to the database named in .env (DATABASE_URL), or the URL given."""
+    load_dotenv()
+    url = url or os.getenv("DATABASE_URL", "sqlite:///hormonious.db")
+    return sessionmaker(create_engine(url))
