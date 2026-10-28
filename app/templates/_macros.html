@@ -2,11 +2,32 @@
   {{ r.total_min }} min ({{ r.active_min }} active) · {{ r.cuisine }}{% if r.spice >= 2 %} · {{ "🌶" * r.spice }}{% endif %}
 {%- endmacro %}
 
-{% macro carb_text(plate) -%}
-  {%- for c in plate.components -%}
-    {%- if c.grams > 0 -%}
-      {{ c.grams|round|int }} g {% if c.weight_label %}{{ c.weight_label }} {% endif %}{{ c.ingredient.name|lower }}
-      {%- if c.sized_by == "swap" %} (swap){% endif %}{% if not loop.last %}, {% endif %}
-    {%- else -%}no {{ c.component }}{% if not loop.last %}, {% endif %}{%- endif -%}
-  {%- endfor -%}
+{# Placeholder until AI food pictures arrive (stage 5): a bold colour block per cuisine. #}
+{% macro recipe_image(r, big=False) -%}
+  <div class="recipe-img{{ ' big' if big }}" style="--hue: {{ cuisine_hue(r.cuisine) }}">
+    <span class="chip on-img">{{ "Weekend special" if r.tier == "weekend" else r.cuisine }}</span>
+    <span class="img-word">{{ r.cuisine }}</span>
+  </div>
+{%- endmacro %}
+
+{% macro recipe_card(r, href, extra="") -%}
+  <a class="recipe-card" href="{{ href }}">
+    {{ recipe_image(r) }}
+    <span class="card-body">
+      <strong>{{ r.title }}</strong>
+      <span class="stats">⏱ {{ r.total_min }} min · {{ r.active_min }} active{% if r.spice >= 2 %} · {{ "🌶" * r.spice }}{% endif %}</span>
+      {{ extra }}
+    </span>
+  </a>
+{%- endmacro %}
+
+{% macro portion_text(c) -%}
+  {%- if c.grams <= 0 -%}no {{ c.component }}
+  {%- elif c.ingredient.pack_unit == "each" and c.ingredient.unit_g -%}
+    {{ (c.grams / c.ingredient.unit_g)|round|int }} x {{ c.ingredient.name|lower }}
+  {%- else -%}
+    {{ c.grams|round|int }} g {% if c.weight_label %}{{ c.weight_label }} {% endif %}{{ c.ingredient.name|lower }}
+    {%- if c.ingredient.cooked_yield != 1 %} <span class="muted">(≈{{ c.cooked_grams|int }} g cooked)</span>{% endif %}
+  {%- endif -%}
+  {%- if c.sized_by == "swap" %} <span class="chip small">swap</span>{% elif c.sized_by == "you" %} <span class="chip small">your choice</span>{% endif -%}
 {%- endmacro %}

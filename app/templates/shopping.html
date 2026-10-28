@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Shopping · Hormonious{% endblock %}
+{% block content %}
+<p class="eyebrow"><a href="{{ url_for('main.week', start=week_start.isoformat()) }}">‹ Week from Sat {{ week_start.strftime("%d %b") }}</a></p>
+<h1>Shopping list</h1>
+
+{% if not cooks %}
+  <p class="empty">Nothing planned yet. <a href="{{ url_for('main.week', start=week_start.isoformat()) }}">Pick some recipes</a> and your list will appear here.</p>
+{% else %}
+  <div class="shop-summary">
+    <span><b id="left-count">{{ left }}</b> of {{ total }} left to get</span>
+    <button type="button" class="btn small" id="share" data-url="{{ url_for('main.shopping_text', start=week_start.isoformat()) }}">Share list</button>
+  </div>
+
+  {% for aisle, items in groups %}
+  <h2 class="aisle">{{ aisle }}</h2>
+  <ul class="shop-list">
+    {% for item in items %}{% include "_shopping_item.html" %}{% endfor %}
+  </ul>
+  {% endfor %}
+
+  {% if staples %}
+  <details class="staples">
+    <summary>Pantry staples we should already have ({{ staples|length }})</summary>
+    <ul class="shop-list">
+      {% for item in staples %}
+      <li class="shop-item">
+        <div class="shop-text"><b>{{ item.ingredient.name }}</b><small class="muted">{{ item.needed_text }}</small></div>
+        <form method="post" action="{{ url_for('main.pantry', start=week_start.isoformat(), key=item.key) }}">
+          <button class="btn ghost small" type="submit">Need to buy</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+
+  <details class="staples">
+    <summary>Move items to pantry staples</summary>
+    <ul class="shop-list">
+      {% for aisle, items in groups %}{% for item in items %}
+      <li class="shop-item">
+        <div class="shop-text"><b>{{ item.ingredient.name }}</b></div>
+        <form method="post" action="{{ url_for('main.pantry', start=week_start.isoformat(), key=item.key) }}">
+          <button class="btn ghost small" type="submit">We always have this</button>
+        </form>
+      </li>
+      {% endfor %}{% endfor %}
+    </ul>
+  </details>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Share the plain-text list (iPhone share sheet), or copy it where sharing isn't available.
+  (function () {
+    const btn = document.getElementById("share");
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      const text = await (await fetch(btn.dataset.url)).text();
+      try {
+        if (navigator.share) { await navigator.share({ text }); return; }
+        await navigator.clipboard.writeText(text);
+        btn.textContent = "Copied ✓";
+      } catch (e) {
+        if (e.name !== "AbortError") window.location = btn.dataset.url;
+      }
+    });
+  })();
+</script>
+{% endblock %}

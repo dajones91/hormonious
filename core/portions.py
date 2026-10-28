@@ -176,7 +176,14 @@ def build_plate(recipe: Recipe, catalogue: dict[str, Ingredient], person: str, m
         portions[comp.component] = portion
         used += portion.nutrition
 
-    ordered = [portions[c.component] for c in recipe.flexible]
+    ordered = []
+    for comp in recipe.flexible:  # label anything the person picked themselves
+        portion = portions[comp.component]
+        choice = choices.get(comp.component)
+        if choice and (choice.option or choice.grams is not None) and portion.sized_by != "you":
+            portion = ComponentPortion(portion.component, portion.ingredient, portion.grams, "you",
+                                       portion.nutrition)
+        ordered.append(portion)
     return Plate(person, meal, share, base, sugar, ordered)
 
 

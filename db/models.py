@@ -170,6 +170,36 @@ class PlanSlotRow(Base):
     no_cook: Mapped[bool] = mapped_column(default=False)
     portions: Mapped[int]
     week: Mapped[WeekRow] = relationship(back_populates="slots")
+    choices: Mapped[list["PortionChoiceRow"]] = relationship(cascade="all, delete-orphan")
+
+
+class PortionChoiceRow(Base):
+    """Someone's change to their flexible portion for one planned night."""
+
+    __tablename__ = "portion_choice"
+    __table_args__ = (UniqueConstraint("slot_id", "person", "meal", "component"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    slot_id: Mapped[int] = mapped_column(ForeignKey("plan_slot.id"))
+    person: Mapped[str]
+    meal: Mapped[str]
+    component: Mapped[str]
+    option: Mapped[str | None]  # ingredient key; None = the default option
+    grams: Mapped[float | None]  # None = sized automatically
+
+
+class PantryRow(Base):
+    """Ingredients we always have in, hidden from the shopping list by default."""
+
+    __tablename__ = "pantry"
+    ingredient_key: Mapped[str] = mapped_column(ForeignKey("ingredient.key"), primary_key=True)
+
+
+class ShoppingTickRow(Base):
+    __tablename__ = "shopping_tick"
+    __table_args__ = (UniqueConstraint("week_id", "ingredient_key"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    week_id: Mapped[int] = mapped_column(ForeignKey("week.id"))
+    ingredient_key: Mapped[str] = mapped_column(ForeignKey("ingredient.key"))
 
 
 def make_session_factory(url: str | None = None) -> sessionmaker:

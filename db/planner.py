@@ -7,12 +7,13 @@ from sqlalchemy.orm import Session
 
 from core.exclusions import ExclusionHit, check_recipe
 from core.menu import build_menu, week_slots
-from core.portions import Plate, Targets, base_shares, plan_plates
+from core.portions import Plate, Targets, base_shares, meals_for_portions, plan_plates
 from core.rules import Issue, RuleSettings, passes, validate
 from core.schema import Ingredient, Recipe
-from db.models import WeekRow
-from db.repo import (create_week, get_catalogue, get_exclusion_rules, get_recipes, get_settings, get_targets,
-                     get_week, last_cooked)
+from core.shopping import PlannedCook, ShoppingItem, build_list
+from db.models import PlanSlotRow, WeekRow
+from db.repo import (create_week, get_catalogue, get_choices, get_exclusion_rules, get_pantry, get_recipe,
+                     get_recipes, get_settings, get_targets, get_week, last_cooked)
 
 
 @dataclass
@@ -36,9 +37,12 @@ class Context:
     settings: dict
     rule_settings: RuleSettings
 
-    def check(self, recipe: Recipe, rules) -> RecipeCheck:
+    def plates(self, recipe: Recipe, portions: int = 4, choices=None) -> list[Plate]:
         shares = base_shares(recipe, self.settings["split_mode"], self.settings["fixed_split"], self.targets)
-        plates = plan_plates(recipe, self.catalogue, self.targets, shares)
+        return plan_plates(recipe, self.catalogue, self.targets, shares, meals_for_portions(portions), choices)
+
+    def check(self, recipe: Recipe, rules, portions: int = 4, choices=None) -> RecipeCheck:
+        plates = self.plates(recipe, portions, choices)
         issues = validate(recipe, self.catalogue, plates, self.targets, self.rule_settings)
         return RecipeCheck(recipe, plates, issues, check_recipe(recipe, self.catalogue, rules))
 
@@ -67,3 +71,20 @@ def ensure_week(session: Session, start: date) -> WeekRow:
         week = create_week(session, start, menu, week_slots(start, ctx.settings["friday_plan"]))
         session.commit()
     return week
+
+
+def week_cooks(session: Session, week: WeekRow, ctx: Context) -> list[tuple[PlanSlotRow, PlannedCook]]:
+    """Every planned cook in the week, with each person's actual portions."""
+    cooks = []
+    for slot in week.slots:
+        if slot.recipe_slug:
+            recipe = get_recipe(session, slot.recipe_slug)
+            plates = ctx.plates(recipe, slot.portions, get_choices(slot))
+            cooks.append((slot, PlannedCook(recipe, slot.portions, plates)))
+    return cooks
+
+
+def shopping_list(session: Session, week: WeekRow) -> list[ShoppingItem]:
+    ctx = load_context(session)
+    cooks = [cook for _, cook in week_cooks(session, week, ctx)]
+    return build_list(cooks, ctx.catalogue, get_pantry(session))

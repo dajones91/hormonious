@@ -1,18 +1,17 @@
 {% extends "base.html" %}
-{% from "_macros.html" import recipe_meta %}
+{% from "_macros.html" import recipe_card %}
 {% block title %}Recipes · Hormonious{% endblock %}
 {% block content %}
 <h1>Recipe library</h1>
 <p class="muted">{{ checks|selectattr("ok")|list|length }} of {{ checks|length }} recipes pass your rules and can go on the menu.</p>
-<ul class="cards">
+<div class="card-grid">
   {% for c in checks %}
-  <li class="{{ 'ok' if c.ok else 'fail' }}">
-    <a href="{{ url_for('main.recipe', slug=c.recipe.slug) }}">{{ c.recipe.title }}</a>
-    <span class="muted">{{ c.recipe.tier|title }} · {{ recipe_meta(c.recipe) }}</span>
-    {% if not c.ok %}<span class="badge fail">Not on menu</span>{% endif %}
     {% set warns = c.issues|selectattr("level", "equalto", "warn")|list %}
-    {% if warns %}<span class="badge warn">{{ warns|length }} note{{ "s" if warns|length != 1 }}</span>{% endif %}
-  </li>
+    {% set extra %}
+      {% if not c.ok %}<span class="chip fail">Not on menu</span>{% endif %}
+      {% if warns %}<span class="chip warn">{{ warns|length }} note{{ "s" if warns|length != 1 }}</span>{% endif %}
+    {% endset %}
+    {{ recipe_card(c.recipe, url_for('main.recipe', slug=c.recipe.slug), extra) }}
   {% endfor %}
-</ul>
+</div>
 {% endblock %}

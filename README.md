@@ -12,26 +12,28 @@ Prerequisites: Python 3.13 and Git (installed with `winget install --id Python.P
 git clone https://github.com/dajones91/hormonious.git
 cd hormonious
 python -m venv .venv          # private Python environment for this project
-.\.venv\Scripts\Activate.ps1  # switch this terminal to use it
 copy .env.example .env        # then edit .env
 ```
 
-Then install the libraries and build the local database:
+Every command below runs the project's own Python directly (`.\.venv\Scripts\python.exe`), so there's
+no "activate" step and no need to change Windows' script settings.
+
+Install the libraries and build the local database:
 
 ```powershell
-pip install -r requirements.txt
-python manage.py reset-db     # creates hormonious.db from the files in data/
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe manage.py reset-db     # creates hormonious.db from the files in data/
 ```
 
 ## Useful commands
 
 | Command | What it does |
 |---|---|
-| `python manage.py serve` | Runs the app at http://127.0.0.1:5000 (this PC only, with the debugger on) |
-| `python manage.py serve --lan` | Also lets phones on your home Wi-Fi open it at `http://<this PC's IP>:5000` (debugger off) |
-| `python manage.py recipes` | Lists every recipe with Dale's and Jade's dinner plates and any rule problems |
-| `python manage.py check "oyster sauce"` | Tests the exclusion filter on any ingredient name |
-| `python -m pytest` | Runs all the tests |
+| `.\.venv\Scripts\python.exe manage.py serve` | Runs the app at http://127.0.0.1:5000 (this PC only, with the debugger on) |
+| `.\.venv\Scripts\python.exe manage.py serve --lan` | Also lets phones on your home Wi-Fi open it at `http://<this PC's IP>:5000` (debugger off) |
+| `.\.venv\Scripts\python.exe manage.py recipes` | Lists every recipe with Dale's and Jade's dinner plates and any rule problems |
+| `.\.venv\Scripts\python.exe manage.py check "oyster sauce"` | Tests the exclusion filter on any ingredient name |
+| `.\.venv\Scripts\python.exe -m pytest` | Runs all the tests |
 
 ## Where things live
 
