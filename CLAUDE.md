@@ -37,7 +37,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - Login is one shared family password. Each device then picks "Dale" or "Jade".
 
 ## Stage progress
-- [ ] 0 PC setup, git, GitHub repo
+- [x] 0 PC setup, git, GitHub repo (private: github.com/dajones91/hormonious, branch `main`)
 - [ ] 1 Recipe model, ingredients, exclusions, seed library
 - [ ] 2 Profiles, targets, menu generation, planning
 - [ ] 3 Recipe cards, portions, shopping list

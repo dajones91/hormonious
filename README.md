@@ -6,7 +6,17 @@ See [PLAN.md](PLAN.md) for the design and [CLAUDE.md](CLAUDE.md) for project con
 
 ## Local setup (Windows)
 
-_Filled in during stage 0–1._
+Prerequisites: Python 3.13 and Git (installed with `winget install --id Python.Python.3.13 -e` and `winget install --id Git.Git -e`).
+
+```powershell
+git clone https://github.com/dajones91/hormonious.git
+cd hormonious
+python -m venv .venv          # private Python environment for this project
+.\.venv\Scripts\Activate.ps1  # switch this terminal to use it
+copy .env.example .env        # then edit .env
+```
+
+_App install and run steps are added in stage 1._
 
 ## Environment variables
 
