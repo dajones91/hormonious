@@ -22,8 +22,8 @@ def create_app(database_url: str | None = None, today: date | None = None) -> Fl
 
     @app.template_global()
     def cuisine_hue(name: str) -> int:
-        """A stable colour per cuisine for the placeholder images, kept in the duck-egg teal/blue range."""
-        return 165 + sum(map(ord, name)) % 40
+        """A stable colour per cuisine for the placeholder images, kept in warm browns, ambers and greens."""
+        return (15 + sum(map(ord, name)) % 85) % 360  # 15-100: chocolate, amber, olive, sage
 
     from app.views import bp
     app.register_blueprint(bp)

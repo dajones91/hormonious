@@ -16,7 +16,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - Hosting: PythonAnywhere free tier. Fallback: Render + Neon Postgres if the outbound allowlist blocks api.anthropic.com (verify before stage 5).
 
 ## Design direction (agreed 2026-10-28)
-- Bold and bright, meal-kit-app energy, with **duck egg blue** as the brand colour (changed from bright blue on 2026-10-28). Duck egg (`--duck` #a9d8d3) is for big surfaces with dark text; buttons and links use a deep duck-egg teal (`--brand` #23706c) so white text stays readable. Dale's plates are teal, Jade's are coral. Our own look, never a copy of any brand.
+- **Warm and healthy** feel (Jade's call, 2026-10-29; replaces the earlier bright blue and duck egg). Brand colour **light chocolate brown** (`--choc` #9a6b4b), used for the header with white text. Buttons and links use a deeper chocolate (`--brand` #7a4f33). The background is cream (`--bg` #faf6f0), with sage green (`--sage` #6f8f5c) for tags and a healthy accent, and honey (`--sun`) for highlights. Dale's plates are chocolate, Jade's are sage. Our own look, never a copy of any brand.
 - **Always light mode**: no dark-mode switching.
 - Inspiration: therandomrecipe.com. Grid recipe cards with a landscape photo, a category chip on the image, the title, and a stats row (time, servings) with clear action buttons. On phones, use a bottom tab bar instead of a mega-menu.
 - **AI-generated food pictures** on recipe cards. Claude can't make images, so this needs a separate image API (choose the provider when we build it); store our own generated images only.
