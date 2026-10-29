@@ -167,3 +167,37 @@ input.short { width: 76px; }
 .banner-cta { align-self: flex-start; margin-top: 6px; background: #fff; color: var(--sage); font-weight: 800;
               padding: 6px 14px; border-radius: 999px; }
 .notice { margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: var(--brand-soft); }
+
+/* Ratings */
+.rating-box { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin: 12px 0; box-shadow: var(--shadow); }
+.rating-box.retired { background: var(--fail-soft); }
+.rating-head { display: flex; align-items: center; gap: 10px; }
+.stars-big { color: var(--sun); font-size: 1.6rem; letter-spacing: 2px; text-shadow: 0 1px 0 var(--brand-dark); }
+.stars-small { color: #c9922e; font-size: 0.95rem; letter-spacing: 1px; }
+.notes { list-style: none; padding: 0; margin: 8px 0 0; }
+.notes li { padding: 8px 0; border-top: 1px solid var(--line); }
+.rate-form { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin: 16px 0; box-shadow: var(--shadow); }
+.rate-form h2 { margin-top: 0; }
+.rate-row { display: grid; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.rate-row input[type="text"] { font: inherit; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); }
+.star-input { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px;
+              border: 0; padding: 0; margin: 0; background: none; box-shadow: none; }
+.star-input input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.star-input label { font-size: 2.2rem; line-height: 1; color: var(--line); cursor: pointer; margin: 0; }
+/* light up the chosen star and every star before it (they're in reverse order) */
+.star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--sun); }
+.star-input input:focus-visible + label { outline: 3px solid var(--brand); border-radius: 6px; }
+.rated { display: inline-block; margin: 8px 0 0 8px; color: #c9922e; font-weight: 700; }
+.rate-row .who { justify-self: start; }
+.star-input { overflow: visible; }
+.stars-big.unrated { color: var(--muted); font-size: 1.05rem; letter-spacing: 0; text-shadow: none; font-weight: 700; }
+
+/* Recipe library search */
+.search { position: sticky; top: 56px; z-index: 5; display: flex; gap: 8px; margin: 8px 0 4px; padding: 8px 0;
+          background: var(--bg); }
+.search input { flex: 1; min-width: 0; font: inherit; padding: 12px 14px; border-radius: 999px;
+                border: 2px solid var(--line); background: #fff; color: var(--ink); }
+.search input:focus { outline: none; border-color: var(--brand); }
+.search button { margin: 0; }
+.recipe-card[hidden] { display: none; }
+.stars-small.unrated { color: var(--muted); letter-spacing: 0; font-size: 0.8rem; }

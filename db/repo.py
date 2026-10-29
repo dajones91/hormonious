@@ -9,10 +9,11 @@ from core.exclusions import ExclusionRule
 from core.loaders import load_household, load_ingredients, load_recipes
 from core.menu import DaySlot, Menu
 from core.portions import FlexChoice, MealTarget, Targets
+from core.ratings import Rating
 from core.schema import FlexComponent, FlexOption, Ingredient, Recipe, RecipeItem
 from db.models import (Base, Exclusion, FlexComponentRow, FlexOptionRow, IngredientRow, PantryRow, Person,
-                       PlanSlotRow, PortionChoiceRow, RecipeItemRow, RecipeRow, SettingRow, ShoppingTickRow,
-                       TargetRow, WeekRow)
+                       PlanSlotRow, PortionChoiceRow, RatingRow, RecipeItemRow, RecipeRestoreRow, RecipeRow,
+                       SettingRow, ShoppingTickRow, TargetRow, WeekRow)
 
 _RECIPE_FIELDS = ("slug", "title", "source", "source_url", "servings", "active_min", "total_min",
                   "tier", "cuisine", "spice", "tags", "steps", "reheat_note", "base_split")
@@ -213,3 +214,38 @@ def reset_and_seed(session: Session) -> dict[str, int]:
         save_recipe(session, recipe)
     session.commit()
     return {"ingredients": len(catalogue), "people": len(people), "recipes": len(recipes)}
+
+
+def add_rating(session: Session, recipe_slug: str, person: str, stars: int, note: str, on: date,
+               slot_id: int | None = None) -> None:
+    """Record a rating. Re-rating the same night replaces that person's earlier rating for it."""
+    if slot_id is not None:
+        existing = session.scalar(select(RatingRow).where(RatingRow.slot_id == slot_id, RatingRow.person == person))
+        if existing:
+            existing.stars, existing.note, existing.rated_on = stars, note, on
+            return
+    session.add(RatingRow(recipe_slug=recipe_slug, slot_id=slot_id, person=person, stars=stars, note=note,
+                          rated_on=on))
+
+
+def get_ratings(session: Session, recipe_slug: str | None = None) -> dict[str, list[Rating]]:
+    """Ratings per recipe, oldest first."""
+    query = select(RatingRow).order_by(RatingRow.rated_on, RatingRow.id)
+    if recipe_slug:
+        query = query.where(RatingRow.recipe_slug == recipe_slug)
+    ratings: dict[str, list[Rating]] = {}
+    for row in session.scalars(query):
+        ratings.setdefault(row.recipe_slug, []).append(Rating(row.person, row.stars, row.rated_on, row.note))
+    return ratings
+
+
+def get_slot_ratings(session: Session, slot_id: int) -> dict[str, RatingRow]:
+    return {r.person: r for r in session.scalars(select(RatingRow).where(RatingRow.slot_id == slot_id))}
+
+
+def get_restores(session: Session) -> dict[str, date]:
+    return {r.recipe_slug: r.restored_on for r in session.scalars(select(RecipeRestoreRow))}
+
+
+def restore_recipe(session: Session, recipe_slug: str, on: date) -> None:
+    session.merge(RecipeRestoreRow(recipe_slug=recipe_slug, restored_on=on))

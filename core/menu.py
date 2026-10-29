@@ -8,6 +8,7 @@ import random
 from dataclasses import dataclass
 from datetime import date, timedelta
 
+from core.ratings import DEFAULT_COOLDOWN_WEEKS, available_from
 from core.schema import Recipe
 
 SATURDAY = 5  # date.weekday(): Monday is 0
@@ -63,27 +64,49 @@ class Menu:
 
 
 def build_menu(eligible: list[Recipe], week_start: date, last_cooked: dict[str, date],
-               n_weeknight: int, n_weekend: int) -> Menu:
+               n_weeknight: int, n_weekend: int, stars: dict[str, int | None] | None = None,
+               cooldowns: dict[int, int] = DEFAULT_COOLDOWN_WEEKS, favourite_share: float = 0.6) -> Menu:
     """Pick this week's options from recipes that already pass exclusions and rules.
 
-    Anything cooked in the 7 days before the week starts is left out. The rest
-    are ranked by how long it's been since we had them, plus a little
-    randomness so the menu changes week to week. The same week always gets
-    the same menu. (Ratings and favourites are added in stage 4.)
+    1. Leave out anything retired (2 stars or less) or still in its cooldown (see
+       core/ratings.py). That always includes anything we had last week.
+    2. Favourites (4-5 stars) fill about 60% of the places, the most overdue first,
+       so 5-star recipes come back more often than 4-star ones.
+    3. The rest go to recipes we haven't tried or haven't rated, then 3-star ones,
+       with some randomness so the menu changes week to week.
+    If either group runs short, the other fills the gap. The same week always gets
+    the same menu.
     """
+    stars = stars or {}
     rng = random.Random(week_start.toordinal())
-    cutoff = week_start - timedelta(days=7)
 
-    def score(r: Recipe) -> float:
-        last = last_cooked.get(r.slug)
-        days_since = 60 if last is None else min((week_start - last).days, 60)
-        return days_since + rng.uniform(0, 30)
+    def opens(r: Recipe) -> date | None:
+        return available_from(last_cooked.get(r.slug), stars.get(r.slug), cooldowns)
+
+    def weeks_overdue(r: Recipe) -> float:
+        return min((week_start - opens(r)).days / 7, 12)  # never cooked counts as 12
+
+    def favourite_score(r: Recipe) -> float:
+        return weeks_overdue(r) + stars[r.slug] - 4 + rng.uniform(0, 1.5)
+
+    def other_score(r: Recipe) -> float:
+        score = min(weeks_overdue(r), 8) + rng.uniform(0, 10)
+        if r.slug not in last_cooked:
+            score += 3  # never tried: give new recipes a fair chance
+        if stars.get(r.slug) == 3:
+            score -= 6  # 3 stars: only now and then
+        return score
 
     def pick(tier: str, n: int) -> list[str]:
-        pool = [r for r in eligible if r.tier == tier
-                and not (r.slug in last_cooked and last_cooked[r.slug] >= cutoff)]
-        pool.sort(key=lambda r: (score(r), r.slug), reverse=True)
-        return [r.slug for r in pool[:n]]
+        pool = [r for r in eligible if r.tier == tier and opens(r) is not None and opens(r) <= week_start]
+        favourites = sorted((r for r in pool if (stars.get(r.slug) or 0) >= 4),
+                            key=lambda r: (favourite_score(r), r.slug), reverse=True)
+        others = sorted((r for r in pool if (stars.get(r.slug) or 0) < 4),
+                        key=lambda r: (other_score(r), r.slug), reverse=True)
+        want = round(n * favourite_share)
+        chosen = favourites[:want] + others[:n - min(want, len(favourites))]
+        chosen += [r for r in favourites[want:] + others if r not in chosen][:n - len(chosen)]
+        return [r.slug for r in chosen[:n]]
 
     return Menu(pick("weeknight", n_weeknight), pick("weekend", n_weekend))
 

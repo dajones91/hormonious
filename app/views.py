@@ -7,10 +7,14 @@ from flask import Blueprint, Response, abort, current_app, flash, g, redirect, r
 from core.cooking import cook_base, cook_flex, pot_shares
 from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
 from core.portions import MEALS, PEOPLE, MealTarget, meals_for_portions
+from core.ratings import available_from, household_rating, is_retired
+from core.search import matches, search_text
 from core.shopping import as_text, group_by_aisle
-from db.planner import check_all, ensure_week, has_plan, load_context, make_menu, shopping_list
-from db.repo import (get_choices, get_exclusion_rules, get_recipe, get_recipes, get_slot, get_ticks, save_choice,
-                     save_target, set_setting, set_slot, toggle_pantry, toggle_tick)
+from db.planner import (check_all, ensure_week, has_plan, household_stars, load_context, make_menu,
+                        shopping_list)
+from db.repo import (add_rating, get_choices, get_exclusion_rules, get_ratings, get_recipe, get_recipes, get_restores,
+                     get_slot, get_slot_ratings, get_ticks, last_cooked, restore_recipe, save_choice, save_target,
+                     set_setting, set_slot, toggle_pantry, toggle_tick)
 
 bp = Blueprint("main", __name__)
 
@@ -92,6 +96,7 @@ def week(start: str | None = None):
             "value": "no-cook" if saved and saved.no_cook else (recipe.slug if recipe else ""),
             "recipe": recipe,
             "slot_id": saved.id if saved else None,
+            "rated": get_slot_ratings(session, saved.id) if recipe and slot.day <= today() else None,
             "warnings": check_assignment(slot, recipe) if recipe else [],
         })
     # Saved menu once it's ready; before then an unsaved preview that may still change.
@@ -103,6 +108,7 @@ def week(start: str | None = None):
         weekend=[recipes[s] for s in menu.weekend if s in recipes],
         others=sorted((r for s, r in recipes.items() if s not in on_menu), key=lambda r: r.title),
         cooking=sum(1 for r in rows if r["recipe"]),
+        to_rate=[r for r in rows if r["rated"] is not None and len(r["rated"]) < 2],
         ready=ready, today=today(), is_current=week_start == week_start_for(today()),
         banner=next_week_banner(session, week_start),
         prev_week=(week_start - timedelta(days=7)).isoformat(), next_week=(week_start + timedelta(days=7)).isoformat(),
@@ -111,7 +117,31 @@ def week(start: str | None = None):
 
 @bp.route("/recipes")
 def recipes():
-    return render_template("recipes.html", checks=check_all(db()))
+    session = db()
+    ctx = load_context(session)
+    checks = check_all(session, ctx)
+    stars = household_stars(session)
+    texts = {c.recipe.slug: search_text(c.recipe, ctx.catalogue) for c in checks}
+    query = request.args.get("q", "").strip()[:100]
+    shown = [c for c in checks if matches(texts[c.recipe.slug], query)]
+    retired = [c for c in shown if is_retired(stars.get(c.recipe.slug))]
+    return render_template("recipes.html", checks=[c for c in shown if c not in retired], retired=retired,
+                           stars=stars, query=query, texts=texts, total=len(checks),
+                           on_menu=sum(1 for c in checks if c.ok))
+
+
+def rating_summary(session, slug: str) -> dict:
+    """Everything the recipe page shows about how we've rated it and when it can come back."""
+    ratings = get_ratings(session, slug).get(slug, [])
+    restored_on = get_restores(session).get(slug)
+    stars = household_rating(ratings, restored_on)
+    last = last_cooked(session, today() + timedelta(days=1)).get(slug)
+    opens = available_from(last, stars)
+    return {
+        "stars": stars, "retired": is_retired(stars), "restored_on": restored_on, "last": last,
+        "history": sorted(ratings, key=lambda r: r.on, reverse=True),
+        "next_week": opens if opens and opens != date.min else None,
+    }
 
 
 def card_context(ctx, recipe, check, portions: int) -> dict:
@@ -133,7 +163,19 @@ def recipe(slug: str):
         abort(404)
     ctx = load_context(session)
     check = ctx.check(r, get_exclusion_rules(session))
-    return render_template("recipe.html", slot=None, **card_context(ctx, r, check, r.servings))
+    return render_template("recipe.html", slot=None, rating=rating_summary(session, slug),
+                           **card_context(ctx, r, check, r.servings))
+
+
+@bp.route("/recipe/<slug>/restore", methods=["POST"])
+def restore(slug: str):
+    session = db()
+    if get_recipe(session, slug) is None:
+        abort(404)
+    restore_recipe(session, slug, today())
+    session.commit()
+    flash("Restored. It can come back on the menu, and its old ratings no longer count.", "ok")
+    return redirect(url_for("main.recipe", slug=slug))
 
 
 def choice_groups(ctx, portions: int) -> list[tuple[str, tuple[str, ...]]]:
@@ -183,7 +225,34 @@ def cook(slot_id: int):
     choices = get_choices(slot)
     check = ctx.check(r, get_exclusion_rules(session), slot.portions, choices)
     return render_template("recipe.html", slot=slot, choices=choices, groups=groups, week_start=slot.week.start,
+                           can_rate=slot.day <= today(), slot_ratings=get_slot_ratings(session, slot.id),
+                           rating=rating_summary(session, r.slug),
                            **card_context(ctx, r, check, slot.portions))
+
+
+@bp.route("/cook/<int:slot_id>/rate", methods=["POST"])
+def rate(slot_id: int):
+    """After cooking: each of us rates the recipe 1-5, with an optional note."""
+    session = db()
+    slot = get_slot(session, slot_id)
+    if slot is None or not slot.recipe_slug:
+        abort(404)
+    if slot.day > today():
+        flash("You can rate this once you've cooked it.", "error")
+        return redirect(url_for("main.cook", slot_id=slot_id))
+    saved = 0
+    for person in PEOPLE:
+        stars_text = request.form.get(f"{person}-stars", "")
+        if not stars_text:
+            continue
+        if stars_text not in {"1", "2", "3", "4", "5"}:
+            abort(400)
+        note = request.form.get(f"{person}-note", "").strip()[:500]
+        add_rating(session, slot.recipe_slug, person, int(stars_text), note, today(), slot_id=slot.id)
+        saved += 1
+    session.commit()
+    flash("Thanks, rating saved." if saved else "Pick some stars first.", "ok" if saved else "error")
+    return redirect(url_for("main.cook", slot_id=slot_id) + "#rate")
 
 
 def _week_or_404(start: str):

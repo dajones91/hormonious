@@ -3,15 +3,62 @@
 {% block title %}Recipes · Hormonious{% endblock %}
 {% block content %}
 <h1>Recipe library</h1>
-<p class="muted">{{ checks|selectattr("ok")|list|length }} of {{ checks|length }} recipes pass your rules and can go on the menu.</p>
+<form class="search" method="get" role="search">
+  <input type="search" name="q" id="q" value="{{ query }}" placeholder="Search recipes, ingredients or tags"
+         aria-label="Search recipes" autocomplete="off" enterkeyhint="search">
+  <button type="submit" class="btn small">Search</button>
+</form>
+<p class="muted" id="search-count">
+  {% if query %}{{ checks|length + retired|length }} recipe{{ "s" if checks|length + retired|length != 1 }} match “{{ query }}”.
+    <a href="{{ url_for('main.recipes') }}">Show all</a>
+  {% else %}{{ on_menu }} of {{ total }} recipes pass your rules and can go on the menu.{% endif %}
+</p>
+<p class="empty" id="no-results" {% if checks or retired %}hidden{% endif %}>No recipes match. Try a different word, like an ingredient or cuisine.</p>
 <div class="card-grid">
   {% for c in checks %}
     {% set warns = c.issues|selectattr("level", "equalto", "warn")|list %}
     {% set extra %}
+      <span class="stars-small{{ ' unrated' if stars.get(c.recipe.slug) is none }}">{{ stars_text(stars.get(c.recipe.slug)) }}</span>
       {% if not c.ok %}<span class="chip fail">Not on menu</span>{% endif %}
       {% if warns %}<span class="chip warn">{{ warns|length }} note{{ "s" if warns|length != 1 }}</span>{% endif %}
     {% endset %}
-    {{ recipe_card(c.recipe, url_for('main.recipe', slug=c.recipe.slug), extra) }}
+    {{ recipe_card(c.recipe, url_for('main.recipe', slug=c.recipe.slug), extra, texts[c.recipe.slug]) }}
   {% endfor %}
 </div>
+{% if retired %}
+<h2 id="retired-heading">Retired <span class="muted">(rated 2★ or less, not suggested)</span></h2>
+<div class="card-grid retired-grid">
+  {% for c in retired %}
+    {% set extra %}<span class="stars-small{{ ' unrated' if stars.get(c.recipe.slug) is none }}">{{ stars_text(stars.get(c.recipe.slug)) }}</span>{% endset %}
+    {{ recipe_card(c.recipe, url_for('main.recipe', slug=c.recipe.slug), extra, texts[c.recipe.slug]) }}
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Filter the cards as you type (the Search button does the same thing on the server).
+  (function () {
+    const box = document.getElementById("q");
+    const cards = document.querySelectorAll(".recipe-card[data-search]");
+    const none = document.getElementById("no-results");
+    const count = document.getElementById("search-count");
+    const retiredHeading = document.getElementById("retired-heading");
+    const original = count.innerHTML;
+    box.addEventListener("input", () => {
+      const words = box.value.toLowerCase().match(/[\w-]+/g) || [];
+      let shown = 0, retiredShown = 0;
+      cards.forEach(card => {
+        const hit = words.every(w => card.dataset.search.includes(w));
+        card.hidden = !hit;
+        if (hit) { shown++; if (card.closest(".retired-grid")) retiredShown++; }
+      });
+      none.hidden = shown > 0;
+      if (retiredHeading) retiredHeading.hidden = retiredShown === 0;
+      count.textContent = words.length ? `${shown} recipe${shown === 1 ? "" : "s"} match` : "";
+      if (!words.length) count.innerHTML = original;
+    });
+  })();
+</script>
 {% endblock %}

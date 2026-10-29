@@ -202,8 +202,31 @@ class ShoppingTickRow(Base):
     ingredient_key: Mapped[str] = mapped_column(ForeignKey("ingredient.key"))
 
 
+class RatingRow(Base):
+    """One person's rating of a recipe after cooking it (on a particular night, if known)."""
+
+    __tablename__ = "rating"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    recipe_slug: Mapped[str] = mapped_column(ForeignKey("recipe.slug"))
+    slot_id: Mapped[int | None] = mapped_column(ForeignKey("plan_slot.id"))
+    person: Mapped[str]
+    stars: Mapped[int]
+    note: Mapped[str] = mapped_column(default="")
+    rated_on: Mapped[date]
+
+
+class RecipeRestoreRow(Base):
+    """A recipe we brought back after rating it 2 stars or less; earlier ratings are ignored."""
+
+    __tablename__ = "recipe_restore"
+    recipe_slug: Mapped[str] = mapped_column(ForeignKey("recipe.slug"), primary_key=True)
+    restored_on: Mapped[date]
+
+
 def make_session_factory(url: str | None = None) -> sessionmaker:
     """Connect to the database named in .env (DATABASE_URL), or the URL given."""
     load_dotenv()
     url = url or os.getenv("DATABASE_URL", "sqlite:///hormonious.db")
-    return sessionmaker(create_engine(url))
+    engine = create_engine(url)
+    Base.metadata.create_all(engine)  # adds any brand-new tables; never changes existing ones
+    return sessionmaker(engine)
