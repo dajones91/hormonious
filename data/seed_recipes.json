@@ -45,7 +45,7 @@
     "tier": "weeknight", "cuisine": "Thai", "spice": 2, "active_min": 15, "total_min": 30,
     "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly"],
     "shared": [
-      {"ingredient": "chicken_thigh", "grams": 700, "note": "cut into bite-sized pieces"},
+      {"ingredient": "chicken_breast", "grams": 700, "note": "cut into bite-sized pieces"},
       {"ingredient": "olive_oil", "grams": 7, "display": "1/2 tbsp"},
       {"ingredient": "thai_green_curry_paste", "grams": 60, "display": "3 tbsp"},
       {"ingredient": "garlic", "grams": 10, "display": "2 cloves", "note": "crushed"},

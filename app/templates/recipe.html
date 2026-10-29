@@ -1,52 +1,120 @@
 {% extends "base.html" %}
-{% from "_macros.html" import recipe_meta, carb_text %}
+{% from "_macros.html" import recipe_image, portion_text %}
 {% block title %}{{ r.title }} · Hormonious{% endblock %}
 {% block content %}
-<h1>{{ r.title }}</h1>
-<p class="muted">{{ r.tier|title }} · {{ recipe_meta(r) }} · makes {{ r.servings }} portions</p>
-<p>{% for t in r.tags %}<span class="tag">{{ t }}</span>{% endfor %}</p>
+<article class="card-page">
+  {{ recipe_image(r, big=True) }}
+  {% if slot %}
+    <p class="eyebrow"><a href="{{ url_for('main.week', start=week_start.isoformat()) }}">‹ Week</a> ·
+      {{ slot.day.strftime("%A %d %b") }} · {{ portions }} portions{% if portions == 4 %} (2 dinners + 2 lunches){% endif %}</p>
+  {% else %}
+    <p class="eyebrow"><a href="{{ url_for('main.recipes') }}">‹ Recipes</a> · preview for {{ portions }} portions</p>
+  {% endif %}
+  <h1>{{ r.title }}</h1>
+  <div class="stat-row">
+    <span><b>{{ r.total_min }}</b> min total</span>
+    <span><b>{{ r.active_min }}</b> min active</span>
+    <span><b>{{ r.tier|title }}</b></span>
+    {% if r.spice %}<span><b>{{ "🌶" * r.spice }}</b> spice</span>{% endif %}
+  </div>
+  <p>{% for t in r.tags %}<span class="chip">{{ t }}</span>{% endfor %}</p>
+  <button type="button" class="btn ghost" id="wake" hidden>Keep screen on</button>
 
-{% for e in check.exclusions %}<p class="flash error">Excluded: {{ e }}</p>{% endfor %}
-{% for i in check.issues %}<p class="{{ 'flash error' if i.level == 'fail' else 'warn' }}">{{ '✗' if i.level == 'fail' else '⚠' }} {{ i }}</p>{% endfor %}
+  {% for e in check.exclusions %}<p class="flash error">Excluded: {{ e }}</p>{% endfor %}
+  {% for i in check.issues %}<p class="{{ 'flash error' if i.level == 'fail' else 'warn' }}">{{ '✗' if i.level == 'fail' else '⚠' }} {{ i }}</p>{% endfor %}
 
-<h2>Per-person portions <span class="muted">(estimates)</span></h2>
-<table class="plates">
-  <thead><tr><th></th><th>Carb / extras</th><th>kcal</th><th>Protein</th><th>Carbs</th><th>Fibre</th><th>Fat</th></tr></thead>
-  <tbody>
-  {% for p in check.plates %}
-    {% set n = p.total.rounded() %}{% set t = targets[p.person][p.meal] %}
-    <tr>
-      <th>{{ p.person|title }} {{ p.meal }}<br><span class="muted">{{ (p.share * 100)|round|int }}% of base</span></th>
-      <td>{{ carb_text(p) or "standard portion" }}</td>
-      <td>≈{{ n.kcal|int }}<br><span class="muted">/ {{ t.kcal|int }}</span></td>
-      <td>{{ n.protein|int }} g<br><span class="muted">≥ {{ t.protein_min|int }}</span></td>
-      <td>{{ n.carbs|int }} g<br><span class="muted">{% if t.carbs_max is not none %}≤ {{ t.carbs_max|int }}{% else %}~{{ t.carbs_target|int }}{% endif %}</span></td>
-      <td>{{ n.fibre|int }} g<br><span class="muted">≥ {{ t.fibre_min|int }}</span></td>
-      <td>{{ n.fat|int }} g</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-<p class="muted small">Full recipe cards with plating guides, portion changes and the shopping list arrive in the next stage.</p>
+  <section>
+    <h2>Plating guide</h2>
+    {% for meal in meals %}
+    <div class="plate-block">
+      <h3>{{ "Dinner" if meal == "dinner" else "Lunch box (next day)" }}</h3>
+      {% for person in people %}{% set p = plates[(person, meal)] %}{% set n = p.total.rounded() %}{% set t = targets[person][meal] %}
+      <div class="plate">
+        <div class="plate-head"><span class="who {{ person }}">{{ person|title }}</span>
+          <span class="muted">{{ pot[(person, meal)] }}% of the pot</span></div>
+        <ul class="plate-items">
+          {% for c in p.components %}<li>{{ portion_text(c) }}</li>{% endfor %}
+          {% if not p.components %}<li class="muted">Standard portion</li>{% endif %}
+        </ul>
+        <div class="macros">
+          <span class="{{ 'over' if n.kcal > t.kcal * 1.15 }}"><b>≈{{ n.kcal|int }}</b> kcal<small>/ {{ t.kcal|int }}</small></span>
+          <span class="{{ 'under' if n.protein < t.protein_min }}"><b>{{ n.protein|int }}</b> g protein<small>≥ {{ t.protein_min|int }}</small></span>
+          <span class="{{ 'over' if t.carbs_max is not none and n.carbs > t.carbs_max }}"><b>{{ n.carbs|int }}</b> g carbs<small>{% if t.carbs_max is not none %}≤ {{ t.carbs_max|int }}{% else %}~{{ t.carbs_target|int }}{% endif %}</small></span>
+          <span class="{{ 'under' if n.fibre < t.fibre_min }}"><b>{{ n.fibre|int }}</b> g fibre<small>≥ {{ t.fibre_min|int }}</small></span>
+          <span><b>{{ n.fat|int }}</b> g fat</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <p class="muted small">Tip: weigh the finished pot and give each plate its percentage. Values are estimates.</p>
+  </section>
 
-<h2>Ingredients <span class="muted">(shared base, all {{ r.servings }} portions)</span></h2>
-<ul>
-  {% for item in r.shared %}
-  <li>{{ item.display or (item.grams|round|int ~ " g") }} {{ catalogue[item.ingredient].name|lower }}{% if item.note %}, {{ item.note }}{% endif %}</li>
-  {% endfor %}
-</ul>
-{% for comp in r.flexible %}
-<h3>Flexible: {{ comp.component }}</h3>
-<ul>
-  {% for o in comp.options %}
-  <li>{{ catalogue[o.ingredient].name }}{% if o.default %} (default){% endif %}
-      <span class="muted">· {{ o.standard_grams|int }} g standard per person</span></li>
-  {% endfor %}
-</ul>
-{% if comp.cook_note %}<p class="muted">{{ comp.cook_note }}</p>{% endif %}
-{% endfor %}
+  {% if slot and r.flexible %}
+  <details class="choices" {% if choices %}open{% endif %}>
+    <summary>Change our portions for this night</summary>
+    <form method="post">
+      {% for group, group_meals in groups %}{% for person in people %}{% for comp in r.flexible %}
+        {% set chosen = (choices.get((person, group_meals[0])) or {}).get(comp.component) %}
+        <div class="choice-row">
+          <span class="who {{ person }}">{{ person|title }}</span>
+          <span class="muted">{{ "dinner + lunch" if group == "both" else group }} · {{ comp.component }}</span>
+          <select name="{{ person }}-{{ group }}-{{ comp.component }}-option" aria-label="{{ person }} {{ group }} {{ comp.component }}">
+            <option value="">Automatic</option>
+            {% for o in comp.options %}
+            <option value="{{ o.ingredient }}" {% if chosen and chosen.option == o.ingredient %}selected{% endif %}>{{ catalogue[o.ingredient].name }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" inputmode="numeric" min="0" max="1000" step="5" placeholder="auto g"
+                 name="{{ person }}-{{ group }}-{{ comp.component }}-grams" aria-label="grams"
+                 value="{{ chosen.grams|int if chosen and chosen.grams is not none else '' }}">
+        </div>
+      {% endfor %}{% endfor %}{% endfor %}
+      <p class="muted small">Leave grams blank to size it to your targets. Grams are dry/raw weight.</p>
+      <button class="btn" type="submit">Update portions</button>
+    </form>
+  </details>
+  {% endif %}
 
-<h2>Method</h2>
-<ol class="steps">{% for s in r.steps %}<li>{{ s }}</li>{% endfor %}</ol>
-{% if r.reheat_note %}<p><strong>Lunch:</strong> {{ r.reheat_note }}</p>{% endif %}
+  <section>
+    <h2>Ingredients <span class="muted">for {{ portions }} portions</span></h2>
+    <ul class="ingredients">
+      {% for line in base_lines %}<li>{{ line.text }}{% if line.note %}<span class="muted">, {{ line.note }}</span>{% endif %}</li>{% endfor %}
+    </ul>
+    {% if flex_lines %}
+    <h3>Flexible parts (cook separately)</h3>
+    <ul class="ingredients">
+      {% for f in flex_lines %}
+      <li><b>{{ f.text }}</b><br><span class="muted">
+        {%- for s in f.shares %}{{ s.person|title }} {{ s.meal }} {{ s.percent }}%{% if not loop.last %} · {% endif %}{% endfor %}</span></li>
+      {% endfor %}
+    </ul>
+    {% for comp in r.flexible %}{% if comp.cook_note %}<p class="muted">{{ comp.cook_note }}</p>{% endif %}{% endfor %}
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Method</h2>
+    <ol class="steps">{% for s in r.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+    {% if r.reheat_note and "lunch" in meals %}<p class="lunch-note"><b>Lunch box:</b> {{ r.reheat_note }}</p>{% endif %}
+  </section>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Keep the phone screen on while cooking, where the browser supports it.
+  (function () {
+    const btn = document.getElementById("wake");
+    if (!("wakeLock" in navigator)) return;
+    btn.hidden = false;
+    let lock = null;
+    btn.addEventListener("click", async () => {
+      if (lock) { await lock.release(); lock = null; btn.textContent = "Keep screen on"; return; }
+      try { lock = await navigator.wakeLock.request("screen"); btn.textContent = "Screen will stay on ✓";
+            lock.addEventListener("release", () => { lock = null; btn.textContent = "Keep screen on"; }); }
+      catch (e) { btn.textContent = "Couldn't keep screen on"; }
+    });
+  })();
+</script>
 {% endblock %}

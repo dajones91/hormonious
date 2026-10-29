@@ -2,16 +2,22 @@
 
 from datetime import date, timedelta
 
-from core.menu import build_menu, check_assignment, menu_ready_date, week_slots, week_start_for
+from core.menu import build_menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
 
 SAT = date(2026, 10, 31)
 
 
-def test_week_start_is_the_coming_saturday():
-    assert week_start_for(date(2026, 10, 26)) == SAT  # Monday
-    assert week_start_for(date(2026, 10, 30)) == SAT  # Friday
-    assert week_start_for(SAT) == SAT  # Saturday itself
-    assert week_start_for(date(2026, 11, 1)) == date(2026, 11, 7)  # Sunday -> next week
+def test_week_start_is_the_saturday_of_the_week_we_are_in():
+    assert week_start_for(date(2026, 10, 26)) == date(2026, 10, 24)  # Monday -> last Saturday
+    assert week_start_for(date(2026, 10, 30)) == date(2026, 10, 24)  # Friday
+    assert week_start_for(SAT) == SAT  # Saturday itself starts a new week
+    assert week_start_for(date(2026, 11, 1)) == SAT  # Sunday
+
+
+def test_menu_is_ready_from_the_monday_before():
+    assert not menu_is_ready(SAT, date(2026, 10, 25))  # Sunday before
+    assert menu_is_ready(SAT, date(2026, 10, 26))  # Monday
+    assert menu_is_ready(SAT, date(2026, 11, 3))  # during the week itself
 
 
 def test_menu_ready_on_monday_before():

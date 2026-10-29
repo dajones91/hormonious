@@ -8,10 +8,11 @@ from sqlalchemy.orm import Session
 from core.exclusions import ExclusionRule
 from core.loaders import load_household, load_ingredients, load_recipes
 from core.menu import DaySlot, Menu
-from core.portions import MealTarget, Targets
+from core.portions import FlexChoice, MealTarget, Targets
 from core.schema import FlexComponent, FlexOption, Ingredient, Recipe, RecipeItem
-from db.models import (Base, Exclusion, FlexComponentRow, FlexOptionRow, IngredientRow, Person, PlanSlotRow,
-                       RecipeItemRow, RecipeRow, SettingRow, TargetRow, WeekRow)
+from db.models import (Base, Exclusion, FlexComponentRow, FlexOptionRow, IngredientRow, PantryRow, Person,
+                       PlanSlotRow, PortionChoiceRow, RecipeItemRow, RecipeRow, SettingRow, ShoppingTickRow,
+                       TargetRow, WeekRow)
 
 _RECIPE_FIELDS = ("slug", "title", "source", "source_url", "servings", "active_min", "total_min",
                   "tier", "cuisine", "spice", "tags", "steps", "reheat_note", "base_split")
@@ -120,8 +121,66 @@ def create_week(session: Session, start: date, menu: Menu, slots: list[DaySlot])
 
 def set_slot(session: Session, week: WeekRow, day: date, recipe_slug: str | None, no_cook: bool) -> None:
     slot = next(s for s in week.slots if s.day == day)
-    slot.recipe_slug = None if no_cook else recipe_slug
+    new_slug = None if no_cook else recipe_slug
+    if slot.recipe_slug != new_slug:
+        slot.choices.clear()  # portion changes belong to the old recipe
+    slot.recipe_slug = new_slug
     slot.no_cook = no_cook
+
+
+def get_slot(session: Session, slot_id: int) -> PlanSlotRow | None:
+    return session.get(PlanSlotRow, slot_id)
+
+
+def get_choices(slot: PlanSlotRow) -> dict[tuple[str, str], dict[str, FlexChoice]]:
+    choices: dict[tuple[str, str], dict[str, FlexChoice]] = {}
+    for c in slot.choices:
+        choices.setdefault((c.person, c.meal), {})[c.component] = FlexChoice(c.option, c.grams)
+    return choices
+
+
+def save_choice(slot: PlanSlotRow, person: str, meal: str, component: str,
+                option: str | None, grams: float | None) -> None:
+    """Store a change, or remove it when it's back to automatic."""
+    existing = next((c for c in slot.choices
+                     if (c.person, c.meal, c.component) == (person, meal, component)), None)
+    if option is None and grams is None:
+        if existing:
+            slot.choices.remove(existing)
+    elif existing:
+        existing.option, existing.grams = option, grams
+    else:
+        slot.choices.append(PortionChoiceRow(person=person, meal=meal, component=component,
+                                             option=option, grams=grams))
+
+
+def get_pantry(session: Session) -> set[str]:
+    return set(session.scalars(select(PantryRow.ingredient_key)).all())
+
+
+def toggle_pantry(session: Session, key: str) -> bool:
+    """Add to or remove from the pantry. Returns True if it's now in the pantry."""
+    row = session.get(PantryRow, key)
+    if row:
+        session.delete(row)
+        return False
+    session.add(PantryRow(ingredient_key=key))
+    return True
+
+
+def get_ticks(session: Session, week: WeekRow) -> set[str]:
+    return set(session.scalars(select(ShoppingTickRow.ingredient_key).where(ShoppingTickRow.week_id == week.id)))
+
+
+def toggle_tick(session: Session, week: WeekRow, key: str) -> bool:
+    """Tick or untick an item. Returns True if it's now ticked."""
+    row = session.scalar(select(ShoppingTickRow).where(ShoppingTickRow.week_id == week.id,
+                                                       ShoppingTickRow.ingredient_key == key))
+    if row:
+        session.delete(row)
+        return False
+    session.add(ShoppingTickRow(week_id=week.id, ingredient_key=key))
+    return True
 
 
 def reset_and_seed(session: Session) -> dict[str, int]:
@@ -133,6 +192,8 @@ def reset_and_seed(session: Session) -> dict[str, int]:
     catalogue = load_ingredients()
     for ing in catalogue.values():
         save_ingredient(session, ing)
+    session.flush()
+    session.add_all(PantryRow(ingredient_key=k) for k, ing in catalogue.items() if ing.staple)
 
     household = load_household()
     people = {p["key"]: Person(key=p["key"], name=p["name"]) for p in household["people"]}

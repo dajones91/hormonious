@@ -1,0 +1,15 @@
+{% set done = item.key in ticks %}
+<li class="shop-item{{ ' done' if done }}" id="item-{{ item.key }}">
+  <form method="post" action="{{ url_for('main.tick', start=week_start.isoformat(), key=item.key) }}"
+        hx-post="{{ url_for('main.tick', start=week_start.isoformat(), key=item.key) }}"
+        hx-target="closest li" hx-swap="outerHTML">
+    <button type="submit" class="tick" aria-pressed="{{ 'true' if done else 'false' }}"
+            aria-label="{{ 'Untick' if done else 'Tick' }} {{ item.ingredient.name }}">{{ '✓' if done else '' }}</button>
+  </form>
+  <div class="shop-text">
+    <b>{{ item.ingredient.name }}</b>
+    <span>{{ item.buy_text }}</span>
+    <small class="muted">{{ item.needed_text }} · {{ item.recipes|join(", ") }}</small>
+  </div>
+</li>
+{% if left is defined %}<b id="left-count" hx-swap-oob="true">{{ left }}</b>{% endif %}

@@ -164,3 +164,34 @@ def test_recipe_without_flexible_parts_is_a_standard_portion():
 def test_unknown_swap_is_rejected():
     with pytest.raises(ValueError):
         build_plate(recipe([CARB]), CAT, "dale", "dinner", 0.5, T["dale"]["dinner"], {"carb": FlexChoice("pasta")})
+
+
+def test_same_lunch_splits_the_difference():
+    from core.portions import blended_target
+    r = recipe([CARB])
+    shares = {"dale": 0.5, "jade": 0.5}
+    plates = plan_plates(r, CAT, T, shares, same_lunch=True)
+    by = {(p.person, p.meal): p for p in plates}
+    for person in ("dale", "jade"):
+        assert by[(person, "dinner")].components == by[(person, "lunch")].components
+    separate = {(p.person, p.meal): p for p in plan_plates(r, CAT, T, shares)}
+    dale = [separate[("dale", m)].components[0].grams for m in ("dinner", "lunch")]
+    assert min(dale) <= by[("dale", "dinner")].components[0].grams <= max(dale)
+    # the stricter carb cap is kept: Jade's lunch cap (40) beats her dinner cap (45)
+    assert blended_target(T["jade"]["dinner"], T["jade"]["lunch"]).carbs_max == 40
+    assert blended_target(T["dale"]["dinner"], T["dale"]["lunch"]).kcal == 700
+
+
+def test_same_lunch_uses_dinner_choices_for_both():
+    r = recipe([CARB])
+    choices = {("dale", "dinner"): {"carb": FlexChoice(option="cauli")}}
+    plates = plan_plates(r, CAT, T, {"dale": 0.5, "jade": 0.5}, choices=choices, same_lunch=True)
+    dale = [p for p in plates if p.person == "dale"]
+    assert all(p.components[0].ingredient.key == "cauli" for p in dale)
+
+
+def test_dinner_only_night_uses_dinner_target():
+    r = recipe([CARB])
+    one = plan_plates(r, CAT, T, {"dale": 0.5, "jade": 0.5}, meals=("dinner",), same_lunch=True)
+    alone = build_plate(r, CAT, "dale", "dinner", 0.5, T["dale"]["dinner"])
+    assert one[0].components == alone.components
