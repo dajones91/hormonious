@@ -16,6 +16,10 @@
   </a>
 {% endif %}
 {% if is_current %}<p class="eyebrow">This week</p>{% endif %}
+{% if to_rate %}
+  <p class="notice">★ Still to rate: {% for r in to_rate %}<a href="{{ url_for('main.cook', slot_id=r.slot_id) }}#rate">{{ r.slot.day.strftime("%a") }}</a>{% if not loop.last %}, {% endif %}{% endfor %}.
+    No rating is fine too: it just counts as neutral.</p>
+{% endif %}
 
 {% if preview %}
 <div class="notice">
@@ -56,6 +60,10 @@
       </select>
       {# A submit button, not a link: it saves any dropdown changes first, then opens this night's card. #}
       {% if row.recipe %}<button type="submit" name="open" value="{{ slot.day.isoformat() }}" class="btn small cook-link">Open recipe card ›</button>{% endif %}
+      {% if row.rated is not none %}
+        {% if row.rated|length == 2 %}<span class="rated">{{ "★" * (row.rated.values()|map(attribute="stars")|min) }} rated</span>
+        {% else %}<a class="btn small ghost" href="{{ url_for('main.cook', slot_id=row.slot_id) }}#rate">Rate it ★</a>{% endif %}
+      {% endif %}
       {% for w in row.warnings %}<p class="warn">⚠ {{ w }}</p>{% endfor %}
       {% endif %}
     </div>

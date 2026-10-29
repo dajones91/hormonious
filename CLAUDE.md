@@ -39,11 +39,12 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - `core/rules.py`: `check_plate` (on rounded values), `check_structure`, `validate` (weekend fails become warns). `core/menu.py`: Sat-Fri `week_slots`, `build_menu` (seeded by week start; skips anything cooked in the 7 days before), `check_assignment`.
 - `db/planner.py`: `load_context`, `check_all`, `ensure_week` (menu built lazily on first view, stored in `week`). Cook history comes from `plan_slot` rows (no separate log).
 - `core/cooking.py`: `cook_base` (scaled shared base), `cook_flex` (flex totals + each plate's %), `pot_shares`. `core/shopping.py`: `build_list` (base x portions/servings + every plate's flex grams), `choose_packs` (least over, then fewest packs; loose `each` items are counted), `group_by_aisle` (`AISLE_ORDER`), `as_text`.
+- Ratings live in `rating` (per person, optionally per `plan_slot`; re-rating a night replaces it). Restores live in `recipe_restore`. Pages: rate on `/cook/<id>` (POST `/cook/<id>/rate`, only once the day has come), restore via POST `/recipe/<slug>/restore`; the Week tab lists nights still to rate.
 - Per-night portion changes live in `portion_choice` (cleared when the night's recipe changes). Pantry staples live in `pantry` (seeded from `staple` flags). Ticks live in `shopping_tick`.
 - `app/`: Flask blueprint in `views.py`; `create_app(database_url, today)` (tests pin the date). Pages: `/week` ("Open recipe card" is a submit button named `open`: it saves the plan, then redirects to that night's card), `/cook/<slot_id>` (card plus portion form), `/recipe/<slug>` (preview card), `/shopping/<start>` (+ `.txt`, tick, pantry), `/recipes`, `/profiles`. HTMX (unpkg, pinned 1.9.12) only for shopping ticks; everything else is plain forms. Run commands with `.\.venv\Scripts\python.exe` (Dale's PowerShell blocks Activate.ps1).
 - `core/nutrition.py`: per-100 g sums. `core/loaders.py` reads `data/`. `db/`: SQLAlchemy models + repo. `manage.py`: dev commands.
 - Run `python -m pytest` and `python manage.py recipes` after changing data. A test requires catalogue `families` to equal `classify_name(name)`.
-- No Alembic yet: `manage.py reset-db` rebuilds the dev DB. Add Alembic before the first deploy (stage 7).
+- No Alembic yet: `manage.py reset-db` rebuilds the dev DB. `make_session_factory` runs `create_all`, so brand-new tables appear without a reset (new *columns* on existing tables still need one). Add Alembic before the first deploy (stage 7).
 - Ingredient nutrition is `approx-uk`/unverified. Cross-check against CoFID (needs a download; ask Dale first) before stage 3 portion maths.
 
 ## Household rules
@@ -64,7 +65,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - Weeknight recipes: ≤ 45 min total (ideally 30). Weekend special: ≤ ~90 min.
 - Shared base split: recipe ratio → profile (fixed or by protein target) → 50/50. Flexible portion = min(kcal-fit, carb-fit), clamped and rounded to 5 g.
 - Lunch box = dinner (setting `same_lunch_as_dinner`, default on, Dale's request 2026-10-29): each person's flexible part is sized once against a target halfway between their dinner and lunch targets, keeping the stricter carb cap. One portion choice per person covers both meals (form key `both`).
-- Repetition: never last week's recipes. Cooldown uses the lower of the two ratings: 5★ 2–3 weeks, 4★ 4–6, 3★ ~10, ≤2★ never.
+- Repetition (`core/ratings.py`): household rating = lower of each person's latest rating since any restore (or the only one). Cooldown in whole Sat–Fri weeks after the week we had it: 5★ 2, 4★ 4, 3★ 10, ≤2★ never (retired until restored; restore ignores ratings up to and including the restore day). **No rating = neutral**: 2-week cooldown, no penalty (Dale: forgetting to rate doesn't mean we disliked it). Menu: ~60% favourites (≥4★, most overdue first), rest untried/unrated (never-cooked get a small boost), 3★ only now and then; settings `cooldown_weeks`, `favourite_share`.
 - Login is one shared family password. Each device then picks "Dale" or "Jade".
 
 ## Stage progress
@@ -72,7 +73,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - [x] 1 Recipe model, ingredients, exclusions, seed library (branch `stage-1/recipes-exclusions`)
 - [x] 2 Profiles, targets, menu generation, planning (branch `stage-2/profiles-menu-planning`; portion maths landed here too because rule checks need per-person plates)
 - [x] 3 Recipe cards, portions, shopping list (branch `stage-3/cards-shopping`; new bold-blue style and phone tab bar applied app-wide)
-- [ ] 4 Ratings and repetition
+- [x] 4 Ratings and repetition (branch `stage-4/ratings`)
 - [ ] 5 AI recipe generation
 - [ ] 6 Recipe import (text/photo)
 - [ ] 7 Login, deploy, phone install

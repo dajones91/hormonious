@@ -8,10 +8,20 @@
   {% for c in checks %}
     {% set warns = c.issues|selectattr("level", "equalto", "warn")|list %}
     {% set extra %}
+      <span class="stars-small">{{ stars_text(stars.get(c.recipe.slug)) }}</span>
       {% if not c.ok %}<span class="chip fail">Not on menu</span>{% endif %}
       {% if warns %}<span class="chip warn">{{ warns|length }} note{{ "s" if warns|length != 1 }}</span>{% endif %}
     {% endset %}
     {{ recipe_card(c.recipe, url_for('main.recipe', slug=c.recipe.slug), extra) }}
   {% endfor %}
 </div>
+{% if retired %}
+<h2>Retired <span class="muted">(rated 2★ or less, not suggested)</span></h2>
+<div class="card-grid">
+  {% for c in retired %}
+    {% set extra %}<span class="stars-small">{{ stars_text(stars.get(c.recipe.slug)) }}</span>{% endset %}
+    {{ recipe_card(c.recipe, url_for('main.recipe', slug=c.recipe.slug), extra) }}
+  {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

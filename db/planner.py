@@ -7,13 +7,14 @@ from sqlalchemy.orm import Session
 
 from core.exclusions import ExclusionHit, check_recipe
 from core.menu import Menu, build_menu, menu_is_ready, week_slots
+from core.ratings import DEFAULT_COOLDOWN_WEEKS, household_rating
 from core.portions import Plate, Targets, base_shares, meals_for_portions, plan_plates
 from core.rules import Issue, RuleSettings, passes, validate
 from core.schema import Ingredient, Recipe
 from core.shopping import PlannedCook, ShoppingItem, build_list
 from db.models import PlanSlotRow, WeekRow
-from db.repo import (create_week, get_catalogue, get_choices, get_exclusion_rules, get_pantry, get_recipe,
-                     get_recipes, get_settings, get_targets, get_week, last_cooked)
+from db.repo import (create_week, get_catalogue, get_choices, get_exclusion_rules, get_pantry, get_ratings,
+                     get_recipe, get_recipes, get_restores, get_settings, get_targets, get_week, last_cooked)
 
 
 @dataclass
@@ -61,11 +62,20 @@ def check_all(session: Session, ctx: Context | None = None) -> list[RecipeCheck]
     return [ctx.check(r, rules) for r in get_recipes(session)]
 
 
+def household_stars(session: Session) -> dict[str, int | None]:
+    """Each recipe's household rating (the lower of our latest ratings since any restore)."""
+    restores = get_restores(session)
+    return {slug: household_rating(ratings, restores.get(slug)) for slug, ratings in get_ratings(session).items()}
+
+
 def make_menu(session: Session, start: date) -> Menu:
     ctx = load_context(session)
     eligible = [c.recipe for c in check_all(session, ctx) if c.ok]
+    cooldowns = {int(k): v for k, v in ctx.settings.get("cooldown_weeks", {}).items()} or DEFAULT_COOLDOWN_WEEKS
     return build_menu(eligible, start, last_cooked(session, start),
-                      ctx.settings["weeknight_options"], ctx.settings["weekend_options"])
+                      ctx.settings["weeknight_options"], ctx.settings["weekend_options"],
+                      stars=household_stars(session), cooldowns=cooldowns,
+                      favourite_share=ctx.settings.get("favourite_share", 0.6))
 
 
 def ensure_week(session: Session, start: date, today: date) -> WeekRow | None:

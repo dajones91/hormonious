@@ -249,3 +249,48 @@ def test_menu_built_too_early_is_thrown_away(tmp_path):
         session.commit()
     page = app.test_client().get("/week/2026-11-07").get_data(as_text=True)
     assert "Preview." in page and "Weeknight · 11 options" in page
+
+
+def test_rate_after_cooking_and_it_shapes_next_menu(tmp_path):
+    # Thursday 5 Nov: Monday's tikka has been cooked
+    app = create_app(f"sqlite:///{tmp_path / 'r.db'}", today=date(2026, 11, 5))
+    with app.app_context(), app.config["SESSION_FACTORY"]() as session:
+        reset_and_seed(session)
+    c = app.test_client()
+    c.get("/week/2026-10-31")
+    resp = c.post("/week/2026-10-31", data={"slot-2026-11-02": "chicken-tikka-traybake",
+                                            "slot-2026-11-06": "", "open": "2026-11-02"})
+    card = resp.headers["Location"]
+    week = c.get("/week/2026-10-31").get_data(as_text=True)
+    assert "Still to rate" in week and "Rate it ★" in week
+    page = c.get(card).get_data(as_text=True)
+    assert "How was it?" in page and "Not rated yet" in page
+    c.post(card + "/rate", data={"dale-stars": "5", "dale-note": "Lovely", "jade-stars": "2"})
+    page = c.get(card).get_data(as_text=True)
+    assert "★★☆☆☆" in page and "Retired" in page and "“Lovely”" in page
+    assert "Still to rate" not in c.get("/week/2026-10-31").get_data(as_text=True)
+    # retired: not on a later menu, listed under Retired, and can be restored
+    later = c.get("/week/2026-11-21").get_data(as_text=True)
+    assert "/recipe/chicken-tikka-traybake" not in later.split("<h2>The menu</h2>")[1]
+    lib = c.get("/recipes").get_data(as_text=True)
+    assert lib.index("Retired") < lib.index("Chicken tikka traybake")
+    c.post("/recipe/chicken-tikka-traybake/restore")
+    assert "Give it another chance" not in c.get("/recipe/chicken-tikka-traybake").get_data(as_text=True)
+
+
+def test_cannot_rate_before_cooking(client):
+    monday = plan_two_nights(client)[1]  # today is Mon 26 Oct; the tikka is on Mon 2 Nov
+    page = client.get(f"/cook/{monday}").get_data(as_text=True)
+    assert "How was it?" not in page
+    resp = client.post(f"/cook/{monday}/rate", data={"dale-stars": "5"}, follow_redirects=True)
+    assert "once you&#39;ve cooked it" in resp.get_data(as_text=True)
+
+
+def test_bad_star_value_rejected(tmp_path):
+    app = create_app(f"sqlite:///{tmp_path / 'b.db'}", today=date(2026, 11, 5))
+    with app.app_context(), app.config["SESSION_FACTORY"]() as session:
+        reset_and_seed(session)
+    c = app.test_client()
+    c.get("/week/2026-10-31")
+    card = c.post("/week/2026-10-31", data={"slot-2026-11-02": "turkey-chilli", "open": "2026-11-02"}).headers["Location"]
+    assert c.post(card + "/rate", data={"dale-stars": "9"}).status_code == 400

@@ -20,6 +20,52 @@
   <p>{% for t in r.tags %}<span class="chip">{{ t }}</span>{% endfor %}</p>
   <button type="button" class="btn ghost" id="wake" hidden>Keep screen on</button>
 
+  <section class="rating-box{{ ' retired' if rating.retired }}">
+    <div class="rating-head">
+      <span class="stars-big{{ ' unrated' if rating.stars is none }}" aria-label="{{ rating.stars or 'no' }} stars">{{ stars_text(rating.stars) }}</span>
+      {% if rating.retired %}<span class="chip fail">Retired</span>{% elif rating.stars and rating.stars >= 4 %}<span class="chip">Favourite</span>{% endif %}
+    </div>
+    <p class="muted small">
+      {% if rating.last %}Last had {{ rating.last.strftime("%a %d %b") }}.{% else %}Not cooked yet.{% endif %}
+      {% if rating.retired %}We rated it 2★ or less, so it won't be suggested.
+      {% elif rating.next_week %}Can be on the menu again from the week of Sat {{ rating.next_week.strftime("%d %b") }}.{% endif %}
+    </p>
+    {% if rating.retired %}
+    <form method="post" action="{{ url_for('main.restore', slug=r.slug) }}">
+      <button type="submit" class="btn small ghost">Give it another chance</button>
+    </form>
+    {% endif %}
+    {% if rating.history %}
+    <ul class="notes">
+      {% for h in rating.history[:6] %}
+      <li><span class="who {{ h.person }}">{{ h.person|title }}</span> {{ "★" * h.stars }}
+        <span class="muted small">{{ h.on.strftime("%d %b") }}</span>{% if h.note %}<br>“{{ h.note }}”{% endif %}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  {% if slot and can_rate %}
+  <form method="post" action="{{ url_for('main.rate', slot_id=slot.id) }}" class="rate-form" id="rate">
+    <h2>How was it?</h2>
+    {% for person in people %}{% set mine = slot_ratings.get(person) %}
+    <div class="rate-row">
+      <span class="who {{ person }}">{{ person|title }}</span>
+      <fieldset class="star-input" aria-label="{{ person|title }}'s stars">
+        {% for n in [5, 4, 3, 2, 1] %}
+        <input type="radio" id="{{ person }}-s{{ n }}" name="{{ person }}-stars" value="{{ n }}" {% if mine and mine.stars == n %}checked{% endif %}>
+        <label for="{{ person }}-s{{ n }}" title="{{ n }} star{{ 's' if n > 1 }}">★</label>
+        {% endfor %}
+      </fieldset>
+      <input type="text" name="{{ person }}-note" maxlength="500" placeholder="Note (optional), e.g. more chilli next time"
+             value="{{ mine.note if mine else '' }}">
+    </div>
+    {% endfor %}
+    <p class="muted small">5★ comes back every 2–3 weeks, 4★ every 4–6, 3★ rarely, 2★ or less not at all. The lower of your two ratings counts.</p>
+    <button type="submit" class="btn">Save rating</button>
+  </form>
+  {% endif %}
+
   {% for e in check.exclusions %}<p class="flash error">Excluded: {{ e }}</p>{% endfor %}
   {% for i in check.issues %}<p class="{{ 'flash error' if i.level == 'fail' else 'warn' }}">{{ '✗' if i.level == 'fail' else '⚠' }} {{ i }}</p>{% endfor %}
 
