@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Shopping · Hormonious{% endblock %}
 {% block content %}
-<p class="eyebrow"><a href="{{ url_for('main.week', start=week_start.isoformat()) }}">‹ Week from Sat {{ week_start.strftime("%d %b") }}</a></p>
-<h1>Shopping list</h1>
+<div class="week-nav">
+  <a href="{{ url_for('main.shopping', start=weeks.prev) }}" aria-label="Previous week's list">‹ Prev</a>
+  <h1>Shopping list</h1>
+  <a href="{{ url_for('main.shopping', start=weeks.next) }}" aria-label="Next week's list">Next ›</a>
+</div>
+<p class="eyebrow">For the <a href="{{ url_for('main.week', start=week_start.isoformat()) }}">week from Sat {{ week_start.strftime("%d %b") }}</a></p>
 
 {% if not cooks %}
   <p class="empty">Nothing planned yet. <a href="{{ url_for('main.week', start=week_start.isoformat()) }}">Pick some recipes</a> and your list will appear here.</p>

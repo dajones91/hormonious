@@ -7,10 +7,22 @@
   <h1>Week from Sat {{ week_start.strftime("%d %b") }}</h1>
   <a href="{{ url_for('main.week', start=next_week) }}" aria-label="Next week">Next ›</a>
 </div>
-{% if today < ready %}
-  <p class="muted">The menu for this week is normally ready on Monday {{ ready.strftime("%d %b") }}. Here's a preview.</p>
+{% if banner %}
+  <a class="banner" href="{{ url_for('main.week', start=banner.start.isoformat()) }}">
+    <span class="banner-title">Next week's menu is ready</span>
+    <span>{{ banner.weeknight }} weeknight and {{ banner.weekend }} weekend options for the week from
+      Sat {{ banner.start.strftime("%d %b") }}.</span>
+    <span class="banner-cta">Plan it ›</span>
+  </a>
 {% endif %}
+{% if is_current %}<p class="eyebrow">This week</p>{% endif %}
 
+{% if preview %}
+<div class="notice">
+  <b>Preview.</b> Planning for this week opens on Monday {{ ready.strftime("%d %b") }}, when the menu is set.
+  Until then these options may still change.
+</div>
+{% else %}
 <form method="post" action="{{ url_for('main.week', start=week_start.isoformat()) }}" class="plan">
   <div class="section-head">
     <h2>Our plan</h2>
@@ -53,8 +65,9 @@
     {% if cooking %}<a class="btn ghost" href="{{ url_for('main.shopping', start=week_start.isoformat()) }}">Shopping list ›</a>{% endif %}
   </div>
 </form>
+{% endif %}
 
-<h2>This week's menu</h2>
+<h2>The menu</h2>
 <h3 class="sub">Weeknight · {{ weeknight|length }} options</h3>
 <div class="card-grid">
   {% for r in weeknight %}{{ recipe_card(r, url_for('main.recipe', slug=r.slug)) }}{% endfor %}

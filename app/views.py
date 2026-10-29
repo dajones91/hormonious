@@ -5,10 +5,10 @@ from datetime import date, timedelta
 from flask import Blueprint, Response, abort, current_app, flash, g, redirect, render_template, request, url_for
 
 from core.cooking import cook_base, cook_flex, pot_shares
-from core.menu import check_assignment, menu_ready_date, week_slots, week_start_for
+from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
 from core.portions import MEALS, PEOPLE, MealTarget, meals_for_portions
 from core.shopping import as_text, group_by_aisle
-from db.planner import check_all, ensure_week, load_context, shopping_list
+from db.planner import check_all, ensure_week, has_plan, load_context, make_menu, shopping_list
 from db.repo import (get_choices, get_exclusion_rules, get_recipe, get_recipes, get_slot, get_ticks, save_choice,
                      save_target, set_setting, set_slot, toggle_pantry, toggle_tick)
 
@@ -30,6 +30,18 @@ def home():
     return redirect(url_for("main.week"))
 
 
+def next_week_banner(session, week_start: date) -> dict | None:
+    """On the current week's page, from Monday: next week's menu is ready and not planned yet."""
+    current = week_start_for(today())
+    upcoming = current + timedelta(days=7)
+    if week_start != current or not menu_is_ready(upcoming, today()):
+        return None
+    next_row = ensure_week(session, upcoming, today())  # builds next week's menu on first view from Monday
+    if has_plan(next_row):
+        return None
+    return {"start": upcoming, "weeknight": len(next_row.weeknight_options), "weekend": len(next_row.weekend_options)}
+
+
 @bp.route("/week", methods=["GET"])
 @bp.route("/week/<start>", methods=["GET", "POST"])
 def week(start: str | None = None):
@@ -37,11 +49,15 @@ def week(start: str | None = None):
     if week_start.weekday() != 5:
         abort(404)
     session = db()
-    week_row = ensure_week(session, week_start)
+    week_row = ensure_week(session, week_start, today())
     recipes = {r.slug: r for r in get_recipes(session)}
     slots = week_slots(week_start, load_context(session).settings["friday_plan"])
+    ready = menu_ready_date(week_start)
 
     if request.method == "POST":
+        if week_row is None:
+            flash(f"Planning for this week opens on Monday {ready.strftime('%d %b')}.", "error")
+            return redirect(url_for("main.week", start=week_start.isoformat()))
         chosen = {}
         for slot in slots:
             value = request.form.get(f"slot-{slot.day.isoformat()}", "")
@@ -67,7 +83,7 @@ def week(start: str | None = None):
         return redirect(url_for("main.week", start=week_start.isoformat()))
 
     rows = []
-    stored = {s.day: s for s in week_row.slots}
+    stored = {s.day: s for s in week_row.slots} if week_row else {}
     for slot in slots:
         saved = stored.get(slot.day)
         recipe = recipes.get(saved.recipe_slug) if saved and saved.recipe_slug else None
@@ -78,14 +94,17 @@ def week(start: str | None = None):
             "slot_id": saved.id if saved else None,
             "warnings": check_assignment(slot, recipe) if recipe else [],
         })
-    on_menu = set(week_row.weeknight_options) | set(week_row.weekend_options)
+    # Saved menu once it's ready; before then an unsaved preview that may still change.
+    menu = Menu(week_row.weeknight_options, week_row.weekend_options) if week_row else make_menu(session, week_start)
+    on_menu = set(menu.weeknight) | set(menu.weekend)
     return render_template(
-        "week.html", week_start=week_start, rows=rows, recipes=recipes,
-        weeknight=[recipes[s] for s in week_row.weeknight_options if s in recipes],
-        weekend=[recipes[s] for s in week_row.weekend_options if s in recipes],
+        "week.html", week_start=week_start, rows=rows, recipes=recipes, preview=week_row is None,
+        weeknight=[recipes[s] for s in menu.weeknight if s in recipes],
+        weekend=[recipes[s] for s in menu.weekend if s in recipes],
         others=sorted((r for s, r in recipes.items() if s not in on_menu), key=lambda r: r.title),
         cooking=sum(1 for r in rows if r["recipe"]),
-        ready=menu_ready_date(week_start), today=today(),
+        ready=ready, today=today(), is_current=week_start == week_start_for(today()),
+        banner=next_week_banner(session, week_start),
         prev_week=(week_start - timedelta(days=7)).isoformat(), next_week=(week_start + timedelta(days=7)).isoformat(),
     )
 
@@ -168,28 +187,42 @@ def cook(slot_id: int):
 
 
 def _week_or_404(start: str):
+    """The saved week for a shopping page, or 404 if it's not a Saturday or not open for planning yet."""
     week_start = date.fromisoformat(start)
-    if week_start.weekday() != 5:
+    week_row = ensure_week(db(), week_start, today()) if week_start.weekday() == 5 else None
+    if week_row is None:
         abort(404)
-    return ensure_week(db(), week_start)
+    return week_row
 
 
 @bp.route("/shopping")
 def shopping_now():
-    return redirect(url_for("main.shopping", start=week_start_for(today()).isoformat()))
+    """The list you're likely shopping for: next week's once it's being planned, else this week's."""
+    current = week_start_for(today())
+    upcoming = current + timedelta(days=7)
+    next_row = ensure_week(db(), upcoming, today()) if menu_is_ready(upcoming, today()) else None
+    start = upcoming if has_plan(next_row) else current
+    return redirect(url_for("main.shopping", start=start.isoformat()))
 
 
 @bp.route("/shopping/<start>")
 def shopping(start: str):
     session = db()
-    week_row = _week_or_404(start)
+    week_start = date.fromisoformat(start)
+    if week_start.weekday() != 5:
+        abort(404)
+    weeks = {"prev": (week_start - timedelta(days=7)).isoformat(), "next": (week_start + timedelta(days=7)).isoformat()}
+    week_row = ensure_week(session, week_start, today())
+    if week_row is None:  # planning hasn't opened for this week yet
+        return render_template("shopping.html", week_start=week_start, weeks=weeks, cooks=0, groups=[],
+                               staples=[], ticks=set(), left=0, total=0)
     items = shopping_list(session, week_row)
     ticks = get_ticks(session, week_row)
     to_buy = [i for i in items if not i.staple]
     return render_template(
         "shopping.html", week_start=week_row.start, groups=group_by_aisle(to_buy),
         staples=sorted((i for i in items if i.staple), key=lambda i: i.ingredient.name),
-        ticks=ticks, left=sum(1 for i in to_buy if i.key not in ticks), total=len(to_buy),
+        ticks=ticks, left=sum(1 for i in to_buy if i.key not in ticks), total=len(to_buy), weeks=weeks,
         cooks=sum(1 for s in week_row.slots if s.recipe_slug))
 
 

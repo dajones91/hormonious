@@ -30,7 +30,7 @@ def test_week_must_start_on_saturday(client):
 
 
 def test_week_shows_menu_and_plan(client):
-    page = client.get("/week").get_data(as_text=True)
+    page = client.get("/week/2026-10-31").get_data(as_text=True)
     assert "Week from Sat 31 Oct" in page
     assert "lunch Mon" in page  # Sunday's 4 portions cover Monday lunch
     assert page.count('name="slot-') == 6  # Friday has no plan by default
@@ -48,7 +48,7 @@ def test_save_plan(client):
 
 def test_off_menu_recipe_stays_selected(client):
     page = client.get("/week/2026-10-31").get_data(as_text=True)
-    menu = page.split("This week's menu")[1]
+    menu = page.split("<h2>The menu</h2>")[1]
     off_menu = next(slug for slug in ("lamb-rogan-josh", "steak-chimichurri", "chicken-chickpea-tagine",
                                       "crispy-cod-chips-peas") if f"/recipe/{slug}" not in menu)
     client.post("/week/2026-10-31", data={"slot-2026-11-01": off_menu})
@@ -66,7 +66,7 @@ def test_last_weeks_recipes_left_off_next_menu(client):
     client.get("/week/2026-10-31")
     client.post("/week/2026-10-31", data={"slot-2026-11-02": "turkey-chilli"})
     next_week = client.get("/week/2026-11-07").get_data(as_text=True)
-    menu = next_week.split("This week's menu")[1]
+    menu = next_week.split("<h2>The menu</h2>")[1]
     assert "Smoky turkey and two-bean chilli" not in menu
 
 
@@ -199,3 +199,53 @@ def test_lunch_matches_dinner_and_one_choice_covers_both(client):
     client.post(f"/cook/{monday}", data={"dale-both-carb-grams": "60"})
     page = client.get(f"/cook/{monday}").get_data(as_text=True)
     assert page.count("60 g dry brown basmati rice") == 2  # dinner and lunch box
+
+
+
+def test_week_tab_opens_on_the_current_week(client):
+    page = client.get("/week").get_data(as_text=True)  # today is Monday 26 Oct
+    assert "Week from Sat 24 Oct" in page and ">This week<" in page
+
+
+def test_banner_when_next_weeks_menu_is_ready(client):
+    page = client.get("/week").get_data(as_text=True)
+    assert "Next week's menu is ready" in page and "/week/2026-10-31" in page
+    client.post("/week/2026-10-31", data={"slot-2026-11-02": "turkey-chilli"})
+    assert "menu is ready" not in client.get("/week").get_data(as_text=True)
+
+
+def test_no_banner_before_monday(tmp_path):
+    app = create_app(f"sqlite:///{tmp_path / 'sun.db'}", today=date(2026, 10, 25))  # Sunday
+    with app.app_context(), app.config["SESSION_FACTORY"]() as session:
+        reset_and_seed(session)
+    page = app.test_client().get("/week").get_data(as_text=True)
+    assert "Week from Sat 24 Oct" in page and "menu is ready" not in page
+
+
+def test_future_week_is_a_preview_until_its_monday(client):
+    page = client.get("/week/2026-11-07").get_data(as_text=True)  # opens Monday 2 Nov
+    assert "Preview." in page and "Monday 02 Nov" in page and 'name="slot-' not in page
+    assert "Weeknight · 11 options" in page
+    resp = client.post("/week/2026-11-07", data={"slot-2026-11-09": "turkey-chilli"}, follow_redirects=True)
+    assert "Planning for this week opens" in resp.get_data(as_text=True)
+
+
+def test_shopping_tab_follows_next_week_once_planned(client):
+    assert client.get("/shopping").headers["Location"].endswith("/shopping/2026-10-24")
+    client.post("/week/2026-10-31", data={"slot-2026-11-02": "turkey-chilli"})
+    assert client.get("/shopping").headers["Location"].endswith("/shopping/2026-10-31")
+    unopened = client.get("/shopping/2026-11-14").get_data(as_text=True)
+    assert "Nothing planned yet" in unopened
+
+
+def test_menu_built_too_early_is_thrown_away(tmp_path):
+    """A week saved before its Monday (e.g. by an older version) and never planned becomes a preview again."""
+    from db.planner import create_week
+    from core.menu import Menu, week_slots
+    app = create_app(f"sqlite:///{tmp_path / 'early.db'}", today=date(2026, 10, 26))
+    with app.app_context(), app.config["SESSION_FACTORY"]() as session:
+        reset_and_seed(session)
+        create_week(session, date(2026, 11, 7), Menu(["turkey-chilli"], []), week_slots(date(2026, 11, 7)))
+        session.commit()
+    page = app.test_client().get("/week/2026-11-07").get_data(as_text=True)
+    assert "Preview." in page and "Weeknight · 11 options" in page

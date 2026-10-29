@@ -53,7 +53,13 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
   - Household (both): no meat substitutes at all (Quorn/mycoprotein, tofu, tempeh, seitan, TVP, plant-based or "vegan" mince/sausages etc.) and no paneer. Edamame and soy sauce are fine.
 - Matching works by food family tags on ingredients, then a keyword safety net, then the exception list.
 - Default per-plated-portion rules (configurable): protein ≥ 35 g, fibre ≥ 8 g, Jade's carbs ≤ 45 g, low-GI carbs, little or no added sugar, no refined white carb base without a swap, protein + veg + healthy fat.
-- Week = Saturday → Friday. The shop arrives Friday or Saturday. The new menu is ready each Monday.
+- Week = Saturday → Friday. The shop arrives Friday or Saturday. The new menu is ready each Monday:
+  - The Week tab always opens on the **current** week (`week_start_for` = the Saturday on or before today).
+  - A week's menu is built and saved on first view from its Monday (`menu_is_ready`). Before that, the page is an unsaved
+    preview with no plan form. An unplanned week saved early is deleted and rebuilt on its Monday.
+  - From Monday, the current week's page shows a "Next week's menu is ready" banner until next week has any plan.
+  - The Shopping tab opens next week's list once next week has a plan, otherwise this week's.
+  - Outside-the-app alerts (iPhone web push in stage 7, or the stage 8 Monday email) are not built yet.
 - Mon–Thu cooks 4 portions (2 dinners + 2 next-day lunches). No plan on Friday by default. Weekend special is optional: Saturday = 2 portions, Sunday = 4 (covers Monday lunch).
 - Weeknight recipes: ≤ 45 min total (ideally 30). Weekend special: ≤ ~90 min.
 - Shared base split: recipe ratio → profile (fixed or by protein target) → 50/50. Flexible portion = min(kcal-fit, carb-fit), clamped and rounded to 5 g.

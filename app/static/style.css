@@ -159,3 +159,11 @@ table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
 th, td { padding: 6px; text-align: left; }
 .profiles td input { width: 76px; }
 input.short { width: 76px; }
+
+/* "Next week's menu is ready" banner and preview notice */
+.banner { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; padding: 14px 16px; border-radius: var(--radius);
+          background: var(--sage); color: #fff; text-decoration: none; box-shadow: var(--shadow); }
+.banner-title { font-weight: 900; font-size: 1.15rem; }
+.banner-cta { align-self: flex-start; margin-top: 6px; background: #fff; color: var(--sage); font-weight: 800;
+              padding: 6px 14px; border-radius: 999px; }
+.notice { margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: var(--brand-soft); }

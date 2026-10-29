@@ -14,13 +14,17 @@ SATURDAY = 5  # date.weekday(): Monday is 0
 
 
 def week_start_for(today: date) -> date:
-    """The Saturday of the week being planned: the coming Saturday, or today if it's Saturday."""
-    return today + timedelta(days=(SATURDAY - today.weekday()) % 7)
+    """The Saturday that starts the week we're in (today, if it's Saturday)."""
+    return today - timedelta(days=(today.weekday() - SATURDAY) % 7)
 
 
 def menu_ready_date(week_start: date) -> date:
-    """The Monday before the week starts."""
+    """The Monday before the week starts: the day its menu is built and can be planned."""
     return week_start - timedelta(days=5)
+
+
+def menu_is_ready(week_start: date, today: date) -> bool:
+    return today >= menu_ready_date(week_start)
 
 
 @dataclass(frozen=True)
