@@ -203,6 +203,8 @@ Refined white carbs (white rice, white pasta) may only appear as a flexible opti
   the aisle. Keep new ingredients to a minimum.
 - Spoon amounts: 1 tbsp oil = 14 g, 1 tsp ground spice = 2-3 g, 1 garlic clove = 5 g.
 - `steps`: clear numbered-style steps without the numbers, including when to cook the flexible carb.
+  Don't say how to divide the food between people or into equal portions: the app gives each person's
+  share. End with a step like "Plate using the plating guide, then box the lunch portions once cooled."
 - `reheat_note`: how to reheat the lunch box (or that it's good cold), and what to pack separately.
 - `tags` from: high-protein, low-GI, lunchbox-friendly, good-cold, freezer-friendly, one-pot, traybake,
   weekend-special, fakeaway, vegetarian. Weeknight recipes MUST include lunchbox-friendly.

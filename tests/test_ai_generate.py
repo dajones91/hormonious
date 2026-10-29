@@ -130,6 +130,7 @@ def test_system_prompt_has_our_rules_but_hides_excluded_ingredients(session):
     assert "Jade dinner: about 500 kcal" in text and "same as their dinner" in text
     assert "chicken_breast |" in text and "salmon_fillet" not in text and "chestnut_mushrooms" not in text
     assert "- Turkey chilli" in text and "medical" in text
+    assert "Plate using the plating guide" in text  # the app, not the recipe, sets each share
 
 
 def test_missing_api_key_gives_a_clear_message(monkeypatch):
