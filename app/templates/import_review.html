@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Review import · Hormonious{% endblock %}
+
+{% macro ingredient_select(name, selected) -%}
+  <select name="{{ name }}" aria-label="Ingredient">
+    <option value="">— none —</option>
+    {% for key, label in ingredient_names %}
+    <option value="{{ key }}" {% if key == selected %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+{%- endmacro %}
+
+{% block content %}
+<p class="eyebrow"><a href="{{ url_for('main.recipes') }}">‹ Recipes</a> · Import</p>
+<h1>Check your recipe</h1>
+<p class="muted">The AI has turned it into our format. Check the amounts and the flexible carb, edit anything
+  that's off, then save it to your library.</p>
+{% if draft.note %}<p class="notice"><b>AI note:</b> {{ draft.note }}</p>{% endif %}
+
+{% for e in form_errors %}<p class="flash error">{{ e }}</p>{% endfor %}
+{% for p in result.problems %}<p class="flash error">Fix before saving: {{ p }}</p>{% endfor %}
+
+{% if result.check %}
+  {% set c = result.check %}
+  {% for e in c.exclusions %}<p class="warn">⚠ {{ e }}. It can still be saved, but it won't be suggested on menus.</p>{% endfor %}
+  {% for i in c.issues %}<p class="warn">⚠ {{ i }}{% if i.level == "fail" %} (it won't be suggested on menus until this is fixed){% endif %}</p>{% endfor %}
+  {% if c.ok and not c.issues %}<p class="flash ok">Passes all your rules.</p>{% endif %}
+  <table class="plates compact">
+    <thead><tr><th></th><th>Flexible</th><th>kcal</th><th>P</th><th>C</th><th>Fibre</th></tr></thead>
+    <tbody>
+    {% for p in c.plates if p.meal == "dinner" %}{% set n = p.total.rounded() %}{% set t = targets[p.person][p.meal] %}
+      <tr><th>{{ p.person|title }}</th>
+        <td>{% for comp in p.components %}{{ comp.grams|int }} g {{ comp.ingredient.name|lower }}{% if not loop.last %}, {% endif %}{% else %}—{% endfor %}</td>
+        <td>{{ n.kcal|int }}<span class="muted">/{{ t.kcal|int }}</span></td><td>{{ n.protein|int }}</td><td>{{ n.carbs|int }}</td><td>{{ n.fibre|int }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted small">Dinner plates per person (estimates). Lunch boxes match.</p>
+{% endif %}
+
+<form method="post" class="import-form">
+  <fieldset>
+    <legend>Recipe</legend>
+    <label>Title <input type="text" name="title" value="{{ r.title }}" required></label>
+    <div class="field-row">
+      <label>Kind
+        <select name="tier">
+          <option value="weeknight" {% if r.tier == "weeknight" %}selected{% endif %}>Weeknight</option>
+          <option value="weekend" {% if r.tier == "weekend" %}selected{% endif %}>Weekend special</option>
+        </select></label>
+      <label>Cuisine <input type="text" name="cuisine" value="{{ r.cuisine }}"></label>
+    </div>
+    <div class="field-row">
+      <label>Active min <input type="number" name="active_min" min="1" value="{{ r.active_min }}"></label>
+      <label>Total min <input type="number" name="total_min" min="1" value="{{ r.total_min }}"></label>
+      <label>Spice (0–3) <input type="number" name="spice" min="0" max="3" value="{{ r.spice }}"></label>
+    </div>
+    <label>Tags <span class="muted">(comma separated)</span> <input type="text" name="tags" value="{{ r.tags|join(', ') }}"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Shared base · totals for 4 portions</legend>
+    <p class="muted small">Weights are as bought: raw meat and veg, dry rice and pasta, drained tins.</p>
+    {% for item in r.shared %}{% set i = loop.index0 %}
+    <div class="ing-row">
+      {{ ingredient_select("shared-%d-ingredient" % i, item.ingredient) }}
+      <input type="number" name="shared-{{ i }}-grams" step="any" min="0" value="{{ "%g"|format(item.grams|round(1)) }}" aria-label="grams"> g
+      <input type="text" name="shared-{{ i }}-display" value="{{ item.display or '' }}" placeholder="e.g. 2 tbsp" aria-label="amount shown">
+      <input type="text" name="shared-{{ i }}-note" value="{{ item.note or '' }}" placeholder="prep note" aria-label="note">
+      <label class="remove"><input type="checkbox" name="shared-{{ i }}-remove"> remove</label>
+    </div>
+    {% endfor %}
+    {% for k in range(extra_rows) %}{% set i = r.shared|length + k %}
+    <div class="ing-row extra">
+      {{ ingredient_select("shared-%d-ingredient" % i, "") }}
+      <input type="number" name="shared-{{ i }}-grams" step="any" min="0" placeholder="grams" aria-label="grams"> g
+      <input type="text" name="shared-{{ i }}-display" placeholder="e.g. 2 tbsp" aria-label="amount shown">
+      <input type="text" name="shared-{{ i }}-note" placeholder="prep note" aria-label="note">
+    </div>
+    {% endfor %}
+  </fieldset>
+
+  {% set comps = r.flexible + [{"component": "carb", "options": [], "cook_note": ""}] if not r.flexible else r.flexible %}
+  {% for comp in comps %}{% set c = loop.index0 %}
+  <fieldset>
+    <legend>Flexible part · per person, per meal</legend>
+    <div class="field-row">
+      <label>Type
+        <select name="flex-{{ c }}-component">
+          <option value="carb" {% if comp.component == "carb" %}selected{% endif %}>Carb</option>
+          <option value="topping" {% if comp.component == "topping" %}selected{% endif %}>Topping</option>
+        </select></label>
+      <label>Cooking note <input type="text" name="flex-{{ c }}-cook_note" value="{{ comp.cook_note or '' }}"></label>
+    </div>
+    <p class="muted small">Standard = one person's usual portion. The app sizes each of you within min–max.</p>
+    {% for o in comp.options %}{% set j = loop.index0 %}
+    <div class="opt-row">
+      {{ ingredient_select("flex-%d-opt-%d-ingredient" % (c, j), o.ingredient) }}
+      <label>std <input type="number" name="flex-{{ c }}-opt-{{ j }}-standard" step="any" min="0" value="{{ "%g"|format(o.standard_grams|round(1)) }}"></label>
+      <label>min <input type="number" name="flex-{{ c }}-opt-{{ j }}-min" step="any" min="0" value="{{ "%g"|format(o.min_grams|round(1)) }}"></label>
+      <label>max <input type="number" name="flex-{{ c }}-opt-{{ j }}-max" step="any" min="0" value="{{ "%g"|format(o.max_grams|round(1)) }}"></label>
+      <label><input type="radio" name="flex-{{ c }}-default" value="{{ j }}" {% if o.default %}checked{% endif %}> default</label>
+      <label class="remove"><input type="checkbox" name="flex-{{ c }}-opt-{{ j }}-remove"> remove</label>
+    </div>
+    {% endfor %}
+    {% for k in range(2) %}{% set j = comp.options|length + k %}
+    <div class="opt-row extra">
+      {{ ingredient_select("flex-%d-opt-%d-ingredient" % (c, j), "") }}
+      <label>std <input type="number" name="flex-{{ c }}-opt-{{ j }}-standard" step="any" min="0" placeholder="g"></label>
+      <label>min <input type="number" name="flex-{{ c }}-opt-{{ j }}-min" step="any" min="0" value="0"></label>
+      <label>max <input type="number" name="flex-{{ c }}-opt-{{ j }}-max" step="any" min="0" placeholder="g"></label>
+      <label><input type="radio" name="flex-{{ c }}-default" value="{{ j }}"> default</label>
+    </div>
+    {% endfor %}
+  </fieldset>
+  {% endfor %}
+
+  <fieldset>
+    <legend>Method</legend>
+    <label>Steps <span class="muted">(one per line)</span>
+      <textarea name="steps" rows="10">{{ r.steps|join("\n") }}</textarea></label>
+    <label>Lunch box note <input type="text" name="reheat_note" value="{{ r.reheat_note }}"></label>
+  </fieldset>
+
+  {% if draft.data.new_ingredients %}
+  <p class="muted small">New ingredients the AI added (nutrition is its estimate, marked unverified):
+    {{ draft.data.new_ingredients|map(attribute="name")|join(", ") }}.</p>
+  {% endif %}
+
+  <div class="actions">
+    <button type="submit" name="action" value="save" class="btn">Save to library</button>
+    <button type="submit" name="action" value="check" class="btn ghost">Check my changes</button>
+    <button type="submit" name="action" value="discard" class="btn ghost" formnovalidate
+            onclick="return confirm('Discard this import?');">Discard</button>
+  </div>
+</form>
+{% endblock %}

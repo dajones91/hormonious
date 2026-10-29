@@ -5,12 +5,16 @@ from datetime import date, timedelta
 from flask import Blueprint, Response, abort, current_app, flash, g, redirect, render_template, request, url_for
 
 from ai.generate import AiError, call_claude
+from ai.importer import call_claude_import
+from app.import_form import EXTRA_ROWS, recipe_from_form
 from core.cooking import cook_base, cook_flex, pot_shares
 from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
 from core.portions import MEALS, PEOPLE, MealTarget, meals_for_portions
 from core.ratings import available_from, household_rating, is_retired
 from core.search import matches, search_text
 from core.shopping import as_text, group_by_aisle
+from db.importing import create_draft, preview, save_draft, update_draft
+from db.models import ImportDraftRow
 from db.planner import (check_all, ensure_week, generate_and_save, has_plan, household_stars, load_context,
                         make_menu, shopping_list)
 from db.repo import (add_rating, get_choices, get_exclusion_rules, get_ratings, get_recipe, get_recipe_source_and_status,
@@ -193,6 +197,65 @@ def generate():
     tries = "first time" if result.attempts == 1 else f"after {result.attempts} attempts"
     flash(f"New recipe added. It passed all our checks {tries} ({cost}).", "ok")
     return redirect(url_for("main.recipe", slug=result.recipe.slug))
+
+
+@bp.route("/recipes/import", methods=["POST"])
+def import_recipe():
+    """Read one of our own recipes from pasted text or a photo, then open it for review."""
+    upload = request.files.get("photo")
+    image = upload.read() if upload and upload.filename else None
+    url = request.form.get("source_url", "").strip()[:500]
+    if url and not url.startswith(("http://", "https://")):
+        url = ""
+    call = current_app.config.get("IMPORT_CALL") or call_claude_import
+    try:
+        draft, message, usage = create_draft(db(), request.form.get("text", ""), image, url or None, call=call)
+    except AiError as e:
+        flash(str(e), "error")
+        return redirect(url_for("main.recipes"))
+    if draft is None:
+        flash(f"Couldn't import that: {message}", "error")
+        return redirect(url_for("main.recipes"))
+    return redirect(url_for("main.import_review", draft_id=draft.id))
+
+
+@bp.route("/recipes/import/<int:draft_id>", methods=["GET", "POST"])
+def import_review(draft_id: int):
+    """Check and edit an imported recipe before it goes into the library."""
+    session = db()
+    draft = session.get(ImportDraftRow, draft_id)
+    if draft is None:
+        flash("That import has already been saved or discarded.", "error")
+        return redirect(url_for("main.recipes"))
+    form_errors: list[str] = []
+    if request.method == "POST":
+        action = request.form.get("action", "check")
+        if action == "discard":
+            session.delete(draft)
+            session.commit()
+            flash("Import discarded.", "ok")
+            return redirect(url_for("main.recipes"))
+        recipe_data, form_errors = recipe_from_form(request.form)
+        if not form_errors:
+            form_errors = update_draft(session, draft, recipe_data)
+        if not form_errors and action == "save":
+            recipe, problems = save_draft(session, draft)
+            if recipe is not None:
+                flash("Recipe added to your library.", "ok")
+                return redirect(url_for("main.recipe", slug=recipe.slug))
+            form_errors = problems
+        if not form_errors:
+            return redirect(url_for("main.import_review", draft_id=draft_id))
+    result = preview(session, draft)
+    names = sorted(((k, i.name) for k, i in {**load_context(session).catalogue, **result.catalogue}.items()),
+                   key=lambda kv: kv[1].lower())
+    new_keys = {i["key"]: i["name"] for i in draft.data.get("new_ingredients", [])}
+    for key, name in new_keys.items():
+        if key not in dict(names):
+            names.append((key, f"{name} (new)"))
+    return render_template("import_review.html", draft=draft, r=draft.data["recipe"], result=result,
+                           form_errors=form_errors, ingredient_names=names, extra_rows=EXTRA_ROWS,
+                           targets=load_context(session).targets)
 
 
 @bp.route("/recipe/<slug>/remove", methods=["POST"])

@@ -209,3 +209,27 @@ input.short { width: 76px; }
 .generate select, .generate input[type="text"] { display: block; width: 100%; margin-top: 4px; font: inherit; font-weight: normal;
   padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--ink); }
 .chip.ai { background: var(--brand-soft); color: var(--brand-dark); }
+
+/* Recipe import */
+.generate textarea, .import-form textarea, .generate input[type="url"], .generate input[type="file"] {
+  display: block; width: 100%; margin-top: 4px; font: inherit; font-weight: normal; padding: 10px 12px;
+  border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--ink); }
+.import-form label { display: block; margin: 8px 0; font-weight: 700; }
+.import-form input[type="text"], .import-form input[type="number"], .import-form select {
+  font: inherit; font-weight: normal; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line);
+  background: #fff; color: var(--ink); }
+.import-form label > input[type="text"] { display: block; width: 100%; margin-top: 4px; }
+.field-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.field-row label { flex: 1 1 140px; }
+.field-row input, .field-row select { width: 100%; margin-top: 4px; }
+.ing-row, .opt-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 0;
+                     border-bottom: 1px solid var(--line); }
+.ing-row select, .opt-row select { flex: 1 1 100%; width: 100%; }
+.ing-row input[type="number"] { width: 90px; }
+.ing-row input[type="text"] { flex: 1 1 120px; min-width: 0; }
+.opt-row label { margin: 0; font-weight: 600; font-size: 0.9rem; }
+.opt-row input[type="number"] { width: 72px; }
+.ing-row.extra, .opt-row.extra { opacity: 0.75; }
+.remove { font-weight: 600; font-size: 0.85rem; color: var(--muted); }
+.plates.compact { display: table; font-size: 0.85rem; }
+.plates.compact th, .plates.compact td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; }

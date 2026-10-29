@@ -223,6 +223,17 @@ class RecipeRestoreRow(Base):
     restored_on: Mapped[date]
 
 
+class ImportDraftRow(Base):
+    """An imported recipe waiting for us to review it. Holds the AI's answer as JSON (never the photo)."""
+
+    __tablename__ = "import_draft"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    data: Mapped[dict] = mapped_column(JSON)  # ImportAnswer as a dict
+    source_url: Mapped[str | None]
+    note: Mapped[str] = mapped_column(default="")  # the AI's message about assumptions
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+
 def make_session_factory(url: str | None = None) -> sessionmaker:
     """Connect to the database named in .env (DATABASE_URL), or the URL given."""
     load_dotenv()
