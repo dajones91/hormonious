@@ -201,3 +201,11 @@ input.short { width: 76px; }
 .search button { margin: 0; }
 .recipe-card[hidden] { display: none; }
 .stars-small.unrated { color: var(--muted); letter-spacing: 0; font-size: 0.8rem; }
+
+/* AI recipe generation */
+.generate { background: var(--card); border-radius: var(--radius); padding: 12px 14px; margin: 8px 0 12px; box-shadow: var(--shadow); }
+.generate summary { font-weight: 800; color: var(--brand); cursor: pointer; }
+.generate label { display: block; margin: 10px 0; font-weight: 700; }
+.generate select, .generate input[type="text"] { display: block; width: 100%; margin-top: 4px; font: inherit; font-weight: normal;
+  padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--ink); }
+.chip.ai { background: var(--brand-soft); color: var(--brand-dark); }

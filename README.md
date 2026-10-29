@@ -34,6 +34,7 @@ Install the libraries and build the local database:
 | `.\.venv\Scripts\python.exe manage.py recipes` | Lists every recipe with Dale's and Jade's dinner plates and any rule problems |
 | `.\.venv\Scripts\python.exe manage.py check "oyster sauce"` | Tests the exclusion filter on any ingredient name |
 | `.\.venv\Scripts\python.exe -m pytest` | Runs all the tests |
+| `.\.venv\Scripts\python.exe manage.py generate --tier weeknight --idea "a lamb curry"` | Creates a new AI recipe (needs `ANTHROPIC_API_KEY`; about 10–30p each) |
 
 ## Where things live
 

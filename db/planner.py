@@ -5,16 +5,18 @@ from datetime import date
 
 from sqlalchemy.orm import Session
 
+from ai.generate import Call, GenerationResult, call_claude, generate_recipe, system_prompt
 from core.exclusions import ExclusionHit, check_recipe
 from core.menu import Menu, build_menu, menu_is_ready, week_slots
-from core.ratings import DEFAULT_COOLDOWN_WEEKS, household_rating
 from core.portions import Plate, Targets, base_shares, meals_for_portions, plan_plates
+from core.ratings import DEFAULT_COOLDOWN_WEEKS, household_rating
 from core.rules import Issue, RuleSettings, passes, validate
 from core.schema import Ingredient, Recipe
 from core.shopping import PlannedCook, ShoppingItem, build_list
 from db.models import PlanSlotRow, WeekRow
-from db.repo import (create_week, get_catalogue, get_choices, get_exclusion_rules, get_pantry, get_ratings,
-                     get_recipe, get_recipes, get_restores, get_settings, get_targets, get_week, last_cooked)
+from db.repo import (all_titles_and_slugs, create_week, get_catalogue, get_choices, get_exclusion_notes,
+                     get_exclusion_rules, get_pantry, get_ratings, get_recipe, get_recipes, get_restores, get_settings,
+                     get_targets, get_week, last_cooked, save_ingredient, save_recipe)
 
 
 @dataclass
@@ -117,3 +119,38 @@ def shopping_list(session: Session, week: WeekRow) -> list[ShoppingItem]:
     ctx = load_context(session)
     cooks = [cook for _, cook in week_cooks(session, week, ctx)]
     return build_list(cooks, ctx.catalogue, get_pantry(session))
+
+
+def targets_text(targets: Targets, same_lunch: bool) -> str:
+    lines = []
+    for person, meals in targets.items():
+        for meal, t in meals.items():
+            carbs = f"carbs at most {t.carbs_max:.0f} g" if t.carbs_max is not None else f"carbs about {t.carbs_target:.0f} g"
+            lines.append(f"- {person.title()} {meal}: about {t.kcal:.0f} kcal, protein at least {t.protein_min:.0f} g, "
+                         f"{carbs}, fibre at least {t.fibre_min:.0f} g")
+    if same_lunch:
+        lines.append("Each person's lunch box is the same as their dinner (sized halfway between the two targets).")
+    return "\n".join(lines)
+
+
+def generate_and_save(session: Session, tier: str, idea: str, call: Call = call_claude) -> GenerationResult:
+    """Generate one AI recipe, check it like every other recipe, and save it only if it passes."""
+    ctx = load_context(session)
+    rules = get_exclusion_rules(session)
+    titles, slugs = all_titles_and_slugs(session)
+
+    def check(recipe: Recipe, catalogue: dict[str, Ingredient]) -> list[str]:
+        result = Context(catalogue, ctx.targets, ctx.settings, ctx.rule_settings).check(recipe, rules)
+        return [f"{h} - not allowed" for h in result.exclusions] + [
+            str(i) for i in result.issues if i.level == "fail"]
+
+    system = system_prompt(ctx.catalogue, targets_text(ctx.targets, ctx.settings.get("same_lunch_as_dinner", True)),
+                           "\n".join(get_exclusion_notes(session)), sorted(titles))
+    result = generate_recipe(system, tier, idea, ctx.catalogue, check, titles, slugs, call=call)
+    if result.ok:
+        for ingredient in result.new_ingredients:
+            save_ingredient(session, ingredient)
+        session.flush()
+        save_recipe(session, result.recipe)
+        session.commit()
+    return result

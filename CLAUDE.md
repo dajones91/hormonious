@@ -13,7 +13,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - SQLite via SQLAlchemy 2.0, with Alembic for migrations. Pydantic for the recipe schema and AI-output validation.
 - pytest for tests. The official `anthropic` SDK, model `claude-opus-5-5`.
 - PWA: manifest plus a home-screen install on iPhone (Safari). A Windows laptop uses the browser.
-- Hosting: PythonAnywhere free tier. Fallback: Render + Neon Postgres if the outbound allowlist blocks api.anthropic.com (verify before stage 5).
+- Hosting: PythonAnywhere free tier. `api.anthropic.com` is on its free-account allowlist (checked 2026-10-29). Fallback: Render + Neon Postgres.
 
 ## Design direction (agreed 2026-10-28)
 - **Warm and healthy** feel (Jade's call, 2026-10-29; replaces the earlier bright blue and duck egg). Brand colour **light chocolate brown** (`--choc` #9a6b4b), used for the header with white text. Buttons and links use a deeper chocolate (`--brand` #7a4f33). The background is cream (`--bg` #faf6f0), with sage green (`--sage` #6f8f5c) for tags and a healthy accent, and honey (`--sun`) for highlights. Dale's plates are chocolate, Jade's are sage. Our own look, never a copy of any brand.
@@ -40,6 +40,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - `db/planner.py`: `load_context`, `check_all`, `ensure_week` (menu built lazily on first view, stored in `week`). Cook history comes from `plan_slot` rows (no separate log).
 - `core/cooking.py`: `cook_base` (scaled shared base), `cook_flex` (flex totals + each plate's %), `pot_shares`. `core/shopping.py`: `build_list` (base x portions/servings + every plate's flex grams), `choose_packs` (least over, then fewest packs; loose `each` items are counted), `group_by_aisle` (`AISLE_ORDER`), `as_text`.
 - Library search (`core/search.py`): every query word must appear in the title, cuisine, tier, tags or any ingredient (including swaps). `/recipes?q=` filters on the server; each card's `data-search` lets the page filter live as you type.
+- AI generation: `ai/schema.py` (AiAnswer = the structured output shape; `to_recipe`/`to_ingredient`), `ai/generate.py` (`call_claude` uses `client.messages.parse(output_format=AiAnswer)` with `claude-opus-5-5`; `check_answer`; `generate_recipe` retries up to 3 times with the problems as feedback), `db/planner.generate_and_save` (runs the normal exclusion + per-plate rule checks and saves only on a pass). New AI ingredients are saved with `source=ai-estimate`, `verified=False`, and families from `classify_name`. AI/imported recipes can be removed (`status=removed`); seed recipes can't. Tests inject a fake via `app.config['AI_CALL']` or the `call=` argument, so no API key or spend is needed. CLI: `manage.py generate`.
 - Ratings live in `rating` (per person, optionally per `plan_slot`; re-rating a night replaces it). Restores live in `recipe_restore`. Pages: rate on `/cook/<id>` (POST `/cook/<id>/rate`, only once the day has come), restore via POST `/recipe/<slug>/restore`; the Week tab lists nights still to rate.
 - Per-night portion changes live in `portion_choice` (cleared when the night's recipe changes). Pantry staples live in `pantry` (seeded from `staple` flags). Ticks live in `shopping_tick`.
 - `app/`: Flask blueprint in `views.py`; `create_app(database_url, today)` (tests pin the date). Pages: `/week` ("Open recipe card" is a submit button named `open`: it saves the plan, then redirects to that night's card), `/cook/<slot_id>` (card plus portion form), `/recipe/<slug>` (preview card), `/shopping/<start>` (+ `.txt`, tick, pantry), `/recipes`, `/profiles`. HTMX (unpkg, pinned 1.9.12) only for shopping ticks; everything else is plain forms. Run commands with `.\.venv\Scripts\python.exe` (Dale's PowerShell blocks Activate.ps1).
@@ -75,7 +76,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - [x] 2 Profiles, targets, menu generation, planning (branch `stage-2/profiles-menu-planning`; portion maths landed here too because rule checks need per-person plates)
 - [x] 3 Recipe cards, portions, shopping list (branch `stage-3/cards-shopping`; new bold-blue style and phone tab bar applied app-wide)
 - [x] 4 Ratings and repetition (branch `stage-4/ratings`)
-- [ ] 5 AI recipe generation
+- [x] 5 AI recipe generation (branch `stage-5/ai-recipes`; built and tested with a fake AI, live run needs Dale's API key). AI food pictures still to do (image provider not chosen)
 - [ ] 6 Recipe import (text/photo)
 - [ ] 7 Login, deploy, phone install
 - [ ] 8 (Optional) weekly email digest

@@ -3,6 +3,24 @@
 {% block title %}Recipes · Hormonious{% endblock %}
 {% block content %}
 <h1>Recipe library</h1>
+<details class="generate">
+  <summary>✨ Create a new recipe with AI</summary>
+  <form method="post" action="{{ url_for('main.generate') }}" id="generate-form">
+    <label>Kind of recipe
+      <select name="tier">
+        <option value="weeknight">Weeknight (45 min max, makes tomorrow's lunch)</option>
+        <option value="weekend">Weekend special (up to 90 min)</option>
+      </select>
+    </label>
+    <label>Any idea? <span class="muted">(optional)</span>
+      <input type="text" name="idea" maxlength="200" placeholder="e.g. a lamb curry, something Mexican, use up kale">
+    </label>
+    <p class="muted small">The AI writes a recipe to your rules. It's checked against your exclusions and both your
+      nutrition targets before it's saved, and rewritten if it fails. Costs roughly 10–30p.</p>
+    <button type="submit" class="btn" id="generate-btn">Create recipe</button>
+    <p class="muted small" id="generate-wait" hidden>Writing and checking your recipe… this usually takes a minute or two. Keep this page open.</p>
+  </form>
+</details>
 <form class="search" method="get" role="search">
   <input type="search" name="q" id="q" value="{{ query }}" placeholder="Search recipes, ingredients or tags"
          aria-label="Search recipes" autocomplete="off" enterkeyhint="search">
@@ -37,6 +55,15 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+  // Show that generating is under way, and stop a double tap sending two requests.
+  document.getElementById("generate-form").addEventListener("submit", () => {
+    const btn = document.getElementById("generate-btn");
+    btn.disabled = true;
+    btn.textContent = "Creating…";
+    document.getElementById("generate-wait").hidden = false;
+  });
+</script>
 <script>
   // Filter the cards as you type (the Search button does the same thing on the server).
   (function () {
