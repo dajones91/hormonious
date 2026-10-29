@@ -8,6 +8,7 @@ from core.cooking import cook_base, cook_flex, pot_shares
 from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
 from core.portions import MEALS, PEOPLE, MealTarget, meals_for_portions
 from core.ratings import available_from, household_rating, is_retired
+from core.search import matches, search_text
 from core.shopping import as_text, group_by_aisle
 from db.planner import (check_all, ensure_week, has_plan, household_stars, load_context, make_menu,
                         shopping_list)
@@ -117,11 +118,16 @@ def week(start: str | None = None):
 @bp.route("/recipes")
 def recipes():
     session = db()
-    checks = check_all(session)
+    ctx = load_context(session)
+    checks = check_all(session, ctx)
     stars = household_stars(session)
-    retired = [c for c in checks if is_retired(stars.get(c.recipe.slug))]
-    return render_template("recipes.html", checks=[c for c in checks if c not in retired], retired=retired,
-                           stars=stars)
+    texts = {c.recipe.slug: search_text(c.recipe, ctx.catalogue) for c in checks}
+    query = request.args.get("q", "").strip()[:100]
+    shown = [c for c in checks if matches(texts[c.recipe.slug], query)]
+    retired = [c for c in shown if is_retired(stars.get(c.recipe.slug))]
+    return render_template("recipes.html", checks=[c for c in shown if c not in retired], retired=retired,
+                           stars=stars, query=query, texts=texts, total=len(checks),
+                           on_menu=sum(1 for c in checks if c.ok))
 
 
 def rating_summary(session, slug: str) -> dict:

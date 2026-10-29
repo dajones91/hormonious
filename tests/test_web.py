@@ -294,3 +294,14 @@ def test_bad_star_value_rejected(tmp_path):
     c.get("/week/2026-10-31")
     card = c.post("/week/2026-10-31", data={"slot-2026-11-02": "turkey-chilli", "open": "2026-11-02"}).headers["Location"]
     assert c.post(card + "/rate", data={"dale-stars": "9"}).status_code == 400
+
+
+def test_recipe_search(client):
+    page = client.get("/recipes?q=butter+beans").get_data(as_text=True)
+    assert "match “butter beans”" in page and "Creamy Tuscan chicken" in page
+    assert "Smoky turkey and two-bean chilli" not in page
+    assert 'data-search="' in page
+    empty = client.get("/recipes?q=salmon").get_data(as_text=True)
+    assert "0 recipes match" in empty and 'id="no-results" >' in empty  # the 'no results' message isn't hidden
+    everything = client.get("/recipes").get_data(as_text=True)
+    assert "20 recipes pass your rules" in everything

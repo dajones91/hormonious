@@ -10,8 +10,8 @@
   </div>
 {%- endmacro %}
 
-{% macro recipe_card(r, href, extra="") -%}
-  <a class="recipe-card" href="{{ href }}">
+{% macro recipe_card(r, href, extra="", search="") -%}
+  <a class="recipe-card" href="{{ href }}"{% if search %} data-search="{{ search }}"{% endif %}>
     {{ recipe_image(r) }}
     <span class="card-body">
       <strong>{{ r.title }}</strong>
