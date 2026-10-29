@@ -40,7 +40,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - `db/planner.py`: `load_context`, `check_all`, `ensure_week` (menu built lazily on first view, stored in `week`). Cook history comes from `plan_slot` rows (no separate log).
 - `core/cooking.py`: `cook_base` (scaled shared base), `cook_flex` (flex totals + each plate's %), `pot_shares`. `core/shopping.py`: `build_list` (base x portions/servings + every plate's flex grams), `choose_packs` (least over, then fewest packs; loose `each` items are counted), `group_by_aisle` (`AISLE_ORDER`), `as_text`.
 - Per-night portion changes live in `portion_choice` (cleared when the night's recipe changes). Pantry staples live in `pantry` (seeded from `staple` flags). Ticks live in `shopping_tick`.
-- `app/`: Flask blueprint in `views.py`; `create_app(database_url, today)` (tests pin the date). Pages: `/week`, `/cook/<slot_id>` (card plus portion form), `/recipe/<slug>` (preview card), `/shopping/<start>` (+ `.txt`, tick, pantry), `/recipes`, `/profiles`. HTMX (unpkg, pinned 1.9.12) only for shopping ticks; everything else is plain forms. Run commands with `.\.venv\Scripts\python.exe` (Dale's PowerShell blocks Activate.ps1).
+- `app/`: Flask blueprint in `views.py`; `create_app(database_url, today)` (tests pin the date). Pages: `/week` ("Open recipe card" is a submit button named `open`: it saves the plan, then redirects to that night's card), `/cook/<slot_id>` (card plus portion form), `/recipe/<slug>` (preview card), `/shopping/<start>` (+ `.txt`, tick, pantry), `/recipes`, `/profiles`. HTMX (unpkg, pinned 1.9.12) only for shopping ticks; everything else is plain forms. Run commands with `.\.venv\Scripts\python.exe` (Dale's PowerShell blocks Activate.ps1).
 - `core/nutrition.py`: per-100 g sums. `core/loaders.py` reads `data/`. `db/`: SQLAlchemy models + repo. `manage.py`: dev commands.
 - Run `python -m pytest` and `python manage.py recipes` after changing data. A test requires catalogue `families` to equal `classify_name(name)`.
 - No Alembic yet: `manage.py reset-db` rebuilds the dev DB. Add Alembic before the first deploy (stage 7).
@@ -57,6 +57,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - Mon–Thu cooks 4 portions (2 dinners + 2 next-day lunches). No plan on Friday by default. Weekend special is optional: Saturday = 2 portions, Sunday = 4 (covers Monday lunch).
 - Weeknight recipes: ≤ 45 min total (ideally 30). Weekend special: ≤ ~90 min.
 - Shared base split: recipe ratio → profile (fixed or by protein target) → 50/50. Flexible portion = min(kcal-fit, carb-fit), clamped and rounded to 5 g.
+- Lunch box = dinner (setting `same_lunch_as_dinner`, default on, Dale's request 2026-10-29): each person's flexible part is sized once against a target halfway between their dinner and lunch targets, keeping the stricter carb cap. One portion choice per person covers both meals (form key `both`).
 - Repetition: never last week's recipes. Cooldown uses the lower of the two ratings: 5★ 2–3 weeks, 4★ 4–6, 3★ ~10, ≤2★ never.
 - Login is one shared family password. Each device then picks "Dale" or "Jade".
 

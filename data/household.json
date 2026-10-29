@@ -19,6 +19,7 @@
     "weeknight_options": 11,
     "weekend_options": 3,
     "friday_plan": false,
+    "same_lunch_as_dinner": true,
     "added_sugar_max_g": 5,
     "weeknight_max_min": 45,
     "weekend_max_min": 90

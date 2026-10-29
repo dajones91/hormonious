@@ -35,6 +35,14 @@ Jade may want to check hers with her GP or a dietitian.</p>
       <input type="number" class="short" min="1" max="99" name="fixed_dale" value="{{ (settings.fixed_split.dale * 100)|round|int }}">%</label>
     <p class="muted small">A ratio set on an individual recipe always wins.</p>
   </fieldset>
+
+  <fieldset>
+    <legend>Lunch boxes</legend>
+    <label><input type="checkbox" name="same_lunch_as_dinner" {% if settings.get("same_lunch_as_dinner", True) %}checked{% endif %}>
+      Make each person's lunch the same as their dinner</label>
+    <p class="muted small">Portions are sized halfway between your dinner and lunch targets, keeping the stricter carb limit.
+      Untick to size lunch to its own targets.</p>
+  </fieldset>
   <button type="submit">Save profiles</button>
 </form>
 {% endblock %}

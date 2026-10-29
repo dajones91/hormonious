@@ -54,18 +54,19 @@
   <details class="choices" {% if choices %}open{% endif %}>
     <summary>Change our portions for this night</summary>
     <form method="post">
-      {% for meal in meals %}{% for person in people %}{% for comp in r.flexible %}
-        {% set chosen = (choices.get((person, meal)) or {}).get(comp.component) %}
+      {% for group, group_meals in groups %}{% for person in people %}{% for comp in r.flexible %}
+        {% set chosen = (choices.get((person, group_meals[0])) or {}).get(comp.component) %}
         <div class="choice-row">
-          <span class="who {{ person }}">{{ person|title }}</span> <span class="muted">{{ meal }} · {{ comp.component }}</span>
-          <select name="{{ person }}-{{ meal }}-{{ comp.component }}-option" aria-label="{{ person }} {{ meal }} {{ comp.component }}">
+          <span class="who {{ person }}">{{ person|title }}</span>
+          <span class="muted">{{ "dinner + lunch" if group == "both" else group }} · {{ comp.component }}</span>
+          <select name="{{ person }}-{{ group }}-{{ comp.component }}-option" aria-label="{{ person }} {{ group }} {{ comp.component }}">
             <option value="">Automatic</option>
             {% for o in comp.options %}
             <option value="{{ o.ingredient }}" {% if chosen and chosen.option == o.ingredient %}selected{% endif %}>{{ catalogue[o.ingredient].name }}</option>
             {% endfor %}
           </select>
           <input type="number" inputmode="numeric" min="0" max="1000" step="5" placeholder="auto g"
-                 name="{{ person }}-{{ meal }}-{{ comp.component }}-grams" aria-label="grams"
+                 name="{{ person }}-{{ group }}-{{ comp.component }}-grams" aria-label="grams"
                  value="{{ chosen.grams|int if chosen and chosen.grams is not none else '' }}">
         </div>
       {% endfor %}{% endfor %}{% endfor %}

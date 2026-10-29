@@ -90,11 +90,14 @@ def test_profiles_save_and_change_portions(client):
 
 
 def plan_two_nights(client):
+    """Plan Saturday and Monday; return their card ids [saturday, monday] via the open-card button."""
     client.get("/week/2026-10-31")
-    client.post("/week/2026-10-31", data={"slot-2026-11-02": "chicken-tikka-traybake",
-                                          "slot-2026-10-31": "steak-chimichurri"})
-    page = client.get("/week/2026-10-31").get_data(as_text=True)
-    return [int(part.split('"')[0]) for part in page.split('href="/cook/')[1:]]
+    plan = {"slot-2026-11-02": "chicken-tikka-traybake", "slot-2026-10-31": "steak-chimichurri"}
+    ids = []
+    for day in ("2026-10-31", "2026-11-02"):
+        resp = client.post("/week/2026-10-31", data={**plan, "open": day})
+        ids.append(int(resp.headers["Location"].rsplit("/", 1)[1]))
+    return ids
 
 
 def test_cook_card_shows_plating_guide(client):
@@ -117,7 +120,7 @@ def test_portion_change_updates_card_and_shopping(client):
     monday = plan_two_nights(client)[1]
     before = client.get("/shopping/2026-10-31").get_data(as_text=True)
     assert "Brown basmati rice" in before
-    form = {f"{p}-{m}-carb-option": "cauliflower_rice" for p in ("dale", "jade") for m in ("dinner", "lunch")}
+    form = {f"{p}-both-carb-option": "cauliflower_rice" for p in ("dale", "jade")}
     page = client.post(f"/cook/{monday}", data=form, follow_redirects=True).get_data(as_text=True)
     assert "Portions updated" in page and "your choice" in page
     after = client.get("/shopping/2026-10-31").get_data(as_text=True)
@@ -127,16 +130,16 @@ def test_portion_change_updates_card_and_shopping(client):
 
 def test_portion_grams_override_and_bad_input(client):
     monday = plan_two_nights(client)[1]
-    page = client.post(f"/cook/{monday}", data={"jade-dinner-carb-grams": "40"}, follow_redirects=True)
+    page = client.post(f"/cook/{monday}", data={"jade-both-carb-grams": "40"}, follow_redirects=True)
     assert "40 g dry brown basmati rice" in page.get_data(as_text=True)
-    bad = client.post(f"/cook/{monday}", data={"jade-dinner-carb-grams": "lots"}, follow_redirects=True)
+    bad = client.post(f"/cook/{monday}", data={"jade-both-carb-grams": "lots"}, follow_redirects=True)
     assert "isn&#39;t a number" in bad.get_data(as_text=True)
-    assert client.post(f"/cook/{monday}", data={"jade-dinner-carb-option": "chocolate"}).status_code == 400
+    assert client.post(f"/cook/{monday}", data={"jade-both-carb-option": "chocolate"}).status_code == 400
 
 
 def test_changing_the_recipe_clears_portion_changes(client):
     monday = plan_two_nights(client)[1]
-    client.post(f"/cook/{monday}", data={"dale-dinner-carb-grams": "100"})
+    client.post(f"/cook/{monday}", data={"dale-both-carb-grams": "100"})
     client.post("/week/2026-10-31", data={"slot-2026-11-02": "turkey-chilli", "slot-2026-10-31": "steak-chimichurri"})
     page = client.get(f"/cook/{monday}").get_data(as_text=True)
     assert "your choice" not in page
@@ -173,3 +176,26 @@ def test_empty_shopping_list(client):
 def test_bad_profile_input_is_not_saved(client):
     page = client.post("/profiles", data={"dale-dinner-kcal": "lots"}, follow_redirects=True).get_data(as_text=True)
     assert "Not saved" in page
+
+
+def test_open_recipe_card_saves_dropdown_change_first(client):
+    monday = plan_two_nights(client)[1]
+    # change Monday in the dropdown, then press that night's "Open recipe card" without saving
+    form = {"slot-2026-11-02": "turkey-chilli", "slot-2026-10-31": "steak-chimichurri", "open": "2026-11-02"}
+    resp = client.post("/week/2026-10-31", data=form)
+    assert resp.headers["Location"].endswith(f"/cook/{monday}")
+    assert "Smoky turkey and two-bean chilli" in client.get(f"/cook/{monday}").get_data(as_text=True)
+
+
+def test_open_on_a_night_with_no_recipe(client):
+    page = client.post("/week/2026-10-31", data={"open": "2026-11-03"}, follow_redirects=True)
+    assert "no recipe on that night" in page.get_data(as_text=True)
+
+
+def test_lunch_matches_dinner_and_one_choice_covers_both(client):
+    monday = plan_two_nights(client)[1]
+    page = client.get(f"/cook/{monday}").get_data(as_text=True)
+    assert "dinner + lunch" in page and "jade-dinner-carb-option" not in page
+    client.post(f"/cook/{monday}", data={"dale-both-carb-grams": "60"})
+    page = client.get(f"/cook/{monday}").get_data(as_text=True)
+    assert page.count("60 g dry brown basmati rice") == 2  # dinner and lunch box

@@ -56,6 +56,13 @@ def week(start: str | None = None):
             recipe_slug = None if value in ("", "no-cook") else value
             set_slot(session, week_row, day, recipe_slug, no_cook=value == "no-cook")
         session.commit()
+        open_day = request.form.get("open")
+        if open_day:  # "Open recipe card" pressed: the plan is saved, now go to that night's card
+            slot = next((s for s in week_row.slots if s.day.isoformat() == open_day), None)
+            if slot and slot.recipe_slug:
+                return redirect(url_for("main.cook", slot_id=slot.id))
+            flash("Plan saved. There's no recipe on that night to open.", "ok")
+            return redirect(url_for("main.week", start=week_start.isoformat()))
         flash("Plan saved.", "ok")
         return redirect(url_for("main.week", start=week_start.isoformat()))
 
@@ -110,6 +117,15 @@ def recipe(slug: str):
     return render_template("recipe.html", slot=None, **card_context(ctx, r, check, r.servings))
 
 
+def choice_groups(ctx, portions: int) -> list[tuple[str, tuple[str, ...]]]:
+    """How the portion form is split: one choice per person covering dinner and lunch when
+    lunch matches dinner, otherwise one per meal. Each group is (form key, meals it covers)."""
+    meals = meals_for_portions(portions)
+    if ctx.settings.get("same_lunch_as_dinner", True) and len(meals) > 1:
+        return [("both", meals)]
+    return [(m, (m,)) for m in meals]
+
+
 @bp.route("/cook/<int:slot_id>", methods=["GET", "POST"])
 def cook(slot_id: int):
     """The recipe card for a planned night, with each person's portion changes."""
@@ -120,12 +136,13 @@ def cook(slot_id: int):
     r = get_recipe(session, slot.recipe_slug)
     ctx = load_context(session)
 
+    groups = choice_groups(ctx, slot.portions)
     if request.method == "POST":
         options = {comp.component: {o.ingredient for o in comp.options} for comp in r.flexible}
         for person in PEOPLE:
-            for meal in meals_for_portions(slot.portions):
+            for group, meals in groups:
                 for comp in r.flexible:
-                    prefix = f"{person}-{meal}-{comp.component}"
+                    prefix = f"{person}-{group}-{comp.component}"
                     option = request.form.get(f"{prefix}-option") or None
                     grams_text = (request.form.get(f"{prefix}-grams") or "").strip()
                     if option is not None and option not in options[comp.component]:
@@ -138,14 +155,15 @@ def cook(slot_id: int):
                     if grams is not None and not 0 <= grams <= 1000:
                         flash("Grams must be between 0 and 1000.", "error")
                         return redirect(url_for("main.cook", slot_id=slot_id))
-                    save_choice(slot, person, meal, comp.component, option, grams)
+                    for meal in meals:
+                        save_choice(slot, person, meal, comp.component, option, grams)
         session.commit()
         flash("Portions updated. The shopping list has been updated too.", "ok")
         return redirect(url_for("main.cook", slot_id=slot_id))
 
     choices = get_choices(slot)
     check = ctx.check(r, get_exclusion_rules(session), slot.portions, choices)
-    return render_template("recipe.html", slot=slot, choices=choices, week_start=slot.week.start,
+    return render_template("recipe.html", slot=slot, choices=choices, groups=groups, week_start=slot.week.start,
                            **card_context(ctx, r, check, slot.portions))
 
 
@@ -231,6 +249,7 @@ def profiles():
             if mode not in ("even", "protein", "fixed"):
                 raise ValueError("unknown split mode")
             set_setting(session, "split_mode", mode)
+            set_setting(session, "same_lunch_as_dinner", request.form.get("same_lunch_as_dinner") == "on")
             dale = float(request.form.get("fixed_dale", 55)) / 100
             if not 0 < dale < 1:
                 raise ValueError("Dale's share must be between 1 and 99%")

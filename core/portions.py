@@ -187,13 +187,35 @@ def build_plate(recipe: Recipe, catalogue: dict[str, Ingredient], person: str, m
     return Plate(person, meal, share, base, sugar, ordered)
 
 
+def blended_target(a: MealTarget, b: MealTarget) -> MealTarget:
+    """Halfway between two targets, keeping the stricter carb limit (so Jade's lunch cap still holds)."""
+    caps = [t.carbs_max for t in (a, b) if t.carbs_max is not None]
+    return MealTarget((a.kcal + b.kcal) / 2, (a.protein_min + b.protein_min) / 2,
+                      (a.carbs_target + b.carbs_target) / 2, min(caps) if caps else None,
+                      (a.fibre_min + b.fibre_min) / 2)
+
+
 def plan_plates(recipe: Recipe, catalogue: dict[str, Ingredient], targets: Targets, shares: dict[str, float],
                 meals: tuple[str, ...] = MEALS,
-                choices: dict[tuple[str, str], dict[str, FlexChoice]] | None = None) -> list[Plate]:
-    """Every plate for one cook: each person x each meal. `choices` is keyed by (person, meal)."""
+                choices: dict[tuple[str, str], dict[str, FlexChoice]] | None = None,
+                same_lunch: bool = False) -> list[Plate]:
+    """Every plate for one cook: each person x each meal. `choices` is keyed by (person, meal).
+
+    With `same_lunch`, each person's lunch box matches their dinner: the flexible part is
+    sized once against a target halfway between their dinner and lunch targets, and their
+    dinner choices apply to both meals.
+    """
     choices = choices or {}
-    return [build_plate(recipe, catalogue, p, m, shares[p], targets[p][m], choices.get((p, m)))
-            for m in meals for p in PEOPLE]
+    plates = []
+    for m in meals:
+        for p in PEOPLE:
+            if same_lunch and len(meals) > 1:
+                sizing = blended_target(*(targets[p][meal] for meal in meals))
+                choice = choices.get((p, meals[0]))
+            else:
+                sizing, choice = targets[p][m], choices.get((p, m))
+            plates.append(build_plate(recipe, catalogue, p, m, shares[p], sizing, choice))
+    return plates
 
 
 def meals_for_portions(portions: int) -> tuple[str, ...]:

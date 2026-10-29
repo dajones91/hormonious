@@ -39,7 +39,8 @@ class Context:
 
     def plates(self, recipe: Recipe, portions: int = 4, choices=None) -> list[Plate]:
         shares = base_shares(recipe, self.settings["split_mode"], self.settings["fixed_split"], self.targets)
-        return plan_plates(recipe, self.catalogue, self.targets, shares, meals_for_portions(portions), choices)
+        return plan_plates(recipe, self.catalogue, self.targets, shares, meals_for_portions(portions), choices,
+                           same_lunch=self.settings.get("same_lunch_as_dinner", True))
 
     def check(self, recipe: Recipe, rules, portions: int = 4, choices=None) -> RecipeCheck:
         plates = self.plates(recipe, portions, choices)

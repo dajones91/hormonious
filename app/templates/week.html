@@ -42,7 +42,8 @@
           {% for r in others %}<option value="{{ r.slug }}" {% if row.value == r.slug %}selected{% endif %}>{{ r.title }}</option>{% endfor %}
         </optgroup>
       </select>
-      {% if row.recipe %}<a class="btn small cook-link" href="{{ url_for('main.cook', slot_id=row.slot_id) }}">Open recipe card ›</a>{% endif %}
+      {# A submit button, not a link: it saves any dropdown changes first, then opens this night's card. #}
+      {% if row.recipe %}<button type="submit" name="open" value="{{ slot.day.isoformat() }}" class="btn small cook-link">Open recipe card ›</button>{% endif %}
       {% for w in row.warnings %}<p class="warn">⚠ {{ w }}</p>{% endfor %}
       {% endif %}
     </div>
