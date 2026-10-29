@@ -4,17 +4,18 @@ from datetime import date, timedelta
 
 from flask import Blueprint, Response, abort, current_app, flash, g, redirect, render_template, request, url_for
 
+from ai.generate import AiError, call_claude
 from core.cooking import cook_base, cook_flex, pot_shares
 from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
 from core.portions import MEALS, PEOPLE, MealTarget, meals_for_portions
 from core.ratings import available_from, household_rating, is_retired
 from core.search import matches, search_text
 from core.shopping import as_text, group_by_aisle
-from db.planner import (check_all, ensure_week, has_plan, household_stars, load_context, make_menu,
-                        shopping_list)
-from db.repo import (add_rating, get_choices, get_exclusion_rules, get_ratings, get_recipe, get_recipes, get_restores,
-                     get_slot, get_slot_ratings, get_ticks, last_cooked, restore_recipe, save_choice, save_target,
-                     set_setting, set_slot, toggle_pantry, toggle_tick)
+from db.planner import (check_all, ensure_week, generate_and_save, has_plan, household_stars, load_context,
+                        make_menu, shopping_list)
+from db.repo import (add_rating, get_choices, get_exclusion_rules, get_ratings, get_recipe, get_recipe_source_and_status,
+                     get_recipes, get_restores, get_slot, get_slot_ratings, get_ticks, last_cooked, restore_recipe,
+                     save_choice, save_target, set_recipe_status, set_setting, set_slot, toggle_pantry, toggle_tick)
 
 bp = Blueprint("main", __name__)
 
@@ -163,8 +164,48 @@ def recipe(slug: str):
         abort(404)
     ctx = load_context(session)
     check = ctx.check(r, get_exclusion_rules(session))
-    return render_template("recipe.html", slot=None, rating=rating_summary(session, slug),
+    estimates = sorted({ctx.catalogue[k].name for k in r.ingredient_keys()
+                        if ctx.catalogue[k].source == "ai-estimate" and not ctx.catalogue[k].verified})
+    removed = get_recipe_source_and_status(session, slug)[1] == "removed"
+    return render_template("recipe.html", slot=None, rating=rating_summary(session, slug), estimates=estimates,
+                           removed=removed,
                            **card_context(ctx, r, check, r.servings))
+
+
+@bp.route("/recipes/generate", methods=["POST"])
+def generate():
+    """Ask the AI for a new recipe; it's only saved if it passes every check."""
+    tier = request.form.get("tier", "weeknight")
+    if tier not in ("weeknight", "weekend"):
+        abort(400)
+    idea = request.form.get("idea", "").strip()[:200]
+    try:
+        result = generate_and_save(db(), tier, idea, call=current_app.config.get("AI_CALL") or call_claude)
+    except AiError as e:
+        flash(str(e), "error")
+        return redirect(url_for("main.recipes"))
+    cost = f"about {result.cost_usd * 80:.0f}p" if result.cost_usd >= 0.01 else "under 1p"
+    if not result.ok:
+        last = "; ".join(result.problems[-1][:3])
+        flash(f"Sorry, none of the {result.attempts} attempts passed our checks ({cost} used). Last problems: {last}",
+              "error")
+        return redirect(url_for("main.recipes"))
+    tries = "first time" if result.attempts == 1 else f"after {result.attempts} attempts"
+    flash(f"New recipe added. It passed all our checks {tries} ({cost}).", "ok")
+    return redirect(url_for("main.recipe", slug=result.recipe.slug))
+
+
+@bp.route("/recipe/<slug>/remove", methods=["POST"])
+def remove(slug: str):
+    """Remove an AI or imported recipe from the library (seed recipes are retired by rating instead)."""
+    session = db()
+    info = get_recipe_source_and_status(session, slug)
+    if info is None or info[0] == "seed":
+        abort(404)
+    set_recipe_status(session, slug, "removed")
+    session.commit()
+    flash("Recipe removed from the library.", "ok")
+    return redirect(url_for("main.recipes"))
 
 
 @bp.route("/recipe/<slug>/restore", methods=["POST"])

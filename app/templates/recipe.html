@@ -17,7 +17,9 @@
     <span><b>{{ r.tier|title }}</b></span>
     {% if r.spice %}<span><b>{{ "🌶" * r.spice }}</b> spice</span>{% endif %}
   </div>
-  <p>{% for t in r.tags %}<span class="chip">{{ t }}</span>{% endfor %}</p>
+  <p>{% if r.source == "ai" %}<span class="chip ai">✨ AI recipe</span>{% endif %}{% for t in r.tags %}<span class="chip">{{ t }}</span>{% endfor %}</p>
+  {% if estimates %}<p class="warn">⚠ Nutrition for {{ estimates|join(", ") }} is an AI estimate, so this recipe's numbers are rougher than usual.</p>{% endif %}
+  {% if removed %}<p class="flash error">This recipe has been removed from the library.</p>{% endif %}
   <button type="button" class="btn ghost" id="wake" hidden>Keep screen on</button>
 
   <section class="rating-box{{ ' retired' if rating.retired }}">
@@ -30,6 +32,12 @@
       {% if rating.retired %}We rated it 2★ or less, so it won't be suggested.
       {% elif rating.next_week %}Can be on the menu again from the week of Sat {{ rating.next_week.strftime("%d %b") }}.{% endif %}
     </p>
+    {% if not slot and r.source != "seed" and not removed %}
+    <form method="post" action="{{ url_for('main.remove', slug=r.slug) }}"
+          onsubmit="return confirm('Remove this recipe from the library?');">
+      <button type="submit" class="btn small ghost">Remove from library</button>
+    </form>
+    {% endif %}
     {% if rating.retired %}
     <form method="post" action="{{ url_for('main.restore', slug=r.slug) }}">
       <button type="submit" class="btn small ghost">Give it another chance</button>

@@ -249,3 +249,23 @@ def get_restores(session: Session) -> dict[str, date]:
 
 def restore_recipe(session: Session, recipe_slug: str, on: date) -> None:
     session.merge(RecipeRestoreRow(recipe_slug=recipe_slug, restored_on=on))
+
+
+def all_titles_and_slugs(session: Session) -> tuple[set[str], set[str]]:
+    """Every recipe's title and slug, whatever its status (so the AI never repeats a removed one)."""
+    rows = session.execute(select(RecipeRow.title, RecipeRow.slug)).all()
+    return {t for t, _ in rows}, {s for _, s in rows}
+
+
+def get_recipe_source_and_status(session: Session, slug: str) -> tuple[str, str] | None:
+    row = session.scalar(select(RecipeRow).where(RecipeRow.slug == slug))
+    return (row.source, row.status) if row else None
+
+
+def set_recipe_status(session: Session, slug: str, status: str) -> None:
+    row = session.scalar(select(RecipeRow).where(RecipeRow.slug == slug))
+    row.status = status
+
+
+def get_exclusion_notes(session: Session) -> list[str]:
+    return [f"- {r.person.name}: {r.note or r.family}" for r in session.scalars(select(Exclusion))]

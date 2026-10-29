@@ -5,6 +5,7 @@
     python manage.py check "oyster sauce"   # test the exclusion filter on any ingredient name
     python manage.py serve             # run the web app at http://127.0.0.1:5000
     python manage.py serve --lan       # ...and let phones on your Wi-Fi open it too
+    python manage.py generate --tier weeknight --idea "a lamb curry"   # create an AI recipe (costs ~10-30p)
 """
 
 import argparse
@@ -43,6 +44,26 @@ def cmd_recipes(session) -> None:
     print(f"\n{len(checks) - failing} of {len(checks)} recipes can go on the menu. Values are estimates.")
 
 
+def cmd_generate(session, tier: str, idea: str) -> None:
+    from ai.generate import AiError
+    from db.planner import generate_and_save
+    print("Asking the AI for a recipe and checking it... (usually a minute or two)")
+    try:
+        result = generate_and_save(session, tier, idea)
+    except AiError as e:
+        print(f"Couldn't generate: {e}")
+        return
+    for n, problems in enumerate(result.problems, 1):
+        print(f"Attempt {n} rejected:\n  - " + "\n  - ".join(problems))
+    cost = f"${result.cost_usd:.2f} ({result.input_tokens} input + {result.output_tokens} output tokens)"
+    if result.ok:
+        print(f"Saved '{result.recipe.title}' ({result.recipe.slug}) after {result.attempts} attempt(s). Cost {cost}.")
+        for ing in result.new_ingredients:
+            print(f"  New ingredient (AI nutrition estimate, unverified): {ing.name}")
+    else:
+        print(f"Nothing saved: no attempt passed. Cost {cost}.")
+
+
 def cmd_check(session, name: str) -> None:
     hits = check_name(name, get_exclusion_rules(session))
     print("\n".join(f"EXCLUDED: {h}" for h in hits) if hits else f"'{name}' is allowed for everyone.")
@@ -55,6 +76,9 @@ def main() -> None:
     sub.add_parser("recipes", help="list recipes with per-person plates and rule checks")
     check = sub.add_parser("check", help="test the exclusion filter on an ingredient name")
     check.add_argument("name")
+    gen = sub.add_parser("generate", help="create a new recipe with AI (uses the Anthropic API)")
+    gen.add_argument("--tier", choices=["weeknight", "weekend"], default="weeknight")
+    gen.add_argument("--idea", default="", help='optional, e.g. "a lamb curry"')
     serve = sub.add_parser("serve", help="run the web app locally")
     serve.add_argument("--lan", action="store_true",
                        help="let phones on your home Wi-Fi connect (turns the debugger off)")
@@ -71,6 +95,8 @@ def main() -> None:
             cmd_reset_db(session)
         elif args.command == "recipes":
             cmd_recipes(session)
+        elif args.command == "generate":
+            cmd_generate(session, args.tier, args.idea)
         else:
             cmd_check(session, args.name)
 
