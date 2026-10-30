@@ -487,6 +487,12 @@ def profiles():
                 raise ValueError("unknown split mode")
             set_setting(session, "split_mode", mode)
             set_setting(session, "same_lunch_as_dinner", request.form.get("same_lunch_as_dinner") == "on")
+            for key, top in (("weeknight_options", 50), ("weekend_options", 30)):
+                if request.form.get(key):
+                    count = int(request.form[key])
+                    if not 1 <= count <= top:
+                        raise ValueError(f"menu size must be between 1 and {top}")
+                    set_setting(session, key, count)
             dale = float(request.form.get("fixed_dale", 55)) / 100
             if not 0 < dale < 1:
                 raise ValueError("Dale's share must be between 1 and 99%")

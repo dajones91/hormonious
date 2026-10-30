@@ -48,6 +48,10 @@ def test_save_plan(client):
 
 
 def test_off_menu_recipe_stays_selected(client):
+    from db.repo import set_setting
+    with client.application.config["SESSION_FACTORY"]() as s:  # a short weekend menu leaves some recipes off it
+        set_setting(s, "weekend_options", 2)
+        s.commit()
     page = client.get("/week/2026-10-31").get_data(as_text=True)
     menu = page.split("<h2>The menu</h2>")[1]
     off_menu = next(slug for slug in ("lamb-rogan-josh", "steak-chimichurri", "chicken-chickpea-tagine",
@@ -226,7 +230,7 @@ def test_no_banner_before_monday(tmp_path):
 def test_future_week_is_a_preview_until_its_monday(client):
     page = client.get("/week/2026-11-07").get_data(as_text=True)  # opens Monday 2 Nov
     assert "Preview." in page and "Monday 02 Nov" in page and 'name="slot-' not in page
-    assert "Weeknight · 11 options" in page
+    assert "Weeknight · 16 options" in page
     resp = client.post("/week/2026-11-07", data={"slot-2026-11-09": "turkey-chilli"}, follow_redirects=True)
     assert "Planning for this week opens" in resp.get_data(as_text=True)
 
@@ -249,7 +253,7 @@ def test_menu_built_too_early_is_thrown_away(tmp_path):
         create_week(session, date(2026, 11, 7), Menu(["turkey-chilli"], []), week_slots(date(2026, 11, 7)))
         session.commit()
     page = app.test_client().get("/week/2026-11-07").get_data(as_text=True)
-    assert "Preview." in page and "Weeknight · 11 options" in page
+    assert "Preview." in page and "Weeknight · 16 options" in page
 
 
 def test_rate_after_cooking_and_it_shapes_next_menu(tmp_path):
@@ -340,3 +344,24 @@ def test_back_to_everyone_clears_the_override(client):
     everyone = {f"eat-2026-11-02-{p}-{m}": "on" for p in ("dale", "jade") for m in ("dinner", "lunch")}
     client.post("/week/2026-10-31", data={**base, **everyone})
     assert "4 portions (Dale: dinner + lunch · Jade: dinner + lunch)" in client.get(f"/cook/{monday}").get_data(as_text=True)
+
+
+def test_menu_size_setting(client):
+    form = {}
+    for person in ("dale", "jade"):
+        for meal in ("dinner", "lunch"):
+            form.update({f"{person}-{meal}-kcal": 600, f"{person}-{meal}-protein_min": 35,
+                         f"{person}-{meal}-carbs_target": 45, f"{person}-{meal}-carbs_max": "",
+                         f"{person}-{meal}-fibre_min": 8})
+    form.update({"split_mode": "even", "fixed_dale": 55, "same_lunch_as_dinner": "on",
+                 "weeknight_options": "5", "weekend_options": "2"})
+    assert "Profiles saved" in client.post("/profiles", data=form, follow_redirects=True).get_data(as_text=True)
+    page = client.get("/week/2026-10-31").get_data(as_text=True)  # first built after the change
+    assert "Weeknight · 5 options" in page and "Weekend specials · 2 options" in page
+    bad = client.post("/profiles", data={**form, "weekend_options": "99"}, follow_redirects=True)
+    assert "Not saved" in bad.get_data(as_text=True)
+
+
+def test_default_menu_shows_everything_when_library_is_small(client):
+    page = client.get("/week/2026-10-31").get_data(as_text=True)  # 20/10 wanted; 17 weeknight + 4 weekend exist
+    assert "Weeknight · 16 options" in page and "Weekend specials · 4 options" in page

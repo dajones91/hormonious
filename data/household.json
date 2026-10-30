@@ -16,8 +16,8 @@
   "settings": {
     "split_mode": "even",
     "fixed_split": {"dale": 0.55, "jade": 0.45},
-    "weeknight_options": 11,
-    "weekend_options": 3,
+    "weeknight_options": 20,
+    "weekend_options": 10,
     "friday_plan": false,
     "same_lunch_as_dinner": true,
     "cooldown_weeks": {"5": 2, "4": 4, "3": 10},

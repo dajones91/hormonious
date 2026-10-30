@@ -43,6 +43,16 @@ Jade may want to check hers with her GP or a dietitian.</p>
     <p class="muted small">Portions are sized halfway between your dinner and lunch targets, keeping the stricter carb limit.
       Untick to size lunch to its own targets.</p>
   </fieldset>
+
+  <fieldset>
+    <legend>Weekly menu size</legend>
+    <label>Weeknight options <input type="number" class="short" min="1" max="50" name="weeknight_options"
+           value="{{ settings.get('weeknight_options', 20) }}"></label>
+    <label>Weekend specials <input type="number" class="short" min="1" max="30" name="weekend_options"
+           value="{{ settings.get('weekend_options', 10) }}"></label>
+    <p class="muted small">Applies to menus built from now on (each Monday). If the library has fewer eligible
+      recipes, the menu shows all of them.</p>
+  </fieldset>
   <button type="submit">Save profiles</button>
 </form>
 {% endblock %}
