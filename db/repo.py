@@ -8,12 +8,12 @@ from sqlalchemy.orm import Session
 from core.exclusions import ExclusionRule
 from core.loaders import load_household, load_ingredients, load_recipes
 from core.menu import DaySlot, Menu
-from core.portions import FlexChoice, MealTarget, Targets
+from core.portions import Eaters, FlexChoice, MealTarget, Targets, all_eaters, meals_for_portions
 from core.ratings import Rating
 from core.schema import FlexComponent, FlexOption, Ingredient, Recipe, RecipeItem
 from db.models import (Base, Exclusion, FlexComponentRow, FlexOptionRow, IngredientRow, PantryRow, Person,
                        PlanSlotRow, PortionChoiceRow, RatingRow, RecipeItemRow, RecipeRestoreRow, RecipeRow,
-                       SettingRow, ShoppingTickRow, TargetRow, WeekRow)
+                       SettingRow, ShoppingTickRow, SlotEatersRow, TargetRow, WeekRow)
 
 _RECIPE_FIELDS = ("slug", "title", "source", "source_url", "servings", "active_min", "total_min",
                   "tier", "cuisine", "spice", "tags", "steps", "reheat_note", "base_split")
@@ -269,3 +269,29 @@ def set_recipe_status(session: Session, slug: str, status: str) -> None:
 
 def get_exclusion_notes(session: Session) -> list[str]:
     return [f"- {r.person.name}: {r.note or r.family}" for r in session.scalars(select(Exclusion))]
+
+
+def default_eaters(slot: PlanSlotRow) -> Eaters:
+    """Both of us, for dinner and, on 4-portion nights, the next day's lunch."""
+    return all_eaters(meals_for_portions(slot.portions))
+
+
+def get_eaters(session: Session, slot: PlanSlotRow) -> Eaters:
+    row = session.get(SlotEatersRow, slot.id)
+    if row is None:
+        return default_eaters(slot)
+    return {tuple(e.split(":", 1)) for e in row.eaters}
+
+
+def set_eaters(session: Session, slot: PlanSlotRow, eaters: Eaters) -> None:
+    """Store who's eating; going back to the default removes the stored row."""
+    row = session.get(SlotEatersRow, slot.id)
+    if eaters == default_eaters(slot):
+        if row:
+            session.delete(row)
+        return
+    value = sorted(f"{p}:{m}" for p, m in eaters)
+    if row:
+        row.eaters = value
+    else:
+        session.add(SlotEatersRow(slot_id=slot.id, eaters=value))

@@ -111,11 +111,12 @@ def build_menu(eligible: list[Recipe], week_start: date, last_cooked: dict[str, 
     return Menu(pick("weeknight", n_weeknight), pick("weekend", n_weekend))
 
 
-def check_assignment(slot: DaySlot, recipe: Recipe) -> list[str]:
-    """Warnings when a recipe is put on a night it doesn't suit."""
+def check_assignment(slot: DaySlot, recipe: Recipe, has_lunch: bool | None = None) -> list[str]:
+    """Warnings when a recipe is put on a night it doesn't suit. `has_lunch`: is anyone boxing a lunch?"""
+    has_lunch = slot.portions == 4 if has_lunch is None else has_lunch
     warnings = []
     if slot.kind == "weeknight" and recipe.tier != "weeknight":
         warnings.append(f"{recipe.title} is a weekend special ({recipe.total_min} min) on a weeknight")
-    if slot.portions == 4 and "lunchbox-friendly" not in recipe.tags:
+    if has_lunch and "lunchbox-friendly" not in recipe.tags:
         warnings.append(f"{recipe.title} isn't lunchbox-friendly, but {slot.label} also makes tomorrow's lunch")
     return warnings

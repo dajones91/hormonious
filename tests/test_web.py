@@ -1,5 +1,6 @@
 """Smoke tests for the web pages, using a throwaway database file."""
 
+import re
 from datetime import date
 
 import pytest
@@ -305,3 +306,37 @@ def test_recipe_search(client):
     assert "0 recipes match" in empty and 'id="no-results" >' in empty  # the 'no results' message isn't hidden
     everything = client.get("/recipes").get_data(as_text=True)
     assert "20 recipes pass your rules" in everything
+
+
+def test_whos_eating_ticks_change_card_and_shopping(client):
+    monday = plan_two_nights(client)[1]
+    page = client.get("/week/2026-10-31").get_data(as_text=True)
+    assert re.search(r'name="eat-2026-11-02-jade-lunch"\s+checked', page)  # everyone ticked by default
+    # Jade's away on Monday: only Dale's dinner and lunch
+    form = {"slot-2026-11-02": "chicken-tikka-traybake", "slot-2026-10-31": "steak-chimichurri",
+            "eaters-2026-11-02": "1", "eat-2026-11-02-dale-dinner": "on", "eat-2026-11-02-dale-lunch": "on"}
+    client.post("/week/2026-10-31", data=form)
+    week = client.get("/week/2026-10-31").get_data(as_text=True)
+    assert "2 portions · lunch Tue" in week
+    card = client.get(f"/cook/{monday}").get_data(as_text=True)
+    assert "2 portions (Dale: dinner + lunch)" in card and "Jade" not in card.split("Plating guide")[1].split("How was it")[0].split("Ingredients")[0]
+    assert "325 g chicken breast fillets" in card  # half the base
+    shopping = client.get("/shopping/2026-10-31").get_data(as_text=True)
+    assert "Cauliflower rice" not in shopping
+
+
+def test_no_one_ticked_is_rejected(client):
+    plan_two_nights(client)
+    form = {"slot-2026-11-02": "chicken-tikka-traybake", "eaters-2026-11-02": "1"}
+    page = client.post("/week/2026-10-31", data=form, follow_redirects=True).get_data(as_text=True)
+    assert "tick at least one person" in page
+
+
+def test_back_to_everyone_clears_the_override(client):
+    monday = plan_two_nights(client)[1]
+    base = {"slot-2026-11-02": "chicken-tikka-traybake", "eaters-2026-11-02": "1"}
+    client.post("/week/2026-10-31", data={**base, "eat-2026-11-02-dale-dinner": "on"})
+    assert "1 portion (Dale: dinner)" in client.get(f"/cook/{monday}").get_data(as_text=True)
+    everyone = {f"eat-2026-11-02-{p}-{m}": "on" for p in ("dale", "jade") for m in ("dinner", "lunch")}
+    client.post("/week/2026-10-31", data={**base, **everyone})
+    assert "4 portions (Dale: dinner + lunch · Jade: dinner + lunch)" in client.get(f"/cook/{monday}").get_data(as_text=True)

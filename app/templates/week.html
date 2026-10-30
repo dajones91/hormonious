@@ -39,8 +39,8 @@
         <span class="day"><b>{{ slot.day.strftime("%a") }}</b> {{ slot.day.strftime("%d") }}</span>
         <span class="muted">
           {% if slot.kind == "off" %}no plan
-          {% elif slot.lunch_for %}{{ slot.portions }} portions · lunch {{ slot.lunch_for.strftime("%a") }}
-          {% else %}{{ slot.portions }} portions{% endif %}
+          {% else %}{{ row.eaters|length }} portion{{ "s" if row.eaters|length != 1 }}
+            {%- if row.eaters|selectattr(1, "equalto", "lunch")|list %} · lunch {{ slot.lunch_for.strftime("%a") }}{% endif %}{% endif %}
         </span>
       </label>
       {% if slot.kind != "off" %}
@@ -58,6 +58,17 @@
           {% for r in others %}<option value="{{ r.slug }}" {% if row.value == r.slug %}selected{% endif %}>{{ r.title }}</option>{% endfor %}
         </optgroup>
       </select>
+      <fieldset class="eaters" aria-label="Who's eating on {{ slot.label }}">
+        <input type="hidden" name="eaters-{{ slot.day.isoformat() }}" value="1">
+        {% for person in ["dale", "jade"] %}
+        <span class="eater"><span class="who {{ person }}">{{ person|title }}</span>
+          {% for meal in row.meals %}
+          <label><input type="checkbox" name="eat-{{ slot.day.isoformat() }}-{{ person }}-{{ meal }}"
+                 {% if (person, meal) in row.eaters %}checked{% endif %}> {{ meal }}</label>
+          {% endfor %}
+        </span>
+        {% endfor %}
+      </fieldset>
       {# A submit button, not a link: it saves any dropdown changes first, then opens this night's card. #}
       {% if row.recipe %}<button type="submit" name="open" value="{{ slot.day.isoformat() }}" class="btn small cook-link">Open recipe card ›</button>{% endif %}
       {% if row.rated is not none %}

@@ -233,3 +233,10 @@ input.short { width: 76px; }
 .remove { font-weight: 600; font-size: 0.85rem; color: var(--muted); }
 .plates.compact { display: table; font-size: 0.85rem; }
 .plates.compact th, .plates.compact td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; }
+
+/* Who's eating on a night */
+fieldset.eaters { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 0; padding: 8px 0 0; border: 0;
+                  border-top: 1px dashed var(--line); border-radius: 0; box-shadow: none; background: none; overflow: visible; }
+.eater { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+.eater label { display: inline-flex; align-items: center; gap: 3px; margin: 0; }
+.eater input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--brand); }

@@ -35,6 +35,11 @@ class MealTarget:
 
 
 Targets = dict[str, dict[str, MealTarget]]  # person -> meal -> target
+Eaters = set[tuple[str, str]]  # who's eating which meal on a night, e.g. {("dale", "dinner"), ("dale", "lunch")}
+
+
+def all_eaters(meals: tuple[str, ...] = MEALS) -> Eaters:
+    return {(p, m) for p in PEOPLE for m in meals}
 
 
 @dataclass(frozen=True)
@@ -198,24 +203,37 @@ def blended_target(a: MealTarget, b: MealTarget) -> MealTarget:
 def plan_plates(recipe: Recipe, catalogue: dict[str, Ingredient], targets: Targets, shares: dict[str, float],
                 meals: tuple[str, ...] = MEALS,
                 choices: dict[tuple[str, str], dict[str, FlexChoice]] | None = None,
-                same_lunch: bool = False) -> list[Plate]:
-    """Every plate for one cook: each person x each meal. `choices` is keyed by (person, meal).
+                same_lunch: bool = False, eaters: Eaters | None = None) -> list[Plate]:
+    """Every plate for one cook. `choices` is keyed by (person, meal).
 
-    With `same_lunch`, each person's lunch box matches their dinner: the flexible part is
-    sized once against a target halfway between their dinner and lunch targets, and their
-    dinner choices apply to both meals.
+    `eaters` says who's eating which meal (e.g. only Dale, when Jade is away); by default
+    it's both of us for each of `meals`. Each plate gets its owner's usual share of a meal,
+    so a night for one person cooks just their portions.
+
+    With `same_lunch`, a person eating both meals gets a lunch box that matches their dinner:
+    the flexible part is sized once against a target halfway between their dinner and lunch
+    targets, and their dinner choices apply to both.
     """
     choices = choices or {}
+    eaters = all_eaters(meals) if eaters is None else eaters
     plates = []
-    for m in meals:
+    for m in MEALS:
         for p in PEOPLE:
-            if same_lunch and len(meals) > 1:
-                sizing = blended_target(*(targets[p][meal] for meal in meals))
-                choice = choices.get((p, meals[0]))
+            if (p, m) not in eaters:
+                continue
+            mine = [meal for meal in MEALS if (p, meal) in eaters]
+            if same_lunch and len(mine) > 1:
+                sizing = blended_target(*(targets[p][meal] for meal in mine))
+                choice = choices.get((p, mine[0]))
             else:
                 sizing, choice = targets[p][m], choices.get((p, m))
             plates.append(build_plate(recipe, catalogue, p, m, shares[p], sizing, choice))
     return plates
+
+
+def recipe_fraction(recipe: Recipe, plates: list[Plate]) -> float:
+    """How much of the recipe's shared base to cook for these plates (1.0 = the full 4 portions)."""
+    return sum(2 * p.share for p in plates) / recipe.servings
 
 
 def meals_for_portions(portions: int) -> tuple[str, ...]:
