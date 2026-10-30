@@ -61,7 +61,9 @@ Copy `.env.example` to `.env` and fill it in. `.env` is never committed.
 
 ## Deployment
 
-_Filled in during stage 7 (PythonAnywhere)._
+Step-by-step guide: [docs/DEPLOY.md](docs/DEPLOY.md). In short: a free PythonAnywhere account, the code cloned from GitHub with a read-only token, secrets in `.env`, your database uploaded, a manual-config web app pointing at `wsgi.py`, Force HTTPS on, then Safari → Add to Home Screen on each iPhone.
+
+`wsgi.py` refuses to start without a real `SECRET_KEY` and `FAMILY_PASSWORD`. Database structure changes are Alembic migrations (`migrations/versions`) that run automatically when the app starts.
 
 ## Running costs
 
