@@ -73,7 +73,7 @@ kidney_beans,Red kidney beans (drained),Tins & jars,as_sold,95,7.0,13.0,1.0,6.5,
 black_beans,Black beans (drained),Tins & jars,as_sold,95,7.5,13.0,0.5,7.0,0.5,1,low,pulse,,g,240,400 g tin,,0,approx-uk,0
 butter_beans,Butter beans (drained),Tins & jars,as_sold,77,5.9,10.4,1.0,4.6,0.5,1,low,pulse,,g,240,400 g tin,,0,approx-uk,0
 light_coconut_milk,Reduced-fat coconut milk,Tins & jars,as_sold,73,0.7,1.8,1.5,0,7.0,1,na,,,g,400,tin,,0,approx-uk,0
-olives,Kalamata olives (drained),Tins & jars,as_sold,230,1.5,4.0,0,3.0,23.0,1,na,healthy_fat,,g,160,jar,,0,approx-uk,0
+olives,Kalamata olives (drained),Tins & jars,as_sold,230,1.5,4.0,0,3.0,23.0,1,na,healthy_fat,olive,g,160,jar,,0,approx-uk,0
 capers,Capers (drained),Tins & jars,as_sold,23,2.4,4.9,0.4,3.2,0.9,1,na,,,g,60,jar,,1,approx-uk,0
 gherkins,Gherkins,Tins & jars,as_sold,20,0.8,3.5,2.5,1.2,0.2,1,na,,,g,200,jar,,0,approx-uk,0
 thai_green_curry_paste,Thai green curry paste,World foods,as_sold,130,2.0,13.0,9.0,4.0,7.0,1,na,,,g,110,jar,,0,approx-uk,0

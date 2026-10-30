@@ -65,6 +65,24 @@
     },
     {
       "person": "dale",
+      "family": "olive",
+      "exceptions": [],
+      "note": "No olives (olive oil is fine)."
+    },
+    {
+      "person": "dale",
+      "family": "fennel",
+      "exceptions": [],
+      "note": "Household rule: no fennel (bulb or seeds)."
+    },
+    {
+      "person": "jade",
+      "family": "fennel",
+      "exceptions": [],
+      "note": "Household rule: no fennel (bulb or seeds)."
+    },
+    {
+      "person": "dale",
       "family": "whole_fruit",
       "exceptions": [],
       "note": "No whole pieces of fruit, fresh or dried. Juice and zest are fine."

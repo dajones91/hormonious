@@ -54,6 +54,7 @@ A private weekly meal planner for Dale and Jade, replacing Gousto. Full plan and
 - Exclusions are hard rules. If either person excludes something, the recipe is never suggested.
   - Jade: all fish, shellfish and anchovies (incl. Caesar dressing). **Exceptions:** fish sauce, shrimp paste, oyster sauce, Worcestershire sauce, breaded/battered cod (these may be suggested). Mushrooms in every form, including stock and powder.
   - Dale: whole pieces of fruit, fresh or dried, plus chutney and preserved lemon. Juice and zest are OK, and a lemon slice as garnish is OK. Tomato, pepper, avocado, olives and coconut count as savoury and are OK.
+  - Dale: no olives or tapenade (olive oil is fine). Household (both): no fennel, bulb or seeds (2026-10-30).
   - Household (both): no meat substitutes at all (Quorn/mycoprotein, tofu, tempeh, seitan, TVP, plant-based or "vegan" mince/sausages etc.) and no paneer. Edamame and soy sauce are fine.
 - Matching works by food family tags on ingredients, then a keyword safety net, then the exception list.
 - Default per-plated-portion rules (configurable): protein ≥ 35 g, fibre ≥ 8 g, Jade's carbs ≤ 45 g, low-GI carbs, little or no added sugar, no refined white carb base without a swap, protein + veg + healthy fat.

@@ -38,7 +38,7 @@ PARENTS: dict[str, str] = {
     "fruit_preserve": "whole_fruit",
     # Meat substitutes (Quorn is a fungus, but it's caught here, not as a mushroom)
     "mycoprotein": "meat_substitute",
-    # "paneer" is its own family with no parent.
+    # "paneer", "olive" and "fennel" are families of their own with no parent.
     # Meat (used to tell whether a recipe is vegetarian)
     "chicken": "poultry",
     "turkey": "poultry",
@@ -83,6 +83,10 @@ KEYWORD_RULES: list[tuple[str | None, str]] = [
                         r"(?:\w+\s+)?(?:mince|sausages?|burgers?|chicken|bacon|meatballs?|nuggets?|pieces|strips|"
                         r"fillets?|meat|fish|fingers)\b"),
     ("paneer", _words("paneer")),
+    # Olives (Dale) and fennel (both). Olive oil is fine, so it's used up first.
+    (None, r"\b(?:extra\s+virgin\s+)?olive\s+oil\b"),
+    ("olive", r"\bolives?\b|\btapenade\b"),
+    ("fennel", _words("fennel")),
     # Juice and zest are fine for Dale
     ("fruit_juice", r"\b(?:lemon|lime|orange|grapefruit|apple|pineapple|pomegranate|yuzu|cranberry|fruit)s?\s+(?:juice|zest)\b"),
     ("fruit_juice", r"\b(?:juice|zest)\s+of\s+(?:an?\s+|\d+\s+)?(?:lemon|lime|orange)s?\b"),

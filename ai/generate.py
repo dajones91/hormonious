@@ -175,7 +175,7 @@ def user_prompt(tier: str, idea: str) -> str:
 
 # Families whose ingredients we never offer the AI when it's inventing a recipe.
 EXCLUDED_FAMILIES = {"salmon", "cod", "prawn", "anchovy", "mushroom", "fresh_fruit", "dried_fruit", "fruit_preserve",
-                     "mycoprotein", "meat_substitute", "paneer", "oyster"}
+                     "mycoprotein", "meat_substitute", "paneer", "oyster", "olive", "fennel"}
 
 # Format rules shared by recipe generation and recipe import.
 RECIPE_FORMAT = """- All weights are as bought/weighed: raw meat and veg, DRY rice/pasta/grains, DRAINED tinned beans.
