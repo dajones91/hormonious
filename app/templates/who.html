@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Who's this? · Hormonious{% endblock %}
+{% block topnav %}{% endblock %}
+{% block tabbar %}{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <h1>Who's using this device?</h1>
+  <p class="muted">So your ratings are yours. You can switch on the Profiles page.</p>
+  <form method="post" class="who-buttons">
+    {% for person in people %}
+    <button type="submit" name="person" value="{{ person }}" class="who-btn {{ person }}{{ ' chosen' if person == current }}">
+      {{ person|title }}</button>
+    {% endfor %}
+  </form>
+</div>
+{% endblock %}

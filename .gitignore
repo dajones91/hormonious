@@ -10,8 +10,9 @@ venv/
 .coverage
 htmlcov/
 
-# Local database
+# Local database and backups
 *.db
+backups/
 *.sqlite3
 instance/
 

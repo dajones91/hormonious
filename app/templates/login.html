@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Log in · Hormonious{% endblock %}
+{% block topnav %}{% endblock %}
+{% block tabbar %}{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <h1>Hormonious</h1>
+  <p class="muted">Our weekly meal planner. Enter the family password.</p>
+  <form method="post">
+    <label>Password
+      <input type="password" name="password" autocomplete="current-password" required autofocus></label>
+    <button type="submit" class="btn">Log in</button>
+  </form>
+</div>
+{% endblock %}

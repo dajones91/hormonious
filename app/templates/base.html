@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#9a6b4b">
+  <!-- Home-screen app: name, icon, and open full-screen with the status bar over our header -->
+  <link rel="manifest" href="{{ url_for('manifest') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hormonious">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>{% block title %}Hormonious{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
@@ -13,12 +21,14 @@
   {% set section = request.endpoint.split('.')[-1] %}
   <header class="topbar">
     <a class="brand" href="{{ url_for('main.week') }}">Hormonious</a>
+    {% block topnav %}
     <nav class="topnav">
       <a href="{{ url_for('main.week') }}" {% if section in ('week', 'cook') %}aria-current="page"{% endif %}>Week</a>
       <a href="{{ url_for('main.recipes') }}" {% if section in ('recipes', 'recipe') %}aria-current="page"{% endif %}>Recipes</a>
       <a href="{{ url_for('main.shopping_now') }}" {% if section == 'shopping' %}aria-current="page"{% endif %}>Shopping</a>
       <a href="{{ url_for('main.profiles') }}" {% if section == 'profiles' %}aria-current="page"{% endif %}>Profiles</a>
     </nav>
+    {% endblock %}
   </header>
 
   <main>
@@ -33,6 +43,7 @@
     high-protein, low-GI eating; this app isn't medical advice.
   </footer>
 
+  {% block tabbar %}
   <nav class="tabbar" aria-label="Main">
     <a href="{{ url_for('main.week') }}" {% if section in ('week', 'cook') %}aria-current="page"{% endif %}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Week</a>
@@ -43,6 +54,7 @@
     <a href="{{ url_for('main.profiles') }}" {% if section == 'profiles' %}aria-current="page"{% endif %}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profiles</a>
   </nav>
+  {% endblock %}
   {% block scripts %}{% endblock %}
 </body>
 </html>

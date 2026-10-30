@@ -2,6 +2,13 @@
 {% block title %}Profiles · Hormonious{% endblock %}
 {% block content %}
 <h1>Profiles and targets</h1>
+{% if login_enabled %}
+<div class="notice device">
+  {% if me %}This device is <span class="who {{ me }}">{{ me|title }}</span>.{% endif %}
+  <a href="{{ url_for('auth.who') }}">Switch person</a>
+  <form method="post" action="{{ url_for('auth.logout') }}" class="inline"><button type="submit" class="btn small ghost">Log out</button></form>
+</div>
+{% endif %}
 <p class="muted">Per-meal targets used to size each person's portion. Starting values are placeholders, so set your own.
 Jade may want to check hers with her GP or a dietitian.</p>
 

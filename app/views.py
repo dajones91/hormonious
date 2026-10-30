@@ -6,6 +6,7 @@ from flask import Blueprint, Response, abort, current_app, flash, g, redirect, r
 
 from ai.generate import AiError, call_claude
 from ai.importer import call_claude_import
+from app.auth import current_person
 from app.import_form import EXTRA_ROWS, recipe_from_form
 from core.cooking import cook_base, cook_flex, pot_shares
 from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
@@ -376,7 +377,7 @@ def rate(slot_id: int):
         flash("You can rate this once you've cooked it.", "error")
         return redirect(url_for("main.cook", slot_id=slot_id))
     saved = 0
-    for person in PEOPLE:
+    for person in [current_person()] if current_person() else PEOPLE:  # on a phone, you rate as yourself
         stars_text = request.form.get(f"{person}-stars", "")
         if not stars_text:
             continue

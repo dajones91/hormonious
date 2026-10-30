@@ -6,9 +6,10 @@ the number of tables small.
 
 import os
 from datetime import date, datetime
+from pathlib import Path
 
 from dotenv import load_dotenv
-from sqlalchemy import JSON, ForeignKey, String, UniqueConstraint, create_engine
+from sqlalchemy import JSON, ForeignKey, String, UniqueConstraint, create_engine, inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
 
@@ -245,10 +246,40 @@ class ImportDraftRow(Base):
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
 
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE = PROJECT_DIR / ".env"
+
+
+def database_url() -> str:
+    """DATABASE_URL from .env, or hormonious.db in the project folder (wherever the app is run from)."""
+    load_dotenv(ENV_FILE)
+    return os.getenv("DATABASE_URL") or f"sqlite:///{(PROJECT_DIR / 'hormonious.db').as_posix()}"
+
+
+def upgrade_database(engine) -> None:
+    """Bring the database's structure up to date by running any new migrations (migrations/versions).
+
+    A database made before migrations existed (it has our tables but no version record) matches the
+    first migration, so it's simply marked as up to that point. Your data is never touched.
+    """
+    from alembic import command
+    from alembic.config import Config
+
+    config = Config(str(PROJECT_DIR / "alembic.ini"))
+    config.set_main_option("script_location", str(PROJECT_DIR / "migrations"))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        tables = set(inspect(connection).get_table_names())
+        if "recipe" in tables and "alembic_version" not in tables:
+            command.stamp(config, BASELINE_REVISION)
+        command.upgrade(config, "head")
+
+
+BASELINE_REVISION = "0001"
+
+
 def make_session_factory(url: str | None = None) -> sessionmaker:
-    """Connect to the database named in .env (DATABASE_URL), or the URL given."""
-    load_dotenv()
-    url = url or os.getenv("DATABASE_URL", "sqlite:///hormonious.db")
-    engine = create_engine(url)
-    Base.metadata.create_all(engine)  # adds any brand-new tables; never changes existing ones
+    """Connect to the database (DATABASE_URL in .env, or the URL given) and bring it up to date."""
+    engine = create_engine(url or database_url())
+    upgrade_database(engine)
     return sessionmaker(engine)

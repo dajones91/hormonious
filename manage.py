@@ -6,6 +6,8 @@
     python manage.py serve             # run the web app at http://127.0.0.1:5000
     python manage.py serve --lan       # ...and let phones on your Wi-Fi open it too
     python manage.py generate --tier weeknight --idea "a lamb curry"   # create an AI recipe (costs ~10-30p)
+    python manage.py make-secret       # print a strong random SECRET_KEY to paste into .env
+    python manage.py backup            # save a dated copy of the database in backups/
 """
 
 import argparse
@@ -64,6 +66,23 @@ def cmd_generate(session, tier: str, idea: str) -> None:
         print(f"Nothing saved: no attempt passed. Cost {cost}.")
 
 
+def cmd_backup() -> None:
+    """A safe copy of the live database (SQLite's own backup, fine while the app is running)."""
+    import sqlite3
+    from datetime import datetime
+    from db.models import PROJECT_DIR, database_url
+    url = database_url()
+    if not url.startswith("sqlite:///"):
+        print("Backups here only work for the SQLite database.")
+        return
+    source = url.removeprefix("sqlite:///")
+    target = PROJECT_DIR / "backups" / f"hormonious-{datetime.now():%Y-%m-%d-%H%M}.db"
+    target.parent.mkdir(exist_ok=True)
+    with sqlite3.connect(source) as src, sqlite3.connect(target) as dst:
+        src.backup(dst)
+    print(f"Backed up to {target}")
+
+
 def cmd_check(session, name: str) -> None:
     hits = check_name(name, get_exclusion_rules(session))
     print("\n".join(f"EXCLUDED: {h}" for h in hits) if hits else f"'{name}' is allowed for everyone.")
@@ -79,11 +98,20 @@ def main() -> None:
     gen = sub.add_parser("generate", help="create a new recipe with AI (uses the Anthropic API)")
     gen.add_argument("--tier", choices=["weeknight", "weekend"], default="weeknight")
     gen.add_argument("--idea", default="", help='optional, e.g. "a lamb curry"')
+    sub.add_parser("make-secret", help="print a strong random SECRET_KEY for .env")
+    sub.add_parser("backup", help="save a dated copy of the database in backups/")
     serve = sub.add_parser("serve", help="run the web app locally")
     serve.add_argument("--lan", action="store_true",
                        help="let phones on your home Wi-Fi connect (turns the debugger off)")
     args = parser.parse_args()
 
+    if args.command == "make-secret":
+        import secrets
+        print(secrets.token_hex(32))
+        return
+    if args.command == "backup":
+        cmd_backup()
+        return
     if args.command == "serve":
         from app import create_app
         # The debugger can run code, so it's only on when the app is reachable from this PC alone.

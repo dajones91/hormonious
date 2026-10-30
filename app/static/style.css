@@ -36,7 +36,7 @@ h3.sub { color: var(--muted); font-weight: 600; }
 
 /* Header and navigation */
 .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
-          padding: 12px 16px; background: var(--choc); color: #fff; }
+          padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: var(--choc); color: #fff; }
 .brand { color: #fff; font-weight: 900; font-size: 1.25rem; text-decoration: none; letter-spacing: -0.02em; }
 .topnav { display: none; gap: 6px; }
 .topnav a { color: #fff; text-decoration: none; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
@@ -240,3 +240,18 @@ fieldset.eaters { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 0
 .eater { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; }
 .eater label { display: inline-flex; align-items: center; gap: 3px; margin: 0; }
 .eater input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--brand); }
+
+/* Login and "who's this?" */
+.auth-box { max-width: 420px; margin: 40px auto; background: var(--card); border-radius: var(--radius);
+            padding: 24px 20px; box-shadow: var(--shadow); text-align: center; }
+.auth-box label { display: block; text-align: left; font-weight: 700; margin: 16px 0; }
+.auth-box input[type="password"] { display: block; width: 100%; margin-top: 6px; font: inherit; padding: 12px 14px;
+                                   border-radius: 12px; border: 2px solid var(--line); }
+.auth-box .btn { width: 100%; }
+.who-buttons { display: flex; gap: 12px; margin-top: 16px; }
+button.who-btn { flex: 1; font-size: 1.3rem; padding: 20px; border-radius: var(--radius); color: #fff; background: var(--brand); }
+button.who-btn.jade { background: var(--sage); }
+button.who-btn.chosen { outline: 4px solid var(--sun); }
+.notice.device { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+form.inline { display: inline; margin: 0; }
+form.inline button { margin: 0; width: auto; }

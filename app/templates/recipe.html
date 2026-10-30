@@ -56,7 +56,7 @@
   {% if slot and can_rate %}
   <form method="post" action="{{ url_for('main.rate', slot_id=slot.id) }}" class="rate-form" id="rate">
     <h2>How was it?</h2>
-    {% for person in people %}{% set mine = slot_ratings.get(person) %}
+    {% for person in ([me] if me else people) %}{% set mine = slot_ratings.get(person) %}
     <div class="rate-row">
       <span class="who {{ person }}">{{ person|title }}</span>
       <fieldset class="star-input" aria-label="{{ person|title }}'s stars">
