@@ -3,7 +3,7 @@
 import os
 from datetime import date
 
-from flask import Flask, g
+from flask import Flask, flash, g, redirect, url_for
 
 from db.models import make_session_factory
 
@@ -13,6 +13,12 @@ def create_app(database_url: str | None = None, today: date | None = None) -> Fl
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-only-change-me")
     app.config["SESSION_FACTORY"] = make_session_factory(database_url)
     app.config["TODAY"] = today  # tests can pin the date; None means the real date
+    app.config["MAX_CONTENT_LENGTH"] = 15 * 1024 * 1024  # photo uploads up to 15 MB
+
+    @app.errorhandler(413)
+    def too_big(exc):
+        flash("That photo is too big (over 15 MB). Try a screenshot instead.", "error")
+        return redirect(url_for("main.recipes"))
 
     @app.teardown_appcontext
     def close_db(exc):

@@ -6,7 +6,7 @@
   {{ recipe_image(r, big=True) }}
   {% if slot %}
     <p class="eyebrow"><a href="{{ url_for('main.week', start=week_start.isoformat()) }}">‹ Week</a> ·
-      {{ slot.day.strftime("%A %d %b") }} · {{ portions }} portions{% if portions == 4 %} (2 dinners + 2 lunches){% endif %}</p>
+      {{ slot.day.strftime("%A %d %b") }} · {{ portions }} portion{{ "s" if portions != 1 }} ({{ eating }})</p>
   {% else %}
     <p class="eyebrow"><a href="{{ url_for('main.recipes') }}">‹ Recipes</a> · preview for {{ portions }} portions</p>
   {% endif %}
@@ -82,7 +82,7 @@
     {% for meal in meals %}
     <div class="plate-block">
       <h3>{{ "Dinner" if meal == "dinner" else "Lunch box (next day)" }}</h3>
-      {% for person in people %}{% set p = plates[(person, meal)] %}{% set n = p.total.rounded() %}{% set t = targets[person][meal] %}
+      {% for person in people if (person, meal) in plates %}{% set p = plates[(person, meal)] %}{% set n = p.total.rounded() %}{% set t = targets[person][meal] %}
       <div class="plate">
         <div class="plate-head"><span class="who {{ person }}">{{ person|title }}</span>
           <span class="muted">{{ pot[(person, meal)] }}% of the pot</span></div>
@@ -108,11 +108,11 @@
   <details class="choices" {% if choices %}open{% endif %}>
     <summary>Change our portions for this night</summary>
     <form method="post">
-      {% for group, group_meals in groups %}{% for person in people %}{% for comp in r.flexible %}
+      {% for person, group, group_meals in groups %}{% for comp in r.flexible %}
         {% set chosen = (choices.get((person, group_meals[0])) or {}).get(comp.component) %}
         <div class="choice-row">
           <span class="who {{ person }}">{{ person|title }}</span>
-          <span class="muted">{{ "dinner + lunch" if group == "both" else group }} · {{ comp.component }}</span>
+          <span class="muted">{{ group_meals|join(" + ") }} · {{ comp.component }}</span>
           <select name="{{ person }}-{{ group }}-{{ comp.component }}-option" aria-label="{{ person }} {{ group }} {{ comp.component }}">
             <option value="">Automatic</option>
             {% for o in comp.options %}
@@ -123,7 +123,7 @@
                  name="{{ person }}-{{ group }}-{{ comp.component }}-grams" aria-label="grams"
                  value="{{ chosen.grams|int if chosen and chosen.grams is not none else '' }}">
         </div>
-      {% endfor %}{% endfor %}{% endfor %}
+      {% endfor %}{% endfor %}
       <p class="muted small">Leave grams blank to size it to your targets. Grams are dry/raw weight.</p>
       <button class="btn" type="submit">Update portions</button>
     </form>

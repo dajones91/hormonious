@@ -8,14 +8,14 @@ from sqlalchemy.orm import Session
 from ai.generate import Call, GenerationResult, call_claude, generate_recipe, system_prompt
 from core.exclusions import ExclusionHit, check_recipe
 from core.menu import Menu, build_menu, menu_is_ready, week_slots
-from core.portions import Plate, Targets, base_shares, meals_for_portions, plan_plates
+from core.portions import Eaters, Plate, Targets, base_shares, plan_plates
 from core.ratings import DEFAULT_COOLDOWN_WEEKS, household_rating
 from core.rules import Issue, RuleSettings, passes, validate
 from core.schema import Ingredient, Recipe
 from core.shopping import PlannedCook, ShoppingItem, build_list
 from db.models import PlanSlotRow, WeekRow
 from db.repo import (all_titles_and_slugs, create_week, get_catalogue, get_choices, get_exclusion_notes,
-                     get_exclusion_rules, get_pantry, get_ratings, get_recipe, get_recipes, get_restores, get_settings,
+                     get_eaters, get_exclusion_rules, get_pantry, get_ratings, get_recipe, get_recipes, get_restores, get_settings,
                      get_targets, get_week, last_cooked, save_ingredient, save_recipe)
 
 
@@ -40,13 +40,14 @@ class Context:
     settings: dict
     rule_settings: RuleSettings
 
-    def plates(self, recipe: Recipe, portions: int = 4, choices=None) -> list[Plate]:
+    def plates(self, recipe: Recipe, eaters: Eaters | None = None, choices=None) -> list[Plate]:
+        """Plates for whoever's eating (both of us, dinner and lunch, by default)."""
         shares = base_shares(recipe, self.settings["split_mode"], self.settings["fixed_split"], self.targets)
-        return plan_plates(recipe, self.catalogue, self.targets, shares, meals_for_portions(portions), choices,
+        return plan_plates(recipe, self.catalogue, self.targets, shares, choices=choices, eaters=eaters,
                            same_lunch=self.settings.get("same_lunch_as_dinner", True))
 
-    def check(self, recipe: Recipe, rules, portions: int = 4, choices=None) -> RecipeCheck:
-        plates = self.plates(recipe, portions, choices)
+    def check(self, recipe: Recipe, rules, eaters: Eaters | None = None, choices=None) -> RecipeCheck:
+        plates = self.plates(recipe, eaters, choices)
         issues = validate(recipe, self.catalogue, plates, self.targets, self.rule_settings)
         return RecipeCheck(recipe, plates, issues, check_recipe(recipe, self.catalogue, rules))
 
@@ -110,8 +111,8 @@ def week_cooks(session: Session, week: WeekRow, ctx: Context) -> list[tuple[Plan
     for slot in week.slots:
         if slot.recipe_slug:
             recipe = get_recipe(session, slot.recipe_slug)
-            plates = ctx.plates(recipe, slot.portions, get_choices(slot))
-            cooks.append((slot, PlannedCook(recipe, slot.portions, plates)))
+            plates = ctx.plates(recipe, get_eaters(session, slot), get_choices(slot))
+            cooks.append((slot, PlannedCook(recipe, len(plates), plates)))
     return cooks
 
 

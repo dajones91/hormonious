@@ -93,7 +93,7 @@ def test_whole_fruit_excluded_for_dale(name, rules):
 @pytest.mark.parametrize("name", [
     "Lemon juice", "lime juice", "lemon zest", "orange zest", "juice of 1 lime", "apple juice",
     "Apple cider vinegar", "Cherry tomatoes", "plum tomatoes", "red pepper", "orange pepper",
-    "kaffir lime leaves", "Avocado", "light coconut milk", "olives", "lemon", "lemon slices to garnish",
+    "kaffir lime leaves", "Avocado", "light coconut milk", "lemon", "lemon slices to garnish",
     "grapeseed oil", "red lentils", "tomatoes",
 ])
 def test_savoury_and_juice_allowed_for_dale(name, rules):
@@ -160,10 +160,27 @@ def test_every_family_in_rules_is_known():
 
 def ancestors_all():
     from core.families import PARENTS
-    return set(PARENTS) | set(PARENTS.values()) | {"fruit_juice", "paneer"}
+    return set(PARENTS) | set(PARENTS.values()) | {"fruit_juice", "paneer", "olive", "fennel"}
 
 
 def test_all_seed_recipes_pass_exclusions(catalogue, recipes, rules):
     failing = {r.slug: [str(h) for h in check_recipe(r, catalogue, rules)]
                for r in recipes if not is_allowed(r, catalogue, rules)}
     assert failing == {}
+
+
+# --- Olives (Dale) and fennel (both) ---------------------------------------------------------
+
+@pytest.mark.parametrize("name", ["Kalamata olives", "green olives", "black olive", "olive tapenade"])
+def test_olives_excluded_for_dale(name, rules):
+    assert people_excluding(name, rules) == ["dale"]
+
+
+@pytest.mark.parametrize("name", ["Olive oil", "extra virgin olive oil", "olive oil spray"])
+def test_olive_oil_is_fine(name, rules):
+    assert check_name(name, rules) == []
+
+
+@pytest.mark.parametrize("name", ["Fennel bulb", "fennel seeds", "fennel", "pork and fennel sausages"])
+def test_fennel_excluded_for_both(name, rules):
+    assert "dale" in people_excluding(name, rules) and "jade" in people_excluding(name, rules)

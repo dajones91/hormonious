@@ -12,13 +12,15 @@ Flow for one recipe:
 
 import os
 from dataclasses import dataclass, field
-from typing import Callable
+from typing import Callable, TypeVar
 
 import anthropic
 from pydantic import ValidationError
 
 from ai.schema import AiAnswer, slugify, to_ingredient, to_recipe
 from core.schema import Ingredient, Recipe
+
+T = TypeVar("T")
 
 MODEL = "claude-opus-5-5"
 MAX_ATTEMPTS = 3
@@ -51,8 +53,12 @@ class GenerationResult:
         return (self.input_tokens * PRICE_PER_M["input"] + self.output_tokens * PRICE_PER_M["output"]) / 1_000_000
 
 
-def call_claude(system: str, user: str) -> tuple[AiAnswer, dict]:
-    """One request to the Anthropic API, returning a validated AiAnswer and the token usage."""
+def request_structured(system: str, content, output_format: type[T]) -> tuple[T, dict]:
+    """One request to the Anthropic API that must come back in `output_format`.
+
+    `content` is the user message: plain text, or a list of content blocks (e.g. an image and text).
+    Returns the validated answer and the token usage; any problem becomes an AiError with a plain message.
+    """
     if not os.getenv("ANTHROPIC_API_KEY"):
         raise AiError("No Anthropic API key found. Add ANTHROPIC_API_KEY to your .env file.")
     client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment (.env)
@@ -61,8 +67,8 @@ def call_claude(system: str, user: str) -> tuple[AiAnswer, dict]:
             model=MODEL,
             max_tokens=16000,
             system=system,
-            messages=[{"role": "user", "content": user}],
-            output_format=AiAnswer,
+            messages=[{"role": "user", "content": content}],
+            output_format=output_format,
         )
     except anthropic.AuthenticationError:
         raise AiError("The Anthropic API key was rejected. Check ANTHROPIC_API_KEY in .env.")
@@ -72,6 +78,8 @@ def call_claude(system: str, user: str) -> tuple[AiAnswer, dict]:
         raise AiError("Too many requests right now, or the monthly spend limit was reached. Try again later.")
     except anthropic.APIConnectionError:
         raise AiError("Couldn't reach the Anthropic API. Check the internet connection.")
+    except anthropic.BadRequestError as e:
+        raise AiError(f"The Anthropic API couldn't process that request: {e.message}")
     except anthropic.APIStatusError as e:
         raise AiError(f"The Anthropic API returned an error ({e.status_code}). Try again in a few minutes.")
     except ValidationError:
@@ -79,10 +87,15 @@ def call_claude(system: str, user: str) -> tuple[AiAnswer, dict]:
 
     usage = {"input": response.usage.input_tokens, "output": response.usage.output_tokens}
     if response.stop_reason == "refusal":
-        raise AiError("The AI declined this request. Try a different idea.")
+        raise AiError("The AI declined this request. Try something different.")
     if response.stop_reason == "max_tokens" or response.parsed_output is None:
         raise AiError("The AI's answer was cut short. Try again.")
     return response.parsed_output, usage
+
+
+def call_claude(system: str, user: str) -> tuple[AiAnswer, dict]:
+    """Ask for a new recipe in the AiAnswer format."""
+    return request_structured(system, user, AiAnswer)
 
 
 def check_answer(answer: AiAnswer, catalogue: dict[str, Ingredient], check: Checker,
@@ -160,16 +173,37 @@ def user_prompt(tier: str, idea: str) -> str:
     return ask + "\nMake it something different from the recipes we already have."
 
 
-def system_prompt(catalogue: dict[str, Ingredient], targets_text: str, exclusions_text: str,
-                  existing_titles: list[str]) -> str:
-    """Everything Claude needs to know about our household, rules and recipe format."""
-    table = "\n".join(
+# Families whose ingredients we never offer the AI when it's inventing a recipe.
+EXCLUDED_FAMILIES = {"salmon", "cod", "prawn", "anchovy", "mushroom", "fresh_fruit", "dried_fruit", "fruit_preserve",
+                     "mycoprotein", "meat_substitute", "paneer", "oyster", "olive", "fennel"}
+
+# Format rules shared by recipe generation and recipe import.
+RECIPE_FORMAT = """- All weights are as bought/weighed: raw meat and veg, DRY rice/pasta/grains, DRAINED tinned beans.
+- Use ingredient keys from the table below wherever possible. Only if you truly need something else,
+  add it to `new_ingredients` with honest per-100 g nutrition (as weighed), a typical Tesco pack size and
+  the aisle. Keep new ingredients to a minimum.
+- Spoon amounts: 1 tbsp oil = 14 g, 1 tsp ground spice = 2-3 g, 1 garlic clove = 5 g.
+- `steps`: clear numbered-style steps without the numbers, including when to cook the flexible carb.
+  Don't say how to divide the food between people or into equal portions: the app gives each person's
+  share. End with a step like "Plate using the plating guide, then box the lunch portions once cooled."
+- `reheat_note`: how to reheat the lunch box (or that it's good cold), and what to pack separately.
+- `tags` from: high-protein, low-GI, lunchbox-friendly, good-cold, freezer-friendly, one-pot, traybake,
+  weekend-special, fakeaway, vegetarian. Weeknight recipes MUST include lunchbox-friendly."""
+
+
+def ingredient_table(catalogue: dict[str, Ingredient], hide_excluded: bool = True) -> str:
+    """Our ingredients as one line each: key | name | weighed state | nutrition per 100 g | GI | flags."""
+    return "\n".join(
         f"{i.key} | {i.name} | {i.state} | {i.kcal:.0f} kcal, {i.protein:g} P, {i.carbs:g} C, {i.fibre:g} fibre, "
         f"{i.fat:g} fat per 100 g | GI {i.gi} | {','.join(sorted(i.flags)) or '-'}"
         for i in sorted(catalogue.values(), key=lambda i: i.key)
-        if not (i.families & {"salmon", "cod", "prawn", "anchovy", "mushroom", "fresh_fruit", "dried_fruit",
-                              "fruit_preserve", "mycoprotein", "meat_substitute", "paneer", "oyster"})
+        if not (hide_excluded and i.families & EXCLUDED_FAMILIES)
     )
+
+
+def system_prompt(catalogue: dict[str, Ingredient], targets_text: str, exclusions_text: str,
+                  existing_titles: list[str]) -> str:
+    """Everything Claude needs to know about our household, rules and recipe format."""
     titles = "\n".join(f"- {t}" for t in sorted(existing_titles))
     return f"""You write recipes for Hormonious, a private weekly meal planner for a UK couple, Dale and Jade.
 Write in UK English with metric units and UK supermarket (Tesco) ingredient names.
@@ -197,21 +231,11 @@ Refined white carbs (white rice, white pasta) may only appear as a flexible opti
   (cheese, nuts). Give `standard_grams` for ONE person's portion, plus sensible min/max. A carb component
   must have a low-GI default and at least one lower-carb swap (e.g. cauliflower_rice, courgette,
   tenderstem). Exactly one option per component has default=true.
-- All weights are as bought/weighed: raw meat and veg, DRY rice/pasta/grains, DRAINED tinned beans.
-- Use ingredient keys from the table below wherever possible. Only if you truly need something else,
-  add it to `new_ingredients` with honest per-100 g nutrition (as weighed), a typical Tesco pack size and
-  the aisle. Keep new ingredients to a minimum.
-- Spoon amounts: 1 tbsp oil = 14 g, 1 tsp ground spice = 2-3 g, 1 garlic clove = 5 g.
-- `steps`: clear numbered-style steps without the numbers, including when to cook the flexible carb.
-  Don't say how to divide the food between people or into equal portions: the app gives each person's
-  share. End with a step like "Plate using the plating guide, then box the lunch portions once cooled."
-- `reheat_note`: how to reheat the lunch box (or that it's good cold), and what to pack separately.
-- `tags` from: high-protein, low-GI, lunchbox-friendly, good-cold, freezer-friendly, one-pot, traybake,
-  weekend-special, fakeaway, vegetarian. Weeknight recipes MUST include lunchbox-friendly.
+{RECIPE_FORMAT}
 - Spice: they like a fair amount but nothing over the top (max 2 of 3).
 
 # Ingredient table (key | name | weighed state | nutrition per 100 g | GI | flags)
-{table}
+{ingredient_table(catalogue)}
 
 # Recipes we already have (don't repeat these)
 {titles}

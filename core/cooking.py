@@ -60,13 +60,9 @@ class FlexCookLine:
         return amount_text(self.ingredient, self.grams) + cooked
 
 
-def scale_for(recipe: Recipe, portions: int) -> float:
-    return portions / recipe.servings
-
-
-def cook_base(recipe: Recipe, catalogue: dict[str, Ingredient], portions: int) -> list[CookLine]:
-    """The shared base for this many portions. Friendly amounts are kept when unscaled."""
-    scale = scale_for(recipe, portions)
+def cook_base(recipe: Recipe, catalogue: dict[str, Ingredient], scale: float) -> list[CookLine]:
+    """The shared base scaled for the plates being cooked (see recipe_fraction). Friendly amounts are kept when unscaled."""
+    scale = round(scale, 4)
     lines = []
     for item in recipe.shared:
         ing = catalogue[item.ingredient]
@@ -102,5 +98,5 @@ def cook_flex(plates: list[Plate]) -> list[FlexCookLine]:
 
 def pot_shares(plates: list[Plate]) -> dict[tuple[str, str], int]:
     """Each plate's percentage of the shared base pot, e.g. Dale dinner 25%."""
-    meals = len({p.meal for p in plates})
-    return {(p.person, p.meal): round(p.share / meals * 100) for p in plates}
+    total = sum(p.share for p in plates)
+    return {(p.person, p.meal): round(p.share / total * 100) for p in plates}

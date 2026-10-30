@@ -16,8 +16,8 @@
   "settings": {
     "split_mode": "even",
     "fixed_split": {"dale": 0.55, "jade": 0.45},
-    "weeknight_options": 11,
-    "weekend_options": 3,
+    "weeknight_options": 20,
+    "weekend_options": 10,
     "friday_plan": false,
     "same_lunch_as_dinner": true,
     "cooldown_weeks": {"5": 2, "4": 4, "3": 10},
@@ -62,6 +62,24 @@
       "family": "paneer",
       "exceptions": [],
       "note": "Household rule: no paneer."
+    },
+    {
+      "person": "dale",
+      "family": "olive",
+      "exceptions": [],
+      "note": "No olives (olive oil is fine)."
+    },
+    {
+      "person": "dale",
+      "family": "fennel",
+      "exceptions": [],
+      "note": "Household rule: no fennel (bulb or seeds)."
+    },
+    {
+      "person": "jade",
+      "family": "fennel",
+      "exceptions": [],
+      "note": "Household rule: no fennel (bulb or seeds)."
     },
     {
       "person": "dale",

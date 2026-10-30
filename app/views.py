@@ -5,17 +5,21 @@ from datetime import date, timedelta
 from flask import Blueprint, Response, abort, current_app, flash, g, redirect, render_template, request, url_for
 
 from ai.generate import AiError, call_claude
+from ai.importer import call_claude_import
+from app.import_form import EXTRA_ROWS, recipe_from_form
 from core.cooking import cook_base, cook_flex, pot_shares
 from core.menu import Menu, check_assignment, menu_is_ready, menu_ready_date, week_slots, week_start_for
-from core.portions import MEALS, PEOPLE, MealTarget, meals_for_portions
+from core.portions import MEALS, PEOPLE, MealTarget, all_eaters, meals_for_portions, recipe_fraction
 from core.ratings import available_from, household_rating, is_retired
 from core.search import matches, search_text
 from core.shopping import as_text, group_by_aisle
+from db.importing import create_draft, preview, save_draft, update_draft
+from db.models import ImportDraftRow
 from db.planner import (check_all, ensure_week, generate_and_save, has_plan, household_stars, load_context,
                         make_menu, shopping_list)
-from db.repo import (add_rating, get_choices, get_exclusion_rules, get_ratings, get_recipe, get_recipe_source_and_status,
+from db.repo import (add_rating, get_choices, get_eaters, get_exclusion_rules, get_ratings, get_recipe, get_recipe_source_and_status,
                      get_recipes, get_restores, get_slot, get_slot_ratings, get_ticks, last_cooked, restore_recipe,
-                     save_choice, save_target, set_recipe_status, set_setting, set_slot, toggle_pantry, toggle_tick)
+                     save_choice, save_target, set_eaters, set_recipe_status, set_setting, set_slot, toggle_pantry, toggle_tick)
 
 bp = Blueprint("main", __name__)
 
@@ -73,9 +77,23 @@ def week(start: str | None = None):
         if len(picked) != len(set(picked)) or any(v not in recipes for v in picked):
             flash("Each recipe can only go on one night a week.", "error")
             return redirect(url_for("main.week", start=week_start.isoformat()))
+        eaters = {}  # who's eating each night, from the ticks
+        for slot in slots:
+            day = slot.day.isoformat()
+            if slot.kind == "off" or f"eaters-{day}" not in request.form:
+                continue
+            ticked = {(p, m) for p in PEOPLE for m in meals_for_portions(slot.portions)
+                      if request.form.get(f"eat-{day}-{p}-{m}")}
+            if not ticked and chosen.get(slot.day) not in ("", "no-cook", None):
+                flash(f"{slot.label}: tick at least one person eating, or choose No cook.", "error")
+                return redirect(url_for("main.week", start=week_start.isoformat()))
+            eaters[slot.day] = ticked
+        stored = {s.day: s for s in week_row.slots}
         for day, value in chosen.items():
             recipe_slug = None if value in ("", "no-cook") else value
             set_slot(session, week_row, day, recipe_slug, no_cook=value == "no-cook")
+            if eaters.get(day):
+                set_eaters(session, stored[day], eaters[day])
         session.commit()
         open_day = request.form.get("open")
         if open_day:  # "Open recipe card" pressed: the plan is saved, now go to that night's card
@@ -92,13 +110,17 @@ def week(start: str | None = None):
     for slot in slots:
         saved = stored.get(slot.day)
         recipe = recipes.get(saved.recipe_slug) if saved and saved.recipe_slug else None
+        eating = get_eaters(session, saved) if saved else all_eaters(meals_for_portions(slot.portions))
         rows.append({
+            "eaters": eating,
+            "meals": meals_for_portions(slot.portions),
             "slot": slot,
             "value": "no-cook" if saved and saved.no_cook else (recipe.slug if recipe else ""),
             "recipe": recipe,
             "slot_id": saved.id if saved else None,
             "rated": get_slot_ratings(session, saved.id) if recipe and slot.day <= today() else None,
-            "warnings": check_assignment(slot, recipe) if recipe else [],
+            "warnings": check_assignment(slot, recipe, has_lunch=any(m == "lunch" for _, m in eating))
+                        if recipe else [],
         })
     # Saved menu once it's ready; before then an unsaved preview that may still change.
     menu = Menu(week_row.weeknight_options, week_row.weekend_options) if week_row else make_menu(session, week_start)
@@ -145,12 +167,22 @@ def rating_summary(session, slug: str) -> dict:
     }
 
 
-def card_context(ctx, recipe, check, portions: int) -> dict:
+def eaters_text(plates) -> str:
+    """e.g. 'Dale: dinner + lunch · Jade: dinner'."""
+    parts = []
+    for person in PEOPLE:
+        meals = [p.meal for p in plates if p.person == person]
+        if meals:
+            parts.append(f"{person.title()}: {' + '.join(meals)}")
+    return " · ".join(parts)
+
+
+def card_context(ctx, recipe, check) -> dict:
     """Everything the recipe card template needs."""
     plates = check.plates
     return dict(
-        r=recipe, check=check, portions=portions, targets=ctx.targets,
-        base_lines=cook_base(recipe, ctx.catalogue, portions), flex_lines=cook_flex(plates),
+        r=recipe, check=check, portions=len(plates), eating=eaters_text(plates), targets=ctx.targets,
+        base_lines=cook_base(recipe, ctx.catalogue, recipe_fraction(recipe, plates)), flex_lines=cook_flex(plates),
         pot=pot_shares(plates), meals=sorted({p.meal for p in plates}, key=MEALS.index),
         plates={(p.person, p.meal): p for p in plates}, people=PEOPLE, catalogue=ctx.catalogue,
     )
@@ -168,8 +200,7 @@ def recipe(slug: str):
                         if ctx.catalogue[k].source == "ai-estimate" and not ctx.catalogue[k].verified})
     removed = get_recipe_source_and_status(session, slug)[1] == "removed"
     return render_template("recipe.html", slot=None, rating=rating_summary(session, slug), estimates=estimates,
-                           removed=removed,
-                           **card_context(ctx, r, check, r.servings))
+                           removed=removed, **card_context(ctx, r, check))
 
 
 @bp.route("/recipes/generate", methods=["POST"])
@@ -193,6 +224,65 @@ def generate():
     tries = "first time" if result.attempts == 1 else f"after {result.attempts} attempts"
     flash(f"New recipe added. It passed all our checks {tries} ({cost}).", "ok")
     return redirect(url_for("main.recipe", slug=result.recipe.slug))
+
+
+@bp.route("/recipes/import", methods=["POST"])
+def import_recipe():
+    """Read one of our own recipes from pasted text or a photo, then open it for review."""
+    upload = request.files.get("photo")
+    image = upload.read() if upload and upload.filename else None
+    url = request.form.get("source_url", "").strip()[:500]
+    if url and not url.startswith(("http://", "https://")):
+        url = ""
+    call = current_app.config.get("IMPORT_CALL") or call_claude_import
+    try:
+        draft, message, usage = create_draft(db(), request.form.get("text", ""), image, url or None, call=call)
+    except AiError as e:
+        flash(str(e), "error")
+        return redirect(url_for("main.recipes"))
+    if draft is None:
+        flash(f"Couldn't import that: {message}", "error")
+        return redirect(url_for("main.recipes"))
+    return redirect(url_for("main.import_review", draft_id=draft.id))
+
+
+@bp.route("/recipes/import/<int:draft_id>", methods=["GET", "POST"])
+def import_review(draft_id: int):
+    """Check and edit an imported recipe before it goes into the library."""
+    session = db()
+    draft = session.get(ImportDraftRow, draft_id)
+    if draft is None:
+        flash("That import has already been saved or discarded.", "error")
+        return redirect(url_for("main.recipes"))
+    form_errors: list[str] = []
+    if request.method == "POST":
+        action = request.form.get("action", "check")
+        if action == "discard":
+            session.delete(draft)
+            session.commit()
+            flash("Import discarded.", "ok")
+            return redirect(url_for("main.recipes"))
+        recipe_data, form_errors = recipe_from_form(request.form)
+        if not form_errors:
+            form_errors = update_draft(session, draft, recipe_data)
+        if not form_errors and action == "save":
+            recipe, problems = save_draft(session, draft)
+            if recipe is not None:
+                flash("Recipe added to your library.", "ok")
+                return redirect(url_for("main.recipe", slug=recipe.slug))
+            form_errors = problems
+        if not form_errors:
+            return redirect(url_for("main.import_review", draft_id=draft_id))
+    result = preview(session, draft)
+    names = sorted(((k, i.name) for k, i in {**load_context(session).catalogue, **result.catalogue}.items()),
+                   key=lambda kv: kv[1].lower())
+    new_keys = {i["key"]: i["name"] for i in draft.data.get("new_ingredients", [])}
+    for key, name in new_keys.items():
+        if key not in dict(names):
+            names.append((key, f"{name} (new)"))
+    return render_template("import_review.html", draft=draft, r=draft.data["recipe"], result=result,
+                           form_errors=form_errors, ingredient_names=names, extra_rows=EXTRA_ROWS,
+                           targets=load_context(session).targets)
 
 
 @bp.route("/recipe/<slug>/remove", methods=["POST"])
@@ -219,13 +309,17 @@ def restore(slug: str):
     return redirect(url_for("main.recipe", slug=slug))
 
 
-def choice_groups(ctx, portions: int) -> list[tuple[str, tuple[str, ...]]]:
-    """How the portion form is split: one choice per person covering dinner and lunch when
-    lunch matches dinner, otherwise one per meal. Each group is (form key, meals it covers)."""
-    meals = meals_for_portions(portions)
-    if ctx.settings.get("same_lunch_as_dinner", True) and len(meals) > 1:
-        return [("both", meals)]
-    return [(m, (m,)) for m in meals]
+def choice_groups(ctx, eaters) -> list[tuple[str, str, tuple[str, ...]]]:
+    """How the portion form is split, for whoever's eating: one choice per person covering dinner and
+    lunch when lunch matches dinner, otherwise one per meal. Each group is (person, form key, meals)."""
+    groups = []
+    for person in PEOPLE:
+        meals = tuple(m for m in MEALS if (person, m) in eaters)
+        if ctx.settings.get("same_lunch_as_dinner", True) and len(meals) > 1:
+            groups.append((person, "both", meals))
+        else:
+            groups += [(person, m, (m,)) for m in meals]
+    return groups
 
 
 @bp.route("/cook/<int:slot_id>", methods=["GET", "POST"])
@@ -238,37 +332,37 @@ def cook(slot_id: int):
     r = get_recipe(session, slot.recipe_slug)
     ctx = load_context(session)
 
-    groups = choice_groups(ctx, slot.portions)
+    eaters = get_eaters(session, slot)
+    groups = choice_groups(ctx, eaters)
     if request.method == "POST":
         options = {comp.component: {o.ingredient for o in comp.options} for comp in r.flexible}
-        for person in PEOPLE:
-            for group, meals in groups:
-                for comp in r.flexible:
-                    prefix = f"{person}-{group}-{comp.component}"
-                    option = request.form.get(f"{prefix}-option") or None
-                    grams_text = (request.form.get(f"{prefix}-grams") or "").strip()
-                    if option is not None and option not in options[comp.component]:
-                        abort(400)
-                    try:
-                        grams = float(grams_text) if grams_text else None
-                    except ValueError:
-                        flash(f"'{grams_text}' isn't a number of grams.", "error")
-                        return redirect(url_for("main.cook", slot_id=slot_id))
-                    if grams is not None and not 0 <= grams <= 1000:
-                        flash("Grams must be between 0 and 1000.", "error")
-                        return redirect(url_for("main.cook", slot_id=slot_id))
-                    for meal in meals:
-                        save_choice(slot, person, meal, comp.component, option, grams)
+        for person, group, meals in groups:
+            for comp in r.flexible:
+                prefix = f"{person}-{group}-{comp.component}"
+                option = request.form.get(f"{prefix}-option") or None
+                grams_text = (request.form.get(f"{prefix}-grams") or "").strip()
+                if option is not None and option not in options[comp.component]:
+                    abort(400)
+                try:
+                    grams = float(grams_text) if grams_text else None
+                except ValueError:
+                    flash(f"'{grams_text}' isn't a number of grams.", "error")
+                    return redirect(url_for("main.cook", slot_id=slot_id))
+                if grams is not None and not 0 <= grams <= 1000:
+                    flash("Grams must be between 0 and 1000.", "error")
+                    return redirect(url_for("main.cook", slot_id=slot_id))
+                for meal in meals:
+                    save_choice(slot, person, meal, comp.component, option, grams)
         session.commit()
         flash("Portions updated. The shopping list has been updated too.", "ok")
         return redirect(url_for("main.cook", slot_id=slot_id))
 
     choices = get_choices(slot)
-    check = ctx.check(r, get_exclusion_rules(session), slot.portions, choices)
+    check = ctx.check(r, get_exclusion_rules(session), eaters, choices)
     return render_template("recipe.html", slot=slot, choices=choices, groups=groups, week_start=slot.week.start,
                            can_rate=slot.day <= today(), slot_ratings=get_slot_ratings(session, slot.id),
                            rating=rating_summary(session, r.slug),
-                           **card_context(ctx, r, check, slot.portions))
+                           **card_context(ctx, r, check))
 
 
 @bp.route("/cook/<int:slot_id>/rate", methods=["POST"])
@@ -393,6 +487,12 @@ def profiles():
                 raise ValueError("unknown split mode")
             set_setting(session, "split_mode", mode)
             set_setting(session, "same_lunch_as_dinner", request.form.get("same_lunch_as_dinner") == "on")
+            for key, top in (("weeknight_options", 50), ("weekend_options", 30)):
+                if request.form.get(key):
+                    count = int(request.form[key])
+                    if not 1 <= count <= top:
+                        raise ValueError(f"menu size must be between 1 and {top}")
+                    set_setting(session, key, count)
             dale = float(request.form.get("fixed_dale", 55)) / 100
             if not 0 < dale < 1:
                 raise ValueError("Dale's share must be between 1 and 99%")

@@ -223,6 +223,28 @@ class RecipeRestoreRow(Base):
     restored_on: Mapped[date]
 
 
+class SlotEatersRow(Base):
+    """Who's eating on a planned night, when it isn't the default (e.g. Jade away: Dale's dinner and lunch only).
+
+    No row means the default: both of us, for dinner and, on 4-portion nights, the next day's lunch.
+    """
+
+    __tablename__ = "slot_eaters"
+    slot_id: Mapped[int] = mapped_column(ForeignKey("plan_slot.id"), primary_key=True)
+    eaters: Mapped[list[str]] = mapped_column(JSON)  # e.g. ["dale:dinner", "dale:lunch"]
+
+
+class ImportDraftRow(Base):
+    """An imported recipe waiting for us to review it. Holds the AI's answer as JSON (never the photo)."""
+
+    __tablename__ = "import_draft"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    data: Mapped[dict] = mapped_column(JSON)  # ImportAnswer as a dict
+    source_url: Mapped[str | None]
+    note: Mapped[str] = mapped_column(default="")  # the AI's message about assumptions
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+
 def make_session_factory(url: str | None = None) -> sessionmaker:
     """Connect to the database named in .env (DATABASE_URL), or the URL given."""
     load_dotenv()

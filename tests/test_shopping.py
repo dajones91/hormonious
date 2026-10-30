@@ -133,10 +133,10 @@ def test_plain_text_export(catalogue, recipes, targets):
 
 def test_cook_base_keeps_friendly_amounts_and_scales(catalogue, recipes):
     chilli = next(r for r in recipes if r.slug == "turkey-chilli")
-    full = cook_base(chilli, catalogue, 4)
+    full = cook_base(chilli, catalogue, 1.0)
     assert full[0].text == "1 tbsp olive oil"
     assert full[1].text == "1 x onions" and full[1].note == "chopped"
-    half = cook_base(chilli, catalogue, 2)
+    half = cook_base(chilli, catalogue, 0.5)
     assert half[4].grams == pytest.approx(375) and "scaled from" in half[4].text
 
 
@@ -161,3 +161,44 @@ def test_amount_text(catalogue):
     assert amount_text(catalogue["wholemeal_tortilla"], 128) == "2 x wholemeal tortilla wraps"
     assert amount_text(catalogue["brown_basmati"], 130) == "130 g dry brown basmati rice"
     assert amount_text(catalogue["spinach"], 240) == "240 g baby spinach"
+
+
+# --- Who's eating: a night for one person -------------------------------------------------------
+
+def test_one_person_away_cooks_only_their_portions(catalogue, recipes, targets):
+    r = next(x for x in recipes if x.slug == "chicken-tikka-traybake")
+    shares = {"dale": 0.5, "jade": 0.5}
+    dale_only = plan_plates(r, catalogue, targets, shares, eaters={("dale", "dinner"), ("dale", "lunch")},
+                            same_lunch=True)
+    assert [(p.person, p.meal) for p in dale_only] == [("dale", "dinner"), ("dale", "lunch")]
+    items = by_key(build_list([PlannedCook(r, 2, dale_only)], catalogue, set()))
+    assert items["chicken_breast"].grams == pytest.approx(650 / 2)  # half the base: Dale's two quarters
+    assert "cauliflower_rice" not in items  # Jade's swap isn't bought when she's away
+    assert items["brown_basmati"].grams == pytest.approx(sum(p.components[0].grams for p in dale_only))
+
+
+def test_three_portions_both_dinners_one_lunch(catalogue, recipes, targets):
+    r = next(x for x in recipes if x.slug == "turkey-chilli")
+    eaters = {("dale", "dinner"), ("jade", "dinner"), ("jade", "lunch")}
+    plates = plan_plates(r, catalogue, targets, {"dale": 0.5, "jade": 0.5}, eaters=eaters)
+    assert len(plates) == 3
+    assert by_key(build_list([PlannedCook(r, 3, plates)], catalogue, set()))["turkey_mince"].grams == pytest.approx(562.5)
+    assert pot_shares(plates) == {("dale", "dinner"): 33, ("jade", "dinner"): 33, ("jade", "lunch"): 33}
+
+
+def test_uneven_split_scales_the_pot_to_each_persons_share(catalogue, recipes, targets):
+    from core.portions import recipe_fraction
+    r = next(x for x in recipes if x.slug == "turkey-chilli")
+    shares = {"dale": 0.6, "jade": 0.4}
+    jade_only = plan_plates(r, catalogue, targets, shares, eaters={("jade", "dinner"), ("jade", "lunch")})
+    assert recipe_fraction(r, jade_only) == pytest.approx(0.4)  # Jade's usual 40% of each meal, twice
+    everyone = plan_plates(r, catalogue, targets, shares)
+    assert recipe_fraction(r, everyone) == pytest.approx(1.0)
+
+
+def test_single_eater_with_same_lunch_uses_only_their_meals(catalogue, recipes, targets):
+    r = next(x for x in recipes if x.slug == "chicken-tikka-traybake")
+    dinner_only = plan_plates(r, catalogue, targets, {"dale": 0.5, "jade": 0.5},
+                              eaters={("dale", "dinner")}, same_lunch=True)
+    alone = plan_plates(r, catalogue, targets, {"dale": 0.5, "jade": 0.5}, meals=("dinner",))
+    assert dinner_only[0].components == next(p for p in alone if p.person == "dale").components

@@ -12,8 +12,7 @@ import math
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from core.cooking import scale_for
-from core.portions import Plate
+from core.portions import Plate, recipe_fraction
 from core.schema import Ingredient, Recipe
 
 AISLE_ORDER = [
@@ -127,7 +126,7 @@ def build_list(cooks: list[PlannedCook], catalogue: dict[str, Ingredient], pantr
             used_in[key].append(title)
 
     for cook in cooks:
-        scale = scale_for(cook.recipe, cook.portions)
+        scale = recipe_fraction(cook.recipe, cook.plates)  # only the plates actually being eaten
         for item in cook.recipe.shared:
             add(item.ingredient, item.grams * scale, cook.recipe.title)
         for plate in cook.plates:

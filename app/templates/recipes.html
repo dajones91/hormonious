@@ -4,6 +4,21 @@
 {% block content %}
 <h1>Recipe library</h1>
 <details class="generate">
+  <summary>📥 Add one of our own recipes</summary>
+  <form method="post" action="{{ url_for('main.import_recipe') }}" enctype="multipart/form-data" id="import-form">
+    <label>Paste the recipe <span class="muted">(text from a website, email or note)</span>
+      <textarea name="text" rows="6" placeholder="Paste the ingredients and method here"></textarea></label>
+    <label>…or a photo or screenshot of a recipe card
+      <input type="file" name="photo" accept="image/*"></label>
+    <label>Link <span class="muted">(optional, for reference)</span>
+      <input type="url" name="source_url" placeholder="https://"></label>
+    <p class="muted small">The AI turns it into our format (4 portions, flexible carb with swaps), then you check and edit it
+      before saving. Photos aren't kept. Costs roughly 5–15p.</p>
+    <button type="submit" class="btn" id="import-btn">Read recipe</button>
+    <p class="muted small" id="import-wait" hidden>Reading your recipe… this usually takes under a minute.</p>
+  </form>
+</details>
+<details class="generate">
   <summary>✨ Create a new recipe with AI</summary>
   <form method="post" action="{{ url_for('main.generate') }}" id="generate-form">
     <label>Kind of recipe
@@ -56,13 +71,16 @@
 
 {% block scripts %}
 <script>
-  // Show that generating is under way, and stop a double tap sending two requests.
-  document.getElementById("generate-form").addEventListener("submit", () => {
-    const btn = document.getElementById("generate-btn");
-    btn.disabled = true;
-    btn.textContent = "Creating…";
-    document.getElementById("generate-wait").hidden = false;
-  });
+  // Show that the AI is working, and stop a double tap sending two requests.
+  for (const [form, btn, wait, label] of [["generate-form", "generate-btn", "generate-wait", "Creating…"],
+                                          ["import-form", "import-btn", "import-wait", "Reading…"]]) {
+    document.getElementById(form).addEventListener("submit", () => {
+      const button = document.getElementById(btn);
+      button.disabled = true;
+      button.textContent = label;
+      document.getElementById(wait).hidden = false;
+    });
+  }
 </script>
 <script>
   // Filter the cards as you type (the Search button does the same thing on the server).

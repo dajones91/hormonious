@@ -211,7 +211,6 @@
       {"ingredient": "mint", "grams": 5, "display": "a few leaves", "note": "chopped"},
       {"ingredient": "cherry_tomatoes", "grams": 300, "note": "halved"},
       {"ingredient": "red_onion", "grams": 75, "display": "1/2", "note": "thinly sliced"},
-      {"ingredient": "olives", "grams": 40, "display": "a small handful"},
       {"ingredient": "chickpeas", "grams": 240, "display": "1 x 400 g tin, drained"},
       {"ingredient": "red_pepper", "grams": 320, "display": "2", "note": "cut into chunks"},
       {"ingredient": "feta", "grams": 70, "note": "crumbled"},
@@ -227,7 +226,7 @@
       "Mix the chicken with half the lemon juice, the oregano, garlic, half the oil and a pinch of salt. Leave for 5 minutes (or overnight in the fridge).",
       "Thread the chicken and peppers onto skewers if you like. Cook under a hot grill or in the air fryer at 200C for 12-15 minutes, turning once, until the chicken is cooked through and the peppers are charred.",
       "Tzatziki: mix the yoghurt with the grated, squeezed cucumber, the mint and a pinch of salt.",
-      "Salad: toss the lettuce, tomatoes, diced cucumber, red onion, olives and chickpeas with the remaining oil and lemon juice. Top with the feta.",
+      "Salad: toss the lettuce, tomatoes, diced cucumber, red onion and chickpeas with the remaining oil and lemon juice. Top with the feta.",
       "Plate using the plating guide with pitta or bulgur."
     ],
     "reheat_note": "Good cold. Or microwave the chicken for 1-2 minutes. Keep the salad and tzatziki separate."
@@ -708,7 +707,7 @@
   },
   {
     "slug": "chicken-chickpea-tagine",
-    "title": "Chicken, chickpea and olive tagine",
+    "title": "Chicken, chickpea and carrot tagine",
     "tier": "weekend", "cuisine": "Moroccan", "spice": 1, "active_min": 25, "total_min": 75,
     "tags": ["high-protein", "low-GI", "lunchbox-friendly", "freezer-friendly", "weekend-special"],
     "shared": [
@@ -725,7 +724,6 @@
       {"ingredient": "chickpeas", "grams": 480, "display": "2 x 400 g tins, drained"},
       {"ingredient": "carrot", "grams": 240, "display": "3", "note": "chunky slices"},
       {"ingredient": "courgette", "grams": 200, "display": "1", "note": "chunks"},
-      {"ingredient": "olives", "grams": 60},
       {"ingredient": "lemon_juice", "grams": 30, "display": "juice and zest of 1 lemon"},
       {"ingredient": "coriander", "grams": 15, "display": "small bunch"}
     ],
@@ -739,7 +737,7 @@
       "Heat the oil in a large casserole and brown the chicken all over. Set aside.",
       "Soften the onions for 8 minutes, then add the garlic, ginger and spices for 1 minute.",
       "Return the chicken with the tomatoes, stock, chickpeas and carrots. Cover and simmer gently for 30 minutes.",
-      "Add the courgette and olives and simmer uncovered for 15 minutes until the sauce thickens.",
+      "Add the courgette and simmer uncovered for 15 minutes until the sauce thickens.",
       "Stir in the lemon juice and zest. Season. Make the couscous.",
       "Plate using the plating guide with coriander on top."
     ],
